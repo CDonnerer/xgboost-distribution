@@ -28,18 +28,20 @@ class DistXGBoost:
         self._xgb_params["disable_default_eval_metric"] = True
         evals = None
 
+        m_train = xgb.DMatrix(X, y)
+        evals = [(m_train, 'train')]
+
         if eval_set is not None:
-            evals = list()
             for ii, eval in enumerate(eval_set):
                 evals.append((xgb.DMatrix(eval[0], eval[1]), str(ii)))
 
         self._booster = xgb.train(
             self._xgb_params,
-            xgb.DMatrix(X, y),
+            m_train,
             num_boost_round=num_boost_round,
             obj=self._objective_func(),
             feval=self._evaluation_func(),
-            evals=[(m_train, 'train')],
+            evals=evals,
             early_stopping_rounds=early_stopping_rounds,
             verbose_eval=verbose
         )

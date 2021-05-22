@@ -18,8 +18,8 @@ class Normal:
         grad[:, 1] = 1 - (y - mean) ** 2 / var
 
         hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
-        hess[:, 0] = 1 / var
-        hess[:, 1] = 1
+        hess[:, 0] = 2 / var
+        hess[:, 1] = 2
 
         return grad, hess
 
