@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.stats import norm
 
+
 class Normal:
     def __init__(self):
         self.n_params = 2

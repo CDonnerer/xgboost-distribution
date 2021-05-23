@@ -1,6 +1,6 @@
 """Dist-xgboost estimator
 
-Alternative names
+Not entirely happy with name, alternatives:
 - DistXGBoost
 - ProbXGBoost
 - XGProb
@@ -12,6 +12,7 @@ import numpy as np
 import xgboost as xgb
 
 from dist_xgboost.distributions import Normal
+
 
 class DistXGBoost:
     def __init__(self, distribution=None, **kwargs):

@@ -14,3 +14,5 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
+
+from dist_xgboost.estimator import DistXGBoost  # noqa
