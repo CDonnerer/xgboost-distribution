@@ -16,9 +16,8 @@ from dist_xgboost.distributions import Normal
 
 class DistXGBoost:
     def __init__(self, distribution=None, **kwargs):
-        if distribution is None:
-            self.distribution = Normal()
 
+        self.distribution = distribution or Normal()
         self._booster = None
         self._xgb_params = {}
         self._xgb_params.update(kwargs)
@@ -30,7 +29,7 @@ class DistXGBoost:
         evals = None
 
         m_train = xgb.DMatrix(X, y)
-        evals = [(m_train, 'train')]
+        evals = [(m_train, "train")]
 
         if eval_set is not None:
             for ii, eval in enumerate(eval_set):
@@ -44,7 +43,7 @@ class DistXGBoost:
             feval=self._evaluation_func(),
             evals=evals,
             early_stopping_rounds=early_stopping_rounds,
-            verbose_eval=verbose
+            verbose_eval=verbose,
         )
         return self
 
@@ -56,12 +55,14 @@ class DistXGBoost:
             grad = grad.reshape((len(y) * self.distribution.n_params, 1))
             hess = hess.reshape((len(y) * self.distribution.n_params, 1))
             return grad, hess
+
         return obj
 
     def _evaluation_func(self):
         def feval(params: np.ndarray, data: xgb.DMatrix):
             y = data.get_label()
             return self.distribution.loss(y, params)
+
         return feval
 
     def predict_dist(self, X):

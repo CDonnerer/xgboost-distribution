@@ -34,4 +34,4 @@ class Normal:
 
         log_var = np.clip(log_var, -100, 100)
         var = np.exp(log_var)
-        return mean, var ** .5
+        return mean, var ** 0.5
