@@ -3,8 +3,9 @@ dist_xgboost
 ============
 
 XGBoost for probabilistic prediction. Just like normal xgboost, but we estimate
-all parameters of the distribution (as opposed to e.g. just regressing to the
-mean). This enables a simple way to estimate uncertainty:
+all parameters of the distribution for each sample (as opposed to e.g. just
+regressing to the mean at constant variance). This enables a simple way to
+estimate uncertainty:
 
 .. image:: dist_xgboost.png
 
@@ -19,10 +20,9 @@ we can fit a model:
 .. code-block:: python
 
       from dist_xgboost import DistXGboost
-      from dist_xgboost.distributions import Normal
 
       model = DistXGBoost(
-          distribution=Normal(),
+          distribution="normal",
           max_depth=2,
           n_estimators=500
       )

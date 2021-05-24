@@ -4,7 +4,6 @@ Not entirely happy with name, alternatives:
 - DistXGBoost
 - ProbXGBoost
 - XGProb
-- XGBoost
 - XGDist
 
 """
@@ -19,7 +18,7 @@ available_distributions = get_distributions()
 
 class DistXGBoost:
     def __init__(self, distribution="normal", **kwargs):
-        self.distribution = available_distributions[distribution]
+        self.distribution = available_distributions[distribution]()
         self._booster = None
         self._xgb_params = {}
         self._xgb_params.update(kwargs)
