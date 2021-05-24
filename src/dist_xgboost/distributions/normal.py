@@ -3,8 +3,10 @@
 import numpy as np
 from scipy.stats import norm
 
+from dist_xgboost.distributions.base import BaseDistribution
 
-class Normal:
+
+class Normal(BaseDistribution):
     def __init__(self):
         self.n_params = 2
 

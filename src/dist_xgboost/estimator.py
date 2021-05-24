@@ -11,13 +11,15 @@ Not entirely happy with name, alternatives:
 import numpy as np
 import xgboost as xgb
 
-from dist_xgboost.distributions import Normal
+from dist_xgboost.distributions import get_distributions
+
+
+available_distributions = get_distributions()
 
 
 class DistXGBoost:
-    def __init__(self, distribution=None, **kwargs):
-
-        self.distribution = distribution or Normal()
+    def __init__(self, distribution="normal", **kwargs):
+        self.distribution = available_distributions[distribution]
         self._booster = None
         self._xgb_params = {}
         self._xgb_params.update(kwargs)
