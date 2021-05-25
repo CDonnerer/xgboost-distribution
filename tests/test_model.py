@@ -1,7 +1,7 @@
 import numpy as np
-from xgb_dist.model import XGBDistribution
-
 from sklearn.model_selection import train_test_split
+
+from xgb_dist.model import XGBDistribution
 
 
 def test_XGBDistribution(small_X_y_data):
