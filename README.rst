@@ -1,5 +1,5 @@
 ============
-xgb_dist
+xgb-dist
 ============
 
 XGBoost for probabilistic prediction.
