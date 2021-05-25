@@ -1,22 +1,21 @@
 """Dist-xgboost estimator
-
-Not entirely happy with name, alternatives:
-- DistXGBoost
-- ProbXGBoost
-- XGProb
-- XGDist
-
 """
 import numpy as np
 import xgboost as xgb
 
 from dist_xgboost.distributions import get_distributions
 
+from xgb_dist import XGBDistribution
+
+from xgb_distribution import XGBDistribution
+
+from xgbdistribution import XGBDistribution
+
 
 available_distributions = get_distributions()
 
 
-class DistXGBoost:
+class XGBDistribution(xgb.XGBModel):
     def __init__(self, distribution="normal", **kwargs):
         self.distribution = available_distributions[distribution]()
         self._booster = None
@@ -25,7 +24,6 @@ class DistXGBoost:
         self._xgb_params["num_class"] = self.distribution.n_params
 
     def fit(self, X, y, *, eval_set=None, early_stopping_rounds=None, verbose=True):
-        num_boost_round = self._xgb_params.pop("n_estimators", 100)
         self._xgb_params["disable_default_eval_metric"] = True
         evals = None
 
@@ -39,11 +37,11 @@ class DistXGBoost:
         self._booster = xgb.train(
             self._xgb_params,
             m_train,
-            num_boost_round=num_boost_round,
-            obj=self._objective_func(),
-            feval=self._evaluation_func(),
+            num_boost_round=self.get_num_boosting_rounds(),
             evals=evals,
             early_stopping_rounds=early_stopping_rounds,
+            obj=self._objective_func(),
+            feval=self._evaluation_func(),
             verbose_eval=verbose,
         )
         return self

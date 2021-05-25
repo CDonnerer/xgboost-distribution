@@ -19,9 +19,9 @@ we can fit a model:
 
 .. code-block:: python
 
-      from dist_xgboost import DistXGboost
+      from dist_xgb import XGBDistribution
 
-      model = DistXGBoost(
+      model = XGBDistribution(
           distribution="normal",
           max_depth=2,
           n_estimators=500
