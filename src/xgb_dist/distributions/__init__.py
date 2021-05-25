@@ -1,4 +1,4 @@
-from xgb_dist.distributions.normal import Normal
+from xgb_dist.distributions.normal import Normal  # noqa
 from xgb_dist.distributions.base import BaseDistribution
 
 
