@@ -9,7 +9,8 @@ estimate uncertainty:
 
 .. image:: xgb_dist.png
     :align: center
-    :width: 500px
+    :width: 600px
+    :alt: XGBDistribution example
 
 
 Usage
