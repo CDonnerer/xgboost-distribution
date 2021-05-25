@@ -1,6 +1,6 @@
 import pytest
 
-from xgb_dist.skeleton import fib, main
+from dist_xgboost.skeleton import fib, main
 
 __author__ = "Christian Donnerer"
 __copyright__ = "Christian Donnerer"

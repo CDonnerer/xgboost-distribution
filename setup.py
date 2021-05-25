@@ -1,5 +1,5 @@
 """
-    Setup file for xgb_dist.
+    Setup file for dist_xgboost.
     Use setup.cfg to configure your project.
 
     This file was generated with PyScaffold 4.0.1.

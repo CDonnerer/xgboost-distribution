@@ -4,7 +4,7 @@ console script. To run this script uncomment the following lines in the
 ``[options.entry_points]`` section in ``setup.cfg``::
 
     console_scripts =
-         fibonacci = xgb_dist.skeleton:run
+         fibonacci = dist_xgboost.skeleton:run
 
 Then run ``pip install .`` (or ``pip install -e .`` for editable mode)
 which will install the command ``fibonacci`` inside your current environment.
@@ -24,7 +24,7 @@ import argparse
 import logging
 import sys
 
-from xgb_dist import __version__
+from dist_xgboost import __version__
 
 __author__ = "Christian Donnerer"
 __copyright__ = "Christian Donnerer"
@@ -36,7 +36,7 @@ _logger = logging.getLogger(__name__)
 # ---- Python API ----
 # The functions defined in this section can be imported by users in their
 # Python scripts/interactive interpreter, e.g. via
-# `from xgb_dist.skeleton import fib`,
+# `from dist_xgboost.skeleton import fib`,
 # when using this Python module as a library.
 
 
@@ -76,7 +76,7 @@ def parse_args(args):
     parser.add_argument(
         "--version",
         action="version",
-        version="xgb_dist {ver}".format(ver=__version__),
+        version="dist_xgboost {ver}".format(ver=__version__),
     )
     parser.add_argument(dest="n", help="n-th Fibonacci number", type=int, metavar="INT")
     parser.add_argument(
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     # After installing your project with pip, users can also run your Python
     # modules as scripts via the ``-m`` flag, as defined in PEP 338::
     #
-    #     python -m xgb_dist.skeleton 42
+    #     python -m dist_xgboost.skeleton 42
     #
     run()
