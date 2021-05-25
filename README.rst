@@ -1,15 +1,46 @@
 ============
-dist_xgboost
+xgb-dist
 ============
 
+XGBoost for probabilistic prediction.
 
-Add a short description here!
+Just like normal xgboost, except for estimating all parameters of a distribution
+for each sample (as opposed to e.g. just regressing to the mean at constant
+variance). This enables a simple way to estimate uncertainty:
+
+.. image:: xgb_dist.png
+    :align: center
+    :width: 600px
+    :alt: XGBDistribution example
 
 
-Description
+Usage
 ===========
 
-A longer description of your project goes here...
+XGBDistribution follows the scikit-learn xgboost API, except for an additional
+keyword in the constructor for specifying the distribution. Given some data,
+we can fit a model:
+
+.. code-block:: python
+
+      from xgb_dist import XGBDistribution
+
+      model = XGBDistribution(
+          distribution="normal",
+          max_depth=2,
+          n_estimators=500
+      )
+      model.fit(
+          X_train, y_train,
+          eval_set=[(X_test, y_test)],
+          early_stopping_rounds=10
+      )
+
+After fitting, we can predict the parameters of the distribution for new data:
+
+.. code-block:: python
+
+      mean, var = model.predict_dist(X_test)
 
 
 .. _pyscaffold-notes:
