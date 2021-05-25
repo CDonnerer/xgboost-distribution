@@ -1,4 +1,8 @@
 """Distribution base class
+
+TODO:
+- param names property
+
 """
 from abc import ABC, abstractmethod
 
