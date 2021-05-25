@@ -8,6 +8,8 @@ regressing to the mean at constant variance). This enables a simple way to
 estimate uncertainty:
 
 .. image:: xgb_dist.png
+    :align: center
+    :width: 500px
 
 
 Usage
