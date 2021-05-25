@@ -2,10 +2,11 @@
 xgb_dist
 ============
 
-XGBoost for probabilistic prediction. Just like normal xgboost, but we estimate
-all parameters of the distribution for each sample (as opposed to e.g. just
-regressing to the mean at constant variance). This enables a simple way to
-estimate uncertainty:
+XGBoost for probabilistic prediction.
+
+Just like normal xgboost, except for estimating all parameters of a distribution
+for each sample (as opposed to e.g. just regressing to the mean at constant
+variance). This enables a simple way to estimate uncertainty:
 
 .. image:: xgb_dist.png
     :align: center
