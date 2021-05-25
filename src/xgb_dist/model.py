@@ -3,14 +3,7 @@
 import numpy as np
 import xgboost as xgb
 
-from dist_xgboost.distributions import get_distributions
-
-from xgb_dist import XGBDistribution
-
-from xgb_distribution import XGBDistribution
-
-from xgbdistribution import XGBDistribution
-
+from xgb_dist.distributions import get_distributions
 
 available_distributions = get_distributions()
 

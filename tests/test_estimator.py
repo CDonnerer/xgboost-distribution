@@ -1,5 +1,5 @@
-from dist_xgboost.estimator import DistXGBoost
+from xgb_dist.model import XGBDistribution
 
 
-def test_DistXGBoost():
-    model = DistXGBoost()
+def test_XGBDistribution():
+    model = XGBDistribution()

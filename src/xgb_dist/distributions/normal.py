@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.stats import norm
 
-from dist_xgboost.distributions.base import BaseDistribution
+from xgb_dist.distributions.base import BaseDistribution
 
 
 class Normal(BaseDistribution):

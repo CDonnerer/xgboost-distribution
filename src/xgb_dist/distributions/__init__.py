@@ -1,5 +1,5 @@
-from dist_xgboost.distributions.normal import Normal
-from dist_xgboost.distributions.base import BaseDistribution
+from xgb_dist.distributions.normal import Normal
+from xgb_dist.distributions.base import BaseDistribution
 
 
 def get_distributions():
