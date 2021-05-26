@@ -56,8 +56,8 @@ class XGBDistribution(xgb.XGBModel):
             y = data.get_label()
             grad, hess = self.distribution.gradient_and_hessian(y, params)
 
-            grad = grad.reshape((len(y) * self.distribution.n_params, 1))
-            hess = hess.reshape((len(y) * self.distribution.n_params, 1))
+            grad = grad.reshape((len(y) * len(self.distribution.params), 1))
+            hess = hess.reshape((len(y) * len(self.distribution.params), 1))
             return grad, hess
 
         return obj
