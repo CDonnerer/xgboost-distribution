@@ -10,7 +10,7 @@ available_distributions = get_distributions()
 
 
 @xgboost_model_doc(
-    "Implementation of the scikit-learn API for XGBoost distribution.",
+    "Implementation of XGBoost to estimate distributions in scikit-learn API.",
     ["model"],
     extra_parameters=get_distribution_doc(),
 )
