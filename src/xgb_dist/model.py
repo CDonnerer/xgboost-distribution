@@ -2,13 +2,18 @@
 """
 import numpy as np
 import xgboost as xgb
-from xgboost.sklearn import _wrap_evaluation_matrices
+from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
 
-from xgb_dist.distributions import get_distributions
+from xgb_dist.distributions import get_distributions, get_distribution_doc
 
 available_distributions = get_distributions()
 
 
+@xgboost_model_doc(
+    "Implementation of XGBoost to estimate distributions in scikit-learn API.",
+    ["model"],
+    extra_parameters=get_distribution_doc(),
+)
 class XGBDistribution(xgb.XGBModel):
     def __init__(self, distribution="normal", **kwargs):
         self.distribution = available_distributions[distribution]()
@@ -19,7 +24,7 @@ class XGBDistribution(xgb.XGBModel):
 
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
-        params["num_class"] = self.distribution.n_params
+        params["num_class"] = len(self.distribution.params)
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
@@ -56,8 +61,8 @@ class XGBDistribution(xgb.XGBModel):
             y = data.get_label()
             grad, hess = self.distribution.gradient_and_hessian(y, params)
 
-            grad = grad.reshape((len(y) * self.distribution.n_params, 1))
-            hess = hess.reshape((len(y) * self.distribution.n_params, 1))
+            grad = grad.reshape((len(y) * len(self.distribution.params), 1))
+            hess = hess.reshape((len(y) * len(self.distribution.params), 1))
             return grad, hess
 
         return obj

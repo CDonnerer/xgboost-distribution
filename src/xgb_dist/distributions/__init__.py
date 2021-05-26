@@ -8,3 +8,15 @@ def get_distributions():
         subclass.__name__.lower(): subclass
         for subclass in BaseDistribution.__subclasses__()
     }
+
+
+def get_distribution_doc():
+    param_doc = """
+    distribution : str, default='normal'
+        Which distribution to estimate. Available choices:
+
+    """
+    for subclass in BaseDistribution.__subclasses__():
+        param_doc += f"\t\t'{subclass.__name__.lower()}' : params = {subclass().params}"
+
+    return param_doc
