@@ -2,13 +2,18 @@
 """
 import numpy as np
 import xgboost as xgb
-from xgboost.sklearn import _wrap_evaluation_matrices
+from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
 
-from xgb_dist.distributions import get_distributions
+from xgb_dist.distributions import get_distributions, get_distribution_doc
 
 available_distributions = get_distributions()
 
 
+@xgboost_model_doc(
+    "Implementation of the scikit-learn API for XGBoost distribution.",
+    ["model"],
+    extra_parameters=get_distribution_doc(),
+)
 class XGBDistribution(xgb.XGBModel):
     def __init__(self, distribution="normal", **kwargs):
         self.distribution = available_distributions[distribution]()

@@ -37,7 +37,7 @@ except ImportError:
     from sphinx import apidoc
 
 output_dir = os.path.join(__location__, "api")
-module_dir = os.path.join(__location__, "../src/dist_xgboost")
+module_dir = os.path.join(__location__, "../src/xgb_dist")
 try:
     shutil.rmtree(output_dir)
 except FileNotFoundError:
@@ -93,7 +93,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "dist_xgboost"
+project = "xgb_dist"
 copyright = "2021, Christian Donnerer"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -147,15 +147,12 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "alabaster"
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    "sidebar_width": "300px",
-    "page_width": "1200px"
-}
+html_theme_options = {"sidebar_width": "300px", "page_width": "1200px"}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -163,7 +160,7 @@ html_theme_options = {
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 try:
-    from dist_xgboost import __version__ as version
+    from xgb_dist import __version__ as version
 except ImportError:
     pass
 else:
@@ -228,7 +225,7 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "dist_xgboost-doc"
+htmlhelp_basename = "xgb_dist-doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -245,7 +242,13 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "user_guide.tex", "dist_xgboost Documentation", "Christian Donnerer", "manual")
+    (
+        "index",
+        "user_guide.tex",
+        "xgb_dist Documentation",
+        "Christian Donnerer",
+        "manual",
+    )
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
