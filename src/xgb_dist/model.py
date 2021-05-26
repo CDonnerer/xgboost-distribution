@@ -19,7 +19,7 @@ class XGBDistribution(xgb.XGBModel):
 
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
-        params["num_class"] = self.distribution.n_params
+        params["num_class"] = len(self.distribution.params)
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,

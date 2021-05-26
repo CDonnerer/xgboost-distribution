@@ -7,8 +7,11 @@ from xgb_dist.distributions.base import BaseDistribution
 
 
 class Normal(BaseDistribution):
-    def __init__(self):
-        self.n_params = 2
+    """Implementaion of normal distribution for XGBDistribution"""
+
+    @property
+    def params(self):
+        return ["mean", "var"]
 
     def gradient_and_hessian(self, y, params):
         """Gradient and diagonal hessian"""
@@ -28,8 +31,8 @@ class Normal(BaseDistribution):
 
     def loss(self, y, params):
         """Loss function to minimise"""
-        loc, scale = self.predict(params)
-        return "NormalError", -norm.logpdf(y, loc=loc, scale=scale).mean()
+        mean, var = self.predict(params)
+        return "NormalError", -norm.logpdf(y, loc=mean, scale=var).mean()
 
     def predict(self, params):
         mean, log_var = params[:, 0], params[:, 1]
