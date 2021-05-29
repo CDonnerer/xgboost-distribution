@@ -13,8 +13,8 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
     extra_parameters=get_distribution_doc(),
 )
 class XGBDistribution(xgb.XGBModel):
-    def __init__(self, distribution="normal", **kwargs):
-        self.distribution = distribution
+    def __init__(self, distribution=None, **kwargs):
+        self.distribution = distribution or "normal"
         super().__init__(objective=None, **kwargs)
 
     def fit(self, X, y, *, eval_set=None, early_stopping_rounds=None, verbose=True):
