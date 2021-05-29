@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 
 class BaseDistribution(ABC):
     def __repr__(self):
-        return self.__class__.__name__.lower()
+        return f"`{self.__class__.__name__.lower()}`"
 
     @property
     @abstractmethod

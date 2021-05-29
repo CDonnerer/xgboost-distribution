@@ -7,7 +7,7 @@ from xgb_dist.distributions.base import BaseDistribution
 
 
 class Normal(BaseDistribution):
-    """Implementaion of normal distribution for XGBDistribution"""
+    """Implementation of normal distribution for XGBDistribution"""
 
     @property
     def params(self):

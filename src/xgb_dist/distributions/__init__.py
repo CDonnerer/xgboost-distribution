@@ -17,19 +17,22 @@ def get_distribution(name):
 
     if name not in AVAILABLE_DISTRIBUTIONS.keys():
         raise ValueError(
-            f"Distribution is not implemented! Please choose one of {AVAILABLE_DISTRIBUTIONS.keys()}"
+            "Distribution is not implemented! Please choose one of "
+            f"{set(AVAILABLE_DISTRIBUTIONS.keys())}"
         )
 
     return AVAILABLE_DISTRIBUTIONS[name]()
 
 
 def get_distribution_doc():
-    param_doc = """
-    distribution : str, default='normal'
+    """Construct docstring for `distribution` param in XGBDistribution model"""
+
+    param_doc = f"""
+    distribution : {set(AVAILABLE_DISTRIBUTIONS.keys())} default='normal'
         Which distribution to estimate. Available choices:
 
     """
-    for subclass in BaseDistribution.__subclasses__():
-        param_doc += f"\t\t'{subclass.__name__.lower()}' : params = {subclass().params}"
+    for name, subclass in AVAILABLE_DISTRIBUTIONS.items():
+        param_doc += f"\t\t'{name}' : params = {subclass().params}"
 
     return param_doc
