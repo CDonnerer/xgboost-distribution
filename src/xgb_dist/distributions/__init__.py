@@ -1,7 +1,7 @@
 from xgb_dist.distributions.base import BaseDistribution
 from xgb_dist.distributions.normal import Normal  # noqa
 
-# TOTA: cleaner way of importing distribution subclasses?
+# TOTA: alternative way of importing distribution subclasses?
 # __all__ = ["normal"]
 # from . import *
 
