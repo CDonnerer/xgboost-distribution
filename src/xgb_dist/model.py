@@ -1,12 +1,10 @@
-"""Dist-xgboost estimator
+"""XGBDistribution model
 """
 import numpy as np
 import xgboost as xgb
 from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
 
-from xgb_dist.distributions import get_distributions, get_distribution_doc
-
-available_distributions = get_distributions()
+from xgb_dist.distributions import get_distribution, get_distribution_doc
 
 
 @xgboost_model_doc(
@@ -16,7 +14,7 @@ available_distributions = get_distributions()
 )
 class XGBDistribution(xgb.XGBModel):
     def __init__(self, distribution="normal", **kwargs):
-        self.distribution = available_distributions[distribution]()
+        self.distribution = get_distribution(distribution)
         super().__init__(objective=None, **kwargs)
 
     def fit(self, X, y, *, eval_set=None, early_stopping_rounds=None, verbose=True):
