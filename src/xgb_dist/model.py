@@ -3,7 +3,6 @@
 import numpy as np
 import xgboost as xgb
 from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
-
 from xgb_dist.distributions import get_distribution, get_distribution_doc
 
 
@@ -24,6 +23,7 @@ class XGBDistribution(xgb.XGBModel):
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
+        params["base_score"] = np.mean(y)
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
