@@ -25,6 +25,10 @@ class XGBDistribution(xgb.XGBModel):
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
 
+        # TODO: setting base_score is crucial to get right as it's the starting
+        # point for all params of the distribution
+        params["base_score"] = np.mean(y)
+
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
             X=X,
