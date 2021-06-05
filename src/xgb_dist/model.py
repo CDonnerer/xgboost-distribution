@@ -27,7 +27,13 @@ class XGBDistribution(xgb.XGBModel):
 
         # TODO: setting base_score is crucial to get right as it's the starting
         # point for all params of the distribution
-        params["base_score"] = np.mean(y)
+        params["base_score"] = 0.0
+        # np.log(np.std(y))
+
+        self._starting_params = self._distribution.starting_params(y)
+
+        self._mean = np.mean(y)
+        self._log_scale = np.log(np.std(y))
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
@@ -36,11 +42,11 @@ class XGBDistribution(xgb.XGBModel):
             group=None,
             qid=None,
             sample_weight=None,
-            base_margin=None,
+            base_margin=self._get_base_margins(len(y)),
             feature_weights=None,
             eval_set=eval_set,
             sample_weight_eval_set=None,
-            base_margin_eval_set=None,
+            base_margin_eval_set=[self._get_base_margins(len(eval_set[0][1]))],
             eval_group=None,
             eval_qid=None,
             create_dmatrix=lambda **kwargs: xgb.DMatrix(nthread=self.n_jobs, **kwargs),
@@ -61,7 +67,11 @@ class XGBDistribution(xgb.XGBModel):
 
     def predict_dist(self, X):
         """Predict all params of the distribution"""
-        params = self._Booster.predict(xgb.DMatrix(X), output_margin=True)
+
+        params = self._Booster.predict(
+            xgb.DMatrix(X, base_margin=self._get_base_margins(X.shape[0])),
+            output_margin=True,
+        )
         return self._distribution.predict(params)
 
     def predict(self, X):
@@ -78,7 +88,7 @@ class XGBDistribution(xgb.XGBModel):
             grad, hess = self._distribution.gradient_and_hessian(y, params)
 
             flattened_len = len(y) * len(self._distribution.params)
-            grad = grad.reshape((flattened_len, 1))
+            grad = grad.flatten()  # .reshape((flattened_len, 1))
             hess = hess.reshape((flattened_len, 1))
             return grad, hess
 
@@ -90,3 +100,15 @@ class XGBDistribution(xgb.XGBModel):
             return self._distribution.loss(y, params)
 
         return feval
+
+    def _get_base_margins(self, n_samples):
+        return (
+            np.array(
+                [
+                    self._starting_params[0] * np.ones(shape=(n_samples,)),
+                    self._starting_params[1] * np.ones(shape=(n_samples,)),
+                ]
+            )
+            .transpose()
+            .flatten()
+        )
