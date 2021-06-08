@@ -2,11 +2,7 @@
 xgb-dist
 ============
 
-XGBoost for probabilistic prediction.
-
-Just like normal xgboost, except for estimating all parameters of a distribution
-for each sample (as opposed to e.g. just regressing to the mean at constant
-variance). This enables a simple way to estimate uncertainty:
+XGBoost for probabilistic prediction. Like `NGBoost`_, but faster.
 
 .. image:: imgs/xgb_dist.png
     :align: center
@@ -38,12 +34,16 @@ we can fit a model:
 
 After fitting, we can predict the parameters of the distribution for new data:
 
+.. code-block:: python
+
+      mean, var = model.predict_dist(X_test)
+
 
 Performance comparison
 ========================
 
-XGBDistribution follows the methodology first shown in the `NGBoost`_ library,
-namely using natural gradients to estimate the parameters of the distribution.
+XGBDistribution follows the method shown in the `NGBoost`_ library, using
+natural gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison between the NGBRegressor and
 XGBDistribution models, using the Boston Housing dataset and a normal
