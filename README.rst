@@ -48,7 +48,7 @@ natural gradients to estimate the parameters of the distribution.
 Below, we show a performance comparison between the NGBRegressor and
 XGBDistribution models, using the Boston Housing dataset and a normal
 distribution. We note that while the performance of the two models is basically
-identical, XGBDistribution is *50x faster* (includes both fit and predict steps).
+identical, XGBDistribution is **50x faster** (both fit and predict steps).
 
 .. image:: imgs/performance_comparison.png
           :align: center
