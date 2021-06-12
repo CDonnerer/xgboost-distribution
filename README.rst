@@ -1,3 +1,10 @@
+.. image:: https://github.com/CDonnerer/xgb-dist/actions/workflows/test.yml/badge.svg?branch=main
+  :target: https://github.com/CDonnerer/xgb-dist/actions/workflows/test.yml
+
+.. image:: https://coveralls.io/repos/github/CDonnerer/xgb-dist/badge.svg?branch=main
+  :target: https://coveralls.io/github/CDonnerer/xgb-dist?branch=main
+
+
 ============
 xgb-dist
 ============
