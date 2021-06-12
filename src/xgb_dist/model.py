@@ -69,12 +69,24 @@ class XGBDistribution(xgb.XGBModel):
         )
         return self
 
-    def predict_dist(self, X):
+    def predict_dist(
+        self,
+        X,
+        ntree_limit=None,
+        validate_features=False,
+        iteration_range=None,
+    ):
         """Predict all params of the distribution"""
 
-        params = self._Booster.predict(
-            xgb.DMatrix(X, base_margin=self._get_base_margins(X.shape[0])),
+        base_margin = self._get_base_margins(X.shape[0])
+
+        params = super().predict(
+            X=X,
             output_margin=True,
+            ntree_limit=ntree_limit,
+            validate_features=validate_features,
+            base_margin=base_margin,
+            iteration_range=iteration_range,
         )
         return self._distribution.predict(params)
 
