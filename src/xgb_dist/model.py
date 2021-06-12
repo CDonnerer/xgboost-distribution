@@ -31,6 +31,14 @@ class XGBDistribution(xgb.XGBModel):
         params["base_score"] = 0.0
         self._starting_params = self._distribution.starting_params(y)
 
+        base_margin = self._get_base_margins(len(y))
+        if eval_set is not None:
+            base_margin_eval_set = [
+                self._get_base_margins(len(evals[1])) for evals in eval_set
+            ]
+        else:
+            base_margin_eval_set = None
+
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
             X=X,
@@ -38,12 +46,11 @@ class XGBDistribution(xgb.XGBModel):
             group=None,
             qid=None,
             sample_weight=None,
-            base_margin=self._get_base_margins(len(y)),
+            base_margin=base_margin,
             feature_weights=None,
             eval_set=eval_set,
             sample_weight_eval_set=None,
-            # TODO: Clean up the hack
-            base_margin_eval_set=[self._get_base_margins(len(eval_set[0][1]))],
+            base_margin_eval_set=base_margin_eval_set,
             eval_group=None,
             eval_qid=None,
             create_dmatrix=lambda **kwargs: xgb.DMatrix(nthread=self.n_jobs, **kwargs),
