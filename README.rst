@@ -1,3 +1,7 @@
+.. image:: https://coveralls.io/repos/github/CDonnerer/xgb-dist/badge.svg?branch=main
+:target: https://coveralls.io/github/CDonnerer/xgb-dist?branch=main
+
+
 ============
 xgb-dist
 ============
