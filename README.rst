@@ -1,5 +1,7 @@
+.. image: https://github.com/CDonnerer/xgb-dist/workflows/Unit%20testing/badge.svg?branch=main)
+
 .. image:: https://coveralls.io/repos/github/CDonnerer/xgb-dist/badge.svg?branch=main
-:target: https://coveralls.io/github/CDonnerer/xgb-dist?branch=main
+  :target: https://coveralls.io/github/CDonnerer/xgb-dist?branch=main
 
 
 ============
