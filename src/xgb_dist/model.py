@@ -3,7 +3,7 @@
 import numpy as np
 import xgboost as xgb
 from sklearn.base import RegressorMixin
-from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
+from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc, XGBModel
 
 from xgb_dist.distributions import get_distribution, get_distribution_doc
 
@@ -13,14 +13,26 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
     ["model"],
     extra_parameters=get_distribution_doc(),
 )
-class XGBDistribution(xgb.XGBModel, RegressorMixin):
+class XGBDistribution(XGBModel, RegressorMixin):
     def __init__(self, distribution=None, natural_gradient=True, **kwargs):
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
         super().__init__(objective=None, **kwargs)
 
-    def fit(self, X, y, *, eval_set=None, early_stopping_rounds=None, verbose=True):
-
+    def fit(
+        self,
+        X,
+        y,
+        *,
+        sample_weight=None,
+        eval_set=None,
+        early_stopping_rounds=None,
+        verbose=False,
+        xgb_model=None,
+        sample_weight_eval_set=None,
+        feature_weights=None,
+        callbacks=None,
+    ):
         self._distribution = get_distribution(self.distribution)
 
         params = self.get_xgb_params()
@@ -46,11 +58,11 @@ class XGBDistribution(xgb.XGBModel, RegressorMixin):
             y=y,
             group=None,
             qid=None,
-            sample_weight=None,
+            sample_weight=sample_weight,
             base_margin=base_margin,
-            feature_weights=None,
+            feature_weights=feature_weights,
             eval_set=eval_set,
-            sample_weight_eval_set=None,
+            sample_weight_eval_set=sample_weight_eval_set,
             base_margin_eval_set=base_margin_eval_set,
             eval_group=None,
             eval_qid=None,
@@ -70,16 +82,44 @@ class XGBDistribution(xgb.XGBModel, RegressorMixin):
         )
         return self
 
-    def predict_dist(
+    fit.__doc__ = XGBModel.fit.__doc__.replace(
+        "Fit gradient boosting model", "Fit gradient boosting distribution", 1
+    )
+
+    def predict(
         self,
         X,
         ntree_limit=None,
         validate_features=False,
         iteration_range=None,
     ):
-        """Predict all params of the distribution"""
+        """Predict all params of distribution of each `X` example.
+
+        Parameters
+        ----------
+        X : array_like
+            Feature matrix.
+        ntree_limit : int
+            Deprecated, use `iteration_range` instead.
+        validate_features : bool
+            When this is True, validate that the Booster's and data's feature_names are
+            identical.  Otherwise, it is assumed that the feature_names are the same.
+        iteration_range :
+            Specifies which layer of trees are used in prediction.  For example, if a
+            random forest is trained with 100 rounds.  Specifying `iteration_range=(10,
+            20)`, then only the forests built during [10, 20) (half open set) rounds are
+            used in this prediction.
+
+        Returns
+        -------
+        predictions : namedtuple
+            A namedtuple of the distribution parameters, each of which is a
+            numpy array of shape (n_samples), for each data example.
+        """
 
         if not hasattr(self, "_distribution"):
+            # TODO: currently necessary if model was loaded from file. This
+            # adds overhead, there should be a cleaner way
             self._distribution = get_distribution(self.distribution)
 
         base_margin = self._get_base_margins(X.shape[0])
@@ -93,21 +133,6 @@ class XGBDistribution(xgb.XGBModel, RegressorMixin):
             iteration_range=iteration_range,
         )
         return self._distribution.predict(params)
-
-    def predict(
-        self,
-        X,
-        ntree_limit=None,
-        validate_features=False,
-        iteration_range=None,
-    ):
-        """Predict the first param of the distribution, typically the mean"""
-        return self.predict_dist(
-            X=X,
-            ntree_limit=ntree_limit,
-            validate_features=validate_features,
-            iteration_range=iteration_range,
-        )[0]
 
     def _objective_func(self):
         def obj(params: np.ndarray, data: xgb.DMatrix):

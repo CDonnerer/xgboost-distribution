@@ -2,9 +2,9 @@
 Changelog
 =========
 
-Version 0.1
+Version 0.x
 ===========
 
-- Feature A added
-- FIX: nasty bug #1729 fixed
-- add your changes here!
+- First release of xgb_dist
+- Contains XGBDistribution estimator, a xgboost wrapper with natural gradients
+- Normal distribution implemented

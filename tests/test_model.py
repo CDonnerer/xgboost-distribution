@@ -22,8 +22,8 @@ def test_XGBDistribution_early_stopping_predict(small_train_test_data):
     model = XGBDistribution(distribution="normal", max_depth=3, n_estimators=500)
     model.fit(X_train, y_train, eval_set=[(X_test, y_test)], early_stopping_rounds=10)
 
-    mean, var = model.predict_dist(X_test)
-    mean_iter, var_iter = model.predict_dist(
+    mean, var = model.predict(X_test)
+    mean_iter, var_iter = model.predict(
         X_test, iteration_range=(0, model.best_iteration + 1)
     )
     np.testing.assert_array_equal(mean, mean_iter)
@@ -39,7 +39,7 @@ def test_distribution_set_param(small_X_y_data):
     model.set_params(**{"distribution": "normal"})
 
     model.fit(X, y)
-    params = model.predict_dist(X)
+    params = model.predict(X)
 
     assert isinstance(params[0], np.ndarray)
 
@@ -50,14 +50,14 @@ def test_XGBDistribution_model_save(small_X_y_data, tmpdir):
     model = XGBDistribution(n_estimators=10)
     model.fit(X, y)
 
-    preds = model.predict_dist(X)
+    preds = model.predict(X)
 
     model_path = os.path.join(tmpdir, "model.bst")
     model.save_model(model_path)
 
     saved_model = XGBDistribution()
     saved_model.load_model(model_path)
-    saved_preds = saved_model.predict_dist(X)
+    saved_preds = saved_model.predict(X)
 
     np.testing.assert_array_equal(preds[0], saved_preds[0])
     np.testing.assert_array_equal(preds[1], saved_preds[1])

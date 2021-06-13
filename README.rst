@@ -4,6 +4,10 @@
 .. image:: https://coveralls.io/repos/github/CDonnerer/xgb-dist/badge.svg?branch=main
   :target: https://coveralls.io/github/CDonnerer/xgb-dist?branch=main
 
+.. image:: https://readthedocs.org/projects/xgb-dist/badge/?version=latest
+  :target: https://xgb-dist.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
+
 
 ============
 xgb-dist
@@ -11,7 +15,7 @@ xgb-dist
 
 XGBoost for probabilistic prediction. Like `NGBoost`_, but faster.
 
-.. image:: imgs/xgb_dist.png
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/xgb_dist.png
     :align: center
     :width: 600px
     :alt: XGBDistribution example
@@ -26,7 +30,14 @@ we can fit a model:
 
 .. code-block:: python
 
+      from sklearn.datasets import load_boston
+      from sklearn.model_selection import train_test_split
+
       from xgb_dist import XGBDistribution
+
+      data = load_boston()
+      X, y = data.data, data.target
+      X_train, X_test, y_train, y_test = train_test_split(X, y)
 
       model = XGBDistribution(
           distribution="normal",
@@ -39,11 +50,14 @@ we can fit a model:
           early_stopping_rounds=10
       )
 
-After fitting, we can predict the parameters of the distribution for new data:
+After fitting, we can predict the parameters of the distribution for new data.
+This will return a namedtuple of numpy arrays for each parameter of the
+distribution:
 
 .. code-block:: python
 
-      mean, var = model.predict_dist(X_test)
+      preds = model.predict(X_test)
+      mean, scale = preds.mean, preds.scale
 
 
 Performance comparison
@@ -57,7 +71,7 @@ XGBDistribution models, using the Boston Housing dataset and a normal
 distribution. We note that while the performance of the two models is basically
 identical, XGBDistribution is **50x faster** (both fit and predict steps).
 
-.. image:: imgs/performance_comparison.png
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/performance_comparison.png
           :align: center
           :width: 600px
           :alt: XGBDistribution vs NGBoost
