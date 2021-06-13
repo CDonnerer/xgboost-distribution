@@ -30,7 +30,14 @@ we can fit a model:
 
 .. code-block:: python
 
+      from sklearn.datasets import load_boston
+      from sklearn.model_selection import train_test_split
+
       from xgb_dist import XGBDistribution
+
+      data = load_boston()
+      X, y = data.data, data.target
+      X_train, X_test, y_train, y_test = train_test_split(X, y)
 
       model = XGBDistribution(
           distribution="normal",
@@ -43,11 +50,14 @@ we can fit a model:
           early_stopping_rounds=10
       )
 
-After fitting, we can predict the parameters of the distribution for new data:
+After fitting, we can predict the parameters of the distribution for new data.
+This will return a namedtuple of numpy arrays for each parameter of the
+distribution:
 
 .. code-block:: python
 
-      mean, var = model.predict_dist(X_test)
+      preds = model.predict(X_test)
+      mean, scale = preds.mean, preds.scale
 
 
 Performance comparison
