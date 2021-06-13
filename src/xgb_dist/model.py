@@ -2,6 +2,7 @@
 """
 import numpy as np
 import xgboost as xgb
+from sklearn.base import RegressorMixin
 from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
 
 from xgb_dist.distributions import get_distribution, get_distribution_doc
@@ -12,7 +13,7 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
     ["model"],
     extra_parameters=get_distribution_doc(),
 )
-class XGBDistribution(xgb.XGBModel):
+class XGBDistribution(xgb.XGBModel, RegressorMixin):
     def __init__(self, distribution=None, natural_gradient=True, **kwargs):
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
@@ -69,22 +70,44 @@ class XGBDistribution(xgb.XGBModel):
         )
         return self
 
-    def predict_dist(self, X):
+    def predict_dist(
+        self,
+        X,
+        ntree_limit=None,
+        validate_features=False,
+        iteration_range=None,
+    ):
         """Predict all params of the distribution"""
 
-        params = self._Booster.predict(
-            xgb.DMatrix(X, base_margin=self._get_base_margins(X.shape[0])),
+        if not hasattr(self, "_distribution"):
+            self._distribution = get_distribution(self.distribution)
+
+        base_margin = self._get_base_margins(X.shape[0])
+
+        params = super().predict(
+            X=X,
             output_margin=True,
+            ntree_limit=ntree_limit,
+            validate_features=validate_features,
+            base_margin=base_margin,
+            iteration_range=iteration_range,
         )
         return self._distribution.predict(params)
 
-    def predict(self, X):
+    def predict(
+        self,
+        X,
+        ntree_limit=None,
+        validate_features=False,
+        iteration_range=None,
+    ):
         """Predict the first param of the distribution, typically the mean"""
-        return self.predict_dist(X)[0]
-
-    def distribution_params(self):
-        """Get the names of the paramaters of the distribution"""
-        return self._distribution.params
+        return self.predict_dist(
+            X=X,
+            ntree_limit=ntree_limit,
+            validate_features=validate_features,
+            iteration_range=iteration_range,
+        )[0]
 
     def _objective_func(self):
         def obj(params: np.ndarray, data: xgb.DMatrix):
