@@ -2,9 +2,8 @@
 """
 import numpy as np
 import xgboost as xgb
-from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
-
 from sklearn.base import RegressorMixin
+from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
 
 from xgb_dist.distributions import get_distribution, get_distribution_doc
 

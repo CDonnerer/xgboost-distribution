@@ -1,10 +1,11 @@
 """Normal distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.stats import norm
 
 from xgb_dist.distributions.base import BaseDistribution
-from collections import namedtuple
 
 
 class Normal(BaseDistribution):
