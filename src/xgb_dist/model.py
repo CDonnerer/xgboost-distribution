@@ -19,7 +19,20 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self.natural_gradient = natural_gradient
         super().__init__(objective=None, **kwargs)
 
-    def fit(self, X, y, *, eval_set=None, early_stopping_rounds=None, verbose=True):
+    def fit(
+        self,
+        X,
+        y,
+        *,
+        sample_weight=None,
+        eval_set=None,
+        early_stopping_rounds=None,
+        verbose=False,
+        xgb_model=None,
+        sample_weight_eval_set=None,
+        feature_weights=None,
+        callbacks=None,
+    ):
         self._distribution = get_distribution(self.distribution)
 
         params = self.get_xgb_params()
@@ -45,11 +58,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
             y=y,
             group=None,
             qid=None,
-            sample_weight=None,
+            sample_weight=sample_weight,
             base_margin=base_margin,
-            feature_weights=None,
+            feature_weights=feature_weights,
             eval_set=eval_set,
-            sample_weight_eval_set=None,
+            sample_weight_eval_set=sample_weight_eval_set,
             base_margin_eval_set=base_margin_eval_set,
             eval_group=None,
             eval_qid=None,
@@ -70,7 +83,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return self
 
     fit.__doc__ = XGBModel.fit.__doc__.replace(
-        "Fit gradient boosting model", "Fit gradient boosting classifier", 1
+        "Fit gradient boosting model", "Fit gradient boosting distribution", 1
     )
 
     def predict(
