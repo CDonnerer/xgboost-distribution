@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from xgb_dist.model import XGBDistribution
@@ -14,6 +15,7 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
 
 
 def test_XGBDistribution_early_stopping_predict(small_train_test_data):
+    """Check that predict with early stopping uses correct ntrees"""
     X_train, X_test, y_train, y_test = small_train_test_data
 
     model = XGBDistribution(distribution="normal", max_depth=3, n_estimators=500)
@@ -39,3 +41,22 @@ def test_distribution_set_param(small_X_y_data):
     params = model.predict_dist(X)
 
     assert isinstance(params[0], np.ndarray)
+
+
+def test_XGBDistribution_model_save(small_X_y_data, tmpdir):
+    X, y = small_X_y_data
+
+    model = XGBDistribution(n_estimators=10)
+    model.fit(X, y)
+
+    preds = model.predict_dist(X)
+
+    model_path = os.path.join(tmpdir, "model.bst")
+    model.save_model(model_path)
+
+    saved_model = XGBDistribution()
+    saved_model.load_model(model_path)
+    saved_preds = saved_model.predict_dist(X)
+
+    np.testing.assert_array_equal(preds[0], saved_preds[0])
+    np.testing.assert_array_equal(preds[1], saved_preds[1])

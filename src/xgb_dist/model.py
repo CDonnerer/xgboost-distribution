@@ -4,6 +4,8 @@ import numpy as np
 import xgboost as xgb
 from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc
 
+from sklearn.base import RegressorMixin
+
 from xgb_dist.distributions import get_distribution, get_distribution_doc
 
 
@@ -12,7 +14,7 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
     ["model"],
     extra_parameters=get_distribution_doc(),
 )
-class XGBDistribution(xgb.XGBModel):
+class XGBDistribution(xgb.XGBModel, RegressorMixin):
     def __init__(self, distribution=None, natural_gradient=True, **kwargs):
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
@@ -78,6 +80,9 @@ class XGBDistribution(xgb.XGBModel):
     ):
         """Predict all params of the distribution"""
 
+        if not hasattr(self, "_distribution"):
+            self._distribution = get_distribution(self.distribution)
+
         base_margin = self._get_base_margins(X.shape[0])
 
         params = super().predict(
@@ -104,10 +109,6 @@ class XGBDistribution(xgb.XGBModel):
             validate_features=validate_features,
             iteration_range=iteration_range,
         )[0]
-
-    def distribution_params(self):
-        """Get the names of the paramaters of the distribution"""
-        return self._distribution.params
 
     def _objective_func(self):
         def obj(params: np.ndarray, data: xgb.DMatrix):
