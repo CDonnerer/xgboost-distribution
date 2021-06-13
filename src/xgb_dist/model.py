@@ -90,9 +90,20 @@ class XGBDistribution(xgb.XGBModel):
         )
         return self._distribution.predict(params)
 
-    def predict(self, X):
+    def predict(
+        self,
+        X,
+        ntree_limit=None,
+        validate_features=False,
+        iteration_range=None,
+    ):
         """Predict the first param of the distribution, typically the mean"""
-        return self.predict_dist(X)[0]
+        return self.predict_dist(
+            X=X,
+            ntree_limit=ntree_limit,
+            validate_features=validate_features,
+            iteration_range=iteration_range,
+        )[0]
 
     def distribution_params(self):
         """Get the names of the paramaters of the distribution"""

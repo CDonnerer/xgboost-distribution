@@ -4,6 +4,7 @@ import numpy as np
 from scipy.stats import norm
 
 from xgb_dist.distributions.base import BaseDistribution
+from collections import namedtuple
 
 
 class Normal(BaseDistribution):
@@ -11,7 +12,7 @@ class Normal(BaseDistribution):
 
     @property
     def params(self):
-        return ["mean", "var"]
+        return ("mean", "scale")
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
@@ -30,7 +31,7 @@ class Normal(BaseDistribution):
 
             grad = np.linalg.solve(fisher_matrix, grad)
 
-            hess = np.ones(shape=(len(y), 2))  # we set hessian constant
+            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
         else:
             hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
             hess[:, 0] = 1 / var
@@ -48,7 +49,9 @@ class Normal(BaseDistribution):
 
         log_scale = np.clip(log_scale, -100, 100)
         scale = np.exp(log_scale)
-        return mean, scale
+
+        Predictions = namedtuple("Predictions", (p for p in self.params))
+        return Predictions(mean=mean, scale=scale)
 
     def starting_params(self, y):
         return np.mean(y), np.log(np.std(y))
