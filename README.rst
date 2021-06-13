@@ -11,7 +11,7 @@ xgb-dist
 
 XGBoost for probabilistic prediction. Like `NGBoost`_, but faster.
 
-.. image:: imgs/xgb_dist.png
+.. image:: https://github.com/CDonnerer/xgb-dist/blob/main/imgs/xgb_dist.png
     :align: center
     :width: 600px
     :alt: XGBDistribution example
