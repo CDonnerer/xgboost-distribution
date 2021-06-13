@@ -84,6 +84,7 @@ extensions = [
 autodoc_default_flags = ["members"]
 autodoc_default_options = {"members": True}
 
+autosummary_generate = True
 # Generate autosummary pages. Output should be set with: `:toctree: api/`
 autosummary_generate = ["api.rst"]
 
@@ -289,4 +290,5 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "pyscaffold": ("https://pyscaffold.org/en/stable", None),
+    "xgboost": ("https://xgboost.readthedocs.io/en/latest/", None),
 }
