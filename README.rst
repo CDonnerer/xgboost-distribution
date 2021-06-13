@@ -57,7 +57,7 @@ XGBDistribution models, using the Boston Housing dataset and a normal
 distribution. We note that while the performance of the two models is basically
 identical, XGBDistribution is **50x faster** (both fit and predict steps).
 
-.. image:: imgs/performance_comparison.png
+.. image:: https://github.com/CDonnerer/xgb-dist/blob/main/imgs/performance_comparison.png
           :align: center
           :width: 600px
           :alt: XGBDistribution vs NGBoost
