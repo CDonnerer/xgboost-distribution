@@ -24,7 +24,8 @@ XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the `XG
 Usage
 ===========
 
-XGBDistribution follows the `XGBoost scikit-learn API`_, except for an additional
+The ``xgb_dist`` package contains a single model, ``XGBDistribution``.
+``XGBDistribution`` follows the `XGBoost scikit-learn API`_, except for an additional
 keyword in the constructor for specifying the distribution. Given some data,
 we can fit a model:
 
@@ -62,7 +63,7 @@ distribution:
 NGBoost performance comparison
 ===============================
 
-XGBDistribution follows the method shown in the `NGBoost`_ library, namely using
+``XGBDistribution`` follows the method shown in the `NGBoost`_ library, namely using
 natural gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison between the NGBRegressor and
@@ -79,7 +80,7 @@ identical, XGBDistribution is **50x faster** (timed on both fit and predict step
 Full XGBoost features
 ======================
 
-XGBDistribution offers the full set of XGBoost features available in the
+``XGBDistribution`` offers the full set of XGBoost features available in the
 `XGBoost scikit-learn API`_, allowing, for example, probabilistic prediction with
 `monotonic constraints`_:
 
