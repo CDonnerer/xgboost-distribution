@@ -13,7 +13,7 @@
 xgb-dist
 ============
 
-XGBoost for probabilistic prediction. Like `NGBoost`_, but faster.
+XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the XGBoost API.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/xgb_dist.png
     :align: center
@@ -41,7 +41,6 @@ we can fit a model:
 
       model = XGBDistribution(
           distribution="normal",
-          max_depth=2,
           n_estimators=500
       )
       model.fit(
@@ -60,18 +59,30 @@ distribution:
       mean, scale = preds.mean, preds.scale
 
 
-Performance comparison
-========================
+NGBoost performance comparison
+===============================
 
-XGBDistribution follows the method shown in the `NGBoost`_ library, using
+XGBDistribution follows the method shown in the `NGBoost`_ library, namely using
 natural gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison between the NGBRegressor and
 XGBDistribution models, using the Boston Housing dataset and a normal
-distribution. We note that while the performance of the two models is basically
-identical, XGBDistribution is **50x faster** (both fit and predict steps).
+distribution. We note that while the performance of the two models is essentially
+identical, XGBDistribution is **50x faster** (timed on both fit and predict steps).
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/performance_comparison.png
+          :align: center
+          :width: 600px
+          :alt: XGBDistribution vs NGBoost
+
+
+Full XGBoost features
+======================
+
+XGBDistribution offers the full set of XGBoost features available in the
+scikit-learn xgboost API, such as `monotonic constraints`_:
+
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/monotone_constraints.png
           :align: center
           :width: 600px
           :alt: XGBDistribution vs NGBoost
@@ -87,3 +98,4 @@ information on PyScaffold see https://pyscaffold.org/.
 
 
 .. _ngboost: https://github.com/stanfordmlgroup/ngboost
+.. _monotonic constraints: https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html
