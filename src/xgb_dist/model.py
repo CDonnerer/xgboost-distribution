@@ -3,7 +3,8 @@
 import numpy as np
 import xgboost as xgb
 from sklearn.base import RegressorMixin
-from xgboost.sklearn import _wrap_evaluation_matrices, xgboost_model_doc, XGBModel
+from xgboost.core import Booster
+from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 
 from xgb_dist.distributions import get_distribution, get_distribution_doc
 
@@ -116,12 +117,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
             A namedtuple of the distribution parameters, each of which is a
             numpy array of shape (n_samples), for each data example.
         """
-
-        if not hasattr(self, "_distribution"):
-            # TODO: currently necessary if model was loaded from file. This
-            # adds overhead, there should be a cleaner way
-            self._distribution = get_distribution(self.distribution)
-
         base_margin = self._get_base_margins(X.shape[0])
 
         params = super().predict(
@@ -133,6 +128,17 @@ class XGBDistribution(XGBModel, RegressorMixin):
             iteration_range=iteration_range,
         )
         return self._distribution.predict(params)
+
+    def load_model(self, fname) -> None:
+        super().load_model(fname)
+
+        # self._distribution does not get saved in self.save_model(), hence
+        # we reinstantiate upon loading. This is save, as the distributions
+        # are stateless by definition
+        if not hasattr(self, "_distribution"):
+            self._distribution = get_distribution(self.distribution)
+
+    load_model.__doc__ = f"""{Booster.load_model.__doc__}"""
 
     def _objective_func(self):
         def obj(params: np.ndarray, data: xgb.DMatrix):
