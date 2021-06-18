@@ -24,7 +24,6 @@ XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the `XG
 Usage
 ===========
 
-The ``xgb_dist`` package contains a single model, ``XGBDistribution``.
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, except for an additional
 keyword in the constructor for specifying the distribution. Given some data,
 we can fit a model:
