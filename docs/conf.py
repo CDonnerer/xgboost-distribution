@@ -84,6 +84,7 @@ extensions = [
 autodoc_default_flags = ["members"]
 autodoc_default_options = {"members": True}
 autoclass_content = "both"
+autodoc_inherit_docstrings = True
 
 autosummary_generate = True
 # Generate autosummary pages. Output should be set with: `:toctree: api/`

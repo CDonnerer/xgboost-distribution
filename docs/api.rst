@@ -13,4 +13,3 @@ XGBDistribution
 
     xgb_dist.XGBDistribution
     :members:
-    :inherited-members:

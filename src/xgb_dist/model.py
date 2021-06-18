@@ -3,7 +3,6 @@
 import numpy as np
 import xgboost as xgb
 from sklearn.base import RegressorMixin
-from xgboost.core import Booster
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 
 from xgb_dist.distributions import get_distribution, get_distribution_doc
@@ -15,8 +14,7 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
     extra_parameters=get_distribution_doc()
     + """
     natural_gradient : bool, default=True
-        Whether or not natural gradients should be used.
-""",
+        Whether or not natural gradients should be used.""",
 )
 class XGBDistribution(XGBModel, RegressorMixin):
     def __init__(self, distribution=None, natural_gradient=True, **kwargs):
@@ -133,6 +131,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
         )
         return self._distribution.predict(params)
 
+    def save_model(self, fname) -> None:
+        super().save_model(self, fname)
+
     def load_model(self, fname) -> None:
         super().load_model(fname)
 
@@ -141,8 +142,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         # Note: This is safe, as the distributions are always stateless
         if not hasattr(self, "_distribution"):
             self._distribution = get_distribution(self.distribution)
-
-    load_model.__doc__ = f"""{Booster.load_model.__doc__}"""
 
     def _objective_func(self):
         def obj(params: np.ndarray, data: xgb.DMatrix):
