@@ -133,8 +133,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
         super().load_model(fname)
 
         # self._distribution does not get saved in self.save_model(), hence
-        # we reinstantiate upon loading. This is save, as the distributions
-        # are stateless by definition
+        # we reinstantiate upon loading.
+        # Note: This is safe, as the distributions are always stateless
         if not hasattr(self, "_distribution"):
             self._distribution = get_distribution(self.distribution)
 
