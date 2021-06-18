@@ -84,7 +84,7 @@ Full XGBoost features
 `XGBoost scikit-learn API`_, allowing, for example, probabilistic prediction with
 `monotonic constraints`_:
 
-.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/monotone_constraints.png
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/monotone_constraint.png
           :align: center
           :width: 600px
           :alt: XGBDistribution monotonic constraints
