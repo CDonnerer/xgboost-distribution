@@ -49,7 +49,6 @@ def test_XGBDistribution_model_save(small_X_y_data, tmpdir):
 
     model = XGBDistribution(n_estimators=10)
     model.fit(X, y)
-
     preds = model.predict(X)
 
     model_path = os.path.join(tmpdir, "model.bst")

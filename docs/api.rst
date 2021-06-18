@@ -12,8 +12,5 @@ XGBDistribution
     :toctree: api/
 
     xgb_dist.XGBDistribution
-    :noindex:
     :members:
     :inherited-members:
-    :show-inheritance:
-    :recursive:
