@@ -1,8 +1,8 @@
 """Minimal example of XGBDistribution on Boston Housing dataset
 """
+from matplotlib import pyplot as plt
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
-from matplotlib import pyplot as plt
 
 from xgb_dist import XGBDistribution
 
