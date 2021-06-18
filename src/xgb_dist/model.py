@@ -12,7 +12,11 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
 @xgboost_model_doc(
     "Implementation of XGBoost to estimate distributions (scikit-learn API).",
     ["model"],
-    extra_parameters=get_distribution_doc(),
+    extra_parameters=get_distribution_doc()
+    + """
+    natural_gradient : bool, default=True
+        Whether or not natural gradients should be used.
+""",
 )
 class XGBDistribution(XGBModel, RegressorMixin):
     def __init__(self, distribution=None, natural_gradient=True, **kwargs):
