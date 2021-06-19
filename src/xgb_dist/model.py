@@ -46,17 +46,17 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         Parameters
         ----------
-        X :
+        X : array_like
             Feature matrix
-        y :
+        y : array_like
             Labels
-        sample_weight :
+        sample_weight : array_like
             instance weights
-        eval_set :
+        eval_set : list
             A list of (X, y) tuple pairs to use as validation sets, for which
             metrics will be computed.
             Validation metrics will help us track the performance of the model.
-        early_stopping_rounds :
+        early_stopping_rounds : int
             Activates early stopping. Validation metric needs to improve at least once
             in every **early_stopping_rounds** round(s) to continue training.
             Requires at least one item in **eval_set**.
@@ -65,26 +65,23 @@ class XGBDistribution(XGBModel, RegressorMixin):
             If there's more than one item in **eval_set**, the last entry will be used
             for early stopping.
 
-            If there's more than one metric in **eval_metric**, the last metric will be
-            used for early stopping.
-
             If early stopping occurs, the model will have three additional fields:
             ``clf.best_score``, ``clf.best_iteration``.
-        verbose :
+        verbose : bool
             If `verbose` and an evaluation set is used, writes the evaluation metric
             measured on the validation set to stderr.
-        xgb_model :
+        xgb_model : `xgboost.core.Booster`, `xgboost.sklearn.XGBModel`
             file name of stored XGBoost model or 'Booster' instance XGBoost model to be
             loaded before training (allows training continuation).
-        sample_weight_eval_set :
+        sample_weight_eval_set : array_like
             A list of the form [L_1, L_2, ..., L_n], where each L_i is an array like
             object storing instance weights for the i-th validation set.
-        feature_weights :
+        feature_weights : array_like
             Weight for each feature, defines the probability of each feature being
             selected when colsample is being used.  All values must be greater than 0,
             otherwise a `ValueError` is thrown.  Only available for `hist`, `gpu_hist`
             and `exact` tree methods.
-        callbacks :
+        callbacks : list
             List of callback functions that are applied at end of each iteration.
             It is possible to use predefined callbacks by using :ref:`callback_api`.
             Example:
@@ -134,6 +131,13 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         evals_result = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
+        if len(X.shape) != 2:
+            # Simply raise an error here since there might be many
+            # different ways of reshaping
+            raise ValueError(
+                "Please reshape the input data X into 2-dimensional matrix."
+            )
+
         self._Booster = train(
             params,
             train_dmatrix,
