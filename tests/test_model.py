@@ -1,6 +1,8 @@
 import os
 
 import numpy as np
+import pytest
+from sklearn.exceptions import NotFittedError
 
 from xgb_dist.model import XGBDistribution
 
@@ -44,7 +46,7 @@ def test_distribution_set_param(small_X_y_data):
     assert isinstance(params[0], np.ndarray)
 
 
-def test_XGBDistribution_model_save(small_X_y_data, tmpdir):
+def test_XGBDistribution_save_and_load(small_X_y_data, tmpdir):
     X, y = small_X_y_data
 
     model = XGBDistribution(n_estimators=10)
@@ -60,3 +62,11 @@ def test_XGBDistribution_model_save(small_X_y_data, tmpdir):
 
     np.testing.assert_array_equal(preds[0], saved_preds[0])
     np.testing.assert_array_equal(preds[1], saved_preds[1])
+
+
+def test_predict_before_fit_fails(small_X_y_data):
+    X, y = small_X_y_data
+    model = XGBDistribution(n_estimators=10)
+
+    with pytest.raises(NotFittedError):
+        model.predict(X)
