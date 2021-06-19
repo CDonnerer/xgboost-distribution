@@ -1,15 +1,4 @@
 """XGBDistribution model
-
-PyPi names:
-- `xgb-dist`
-- `xgboost-dist`
-- `xgboost-distribution`
-- `xgb-distribution`
-
-from xgb_dist import XGBDistribution
-from xgboost_dist import XGBDistribution
-from xgboost_distribution import XGBDistribution
-from xgb_distribution import XGBDistribution
 """
 import numpy as np
 from sklearn.base import RegressorMixin
