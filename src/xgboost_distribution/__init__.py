@@ -15,4 +15,4 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-from xgb_dist.model import XGBDistribution  # noqa
+from xgboost_distribution.model import XGBDistribution  # noqa
