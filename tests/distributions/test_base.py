@@ -2,7 +2,11 @@
 """
 import pytest
 
-from xgb_dist.distributions import Normal, get_distribution, get_distribution_doc
+from xgboost_distribution.distributions import (
+    Normal,
+    get_distribution,
+    get_distribution_doc,
+)
 
 
 def test_get_distribution():

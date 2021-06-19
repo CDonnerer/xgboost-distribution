@@ -1,4 +1,4 @@
-"""conftest.py for xgb_dist.
+"""conftest.py for xgboost_distribution.
 """
 import numpy as np
 import pytest
