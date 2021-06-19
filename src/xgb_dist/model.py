@@ -1,10 +1,11 @@
 """XGBDistribution model
 """
 import numpy as np
-import xgboost as xgb
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
+from xgboost.core import DMatrix
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
+from xgboost.training import train
 
 from xgb_dist.distributions import get_distribution, get_distribution_doc
 
@@ -37,6 +38,63 @@ class XGBDistribution(XGBModel, RegressorMixin):
         feature_weights=None,
         callbacks=None,
     ):
+        """Fit gradient boosting distribution model.
+
+        Note that calling ``fit()`` multiple times will cause the model object to be
+        re-fit from scratch. To resume training from a previous checkpoint, explicitly
+        pass ``xgb_model`` argument.
+
+        Parameters
+        ----------
+        X :
+            Feature matrix
+        y :
+            Labels
+        sample_weight :
+            instance weights
+        eval_set :
+            A list of (X, y) tuple pairs to use as validation sets, for which
+            metrics will be computed.
+            Validation metrics will help us track the performance of the model.
+        early_stopping_rounds :
+            Activates early stopping. Validation metric needs to improve at least once
+            in every **early_stopping_rounds** round(s) to continue training.
+            Requires at least one item in **eval_set**.
+
+            The method returns the model from the last iteration (not the best one).
+            If there's more than one item in **eval_set**, the last entry will be used
+            for early stopping.
+
+            If there's more than one metric in **eval_metric**, the last metric will be
+            used for early stopping.
+
+            If early stopping occurs, the model will have three additional fields:
+            ``clf.best_score``, ``clf.best_iteration``.
+        verbose :
+            If `verbose` and an evaluation set is used, writes the evaluation metric
+            measured on the validation set to stderr.
+        xgb_model :
+            file name of stored XGBoost model or 'Booster' instance XGBoost model to be
+            loaded before training (allows training continuation).
+        sample_weight_eval_set :
+            A list of the form [L_1, L_2, ..., L_n], where each L_i is an array like
+            object storing instance weights for the i-th validation set.
+        feature_weights :
+            Weight for each feature, defines the probability of each feature being
+            selected when colsample is being used.  All values must be greater than 0,
+            otherwise a `ValueError` is thrown.  Only available for `hist`, `gpu_hist`
+            and `exact` tree methods.
+        callbacks :
+            List of callback functions that are applied at end of each iteration.
+            It is possible to use predefined callbacks by using :ref:`callback_api`.
+            Example:
+
+            .. code-block:: python
+
+                callbacks = [xgb.callback.EarlyStopping(rounds=early_stopping_rounds,
+                                                        save_best=True)]
+
+        """
         self._distribution = get_distribution(self.distribution)
 
         params = self.get_xgb_params()
@@ -56,6 +114,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
         else:
             base_margin_eval_set = None
 
+        evals_result = {}
+
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
             X=X,
@@ -70,25 +130,26 @@ class XGBDistribution(XGBModel, RegressorMixin):
             base_margin_eval_set=base_margin_eval_set,
             eval_group=None,
             eval_qid=None,
-            create_dmatrix=lambda **kwargs: xgb.DMatrix(nthread=self.n_jobs, **kwargs),
+            create_dmatrix=lambda **kwargs: DMatrix(nthread=self.n_jobs, **kwargs),
             label_transform=lambda x: x,
         )
 
-        self._Booster = xgb.train(
+        model, _, params = self._configure_fit(xgb_model, None, params)
+        self._Booster = train(
             params,
             train_dmatrix,
             num_boost_round=self.get_num_boosting_rounds(),
             evals=evals,
             early_stopping_rounds=early_stopping_rounds,
+            evals_result=evals_result,
             obj=self._objective_func(),
             feval=self._evaluation_func(),
             verbose_eval=verbose,
+            xgb_model=model,
+            callbacks=callbacks,
         )
+        self._set_evaluation_result(evals_result)
         return self
-
-    fit.__doc__ = XGBModel.fit.__doc__.replace(
-        "Fit gradient boosting model", "Fit gradient boosting distribution", 1
-    )
 
     def predict(
         self,
@@ -145,7 +206,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self):
-        def obj(params: np.ndarray, data: xgb.DMatrix):
+        def obj(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
                 y, params, self.natural_gradient
@@ -155,7 +216,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return obj
 
     def _evaluation_func(self):
-        def feval(params: np.ndarray, data: xgb.DMatrix):
+        def feval(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             return self._distribution.loss(y, params)
 

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 
 class BaseDistribution(ABC):
-    """Abstract base distribution for XGBDistribution.
+    """Base class distribution for XGBDistribution.
 
     Note that by design all distributions are **stateless**.
     A distribution is thus a collection of functions that operate on the data
@@ -14,6 +14,10 @@ class BaseDistribution(ABC):
     @property
     @abstractmethod
     def params(self):
+        pass
+
+    @abstractmethod
+    def starting_params(self, y):
         pass
 
     @abstractmethod
