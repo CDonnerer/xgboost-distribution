@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
 
-from xgb_dist import XGBDistribution
+from xgboost_distribution import XGBDistribution
 
 
 def plot_residuals(y_true, y_pred, y_err):

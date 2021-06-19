@@ -7,7 +7,7 @@ from xgboost.core import DMatrix
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
 
-from xgb_dist.distributions import get_distribution, get_distribution_doc
+from xgboost_distribution.distributions import get_distribution, get_distribution_doc
 
 
 @xgboost_model_doc(

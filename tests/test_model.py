@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from sklearn.exceptions import NotFittedError
 
-from xgb_dist.model import XGBDistribution
+from xgboost_distribution.model import XGBDistribution
 
 
 def test_XGBDistribution_early_stopping_fit(small_train_test_data):
