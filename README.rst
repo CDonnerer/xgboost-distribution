@@ -1,21 +1,21 @@
-.. image:: https://github.com/CDonnerer/xgb-dist/actions/workflows/test.yml/badge.svg?branch=main
-  :target: https://github.com/CDonnerer/xgb-dist/actions/workflows/test.yml
+.. image:: https://github.com/CDonnerer/xgboost-distribution/actions/workflows/test.yml/badge.svg?branch=main
+  :target: https://github.com/CDonnerer/xgboost-distribution/actions/workflows/test.yml
 
-.. image:: https://coveralls.io/repos/github/CDonnerer/xgb-dist/badge.svg?branch=main
-  :target: https://coveralls.io/github/CDonnerer/xgb-dist?branch=main
+.. image:: https://coveralls.io/repos/github/CDonnerer/xgboost-distribution/badge.svg?branch=main
+  :target: https://coveralls.io/github/CDonnerer/xgboost-distribution?branch=main
 
-.. image:: https://readthedocs.org/projects/xgb-dist/badge/?version=latest
-  :target: https://xgb-dist.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/xgboost-distribution/badge/?version=latest
+  :target: https://xgboost-distribution.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
 
 
-============
-xgb-dist
-============
+====================
+xgboost-distribution
+====================
 
 XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the `XGBoost scikit-learn API`_.
 
-.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/xgb_dist.png
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/xgb_dist.png
     :align: center
     :width: 600px
     :alt: XGBDistribution example
@@ -33,7 +33,7 @@ we can fit a model:
       from sklearn.datasets import load_boston
       from sklearn.model_selection import train_test_split
 
-      from xgb_dist import XGBDistribution
+      from xgboost_distribution import XGBDistribution
 
       data = load_boston()
       X, y = data.data, data.target
@@ -71,7 +71,7 @@ distribution (similar hyperparameters). We note that while the performance of
 the two models is essentially identical, XGBDistribution is **50x faster**
 (timed on both fit and predict steps).
 
-.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/performance_comparison.png
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
           :width: 600px
           :alt: XGBDistribution vs NGBoost
@@ -84,7 +84,7 @@ Full XGBoost features
 `XGBoost scikit-learn API`_, allowing, for example, probabilistic prediction with
 `monotonic constraints`_:
 
-.. image:: https://raw.githubusercontent.com/CDonnerer/xgb-dist/main/imgs/monotone_constraint.png
+.. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/monotone_constraint.png
           :align: center
           :width: 600px
           :alt: XGBDistribution monotonic constraints
