@@ -11,7 +11,7 @@ from xgb_dist.distributions import get_distribution, get_distribution_doc
 
 
 @xgboost_model_doc(
-    "Implementation of XGBoost to estimate distributions (scikit-learn API).",
+    "Implementation of XGBoost to estimate distributions (in scikit-learn API).",
     ["model"],
     extra_parameters=get_distribution_doc()
     + """
@@ -114,8 +114,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         else:
             base_margin_eval_set = None
 
-        evals_result = {}
-
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
             X=X,
@@ -134,6 +132,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             label_transform=lambda x: x,
         )
 
+        evals_result = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
         self._Booster = train(
             params,
