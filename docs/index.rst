@@ -1,8 +1,8 @@
-============
-xgb_dist
-============
+====================
+xgboost-distribution
+====================
 
-This is the documentation of **xgb_dist**.
+This is the documentation of **xgboost-distribution**.
 
 
 Contents

@@ -103,7 +103,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "xgb_dist"
+project = "xgboost_distribution"
 copyright = "2021, Christian Donnerer"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -170,7 +170,7 @@ html_theme_options = {"sidebar_width": "300px", "page_width": "1200px"}
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 try:
-    from xgb_dist import __version__ as version
+    from xgboost_distribution import __version__ as version
 except ImportError:
     pass
 else:
@@ -235,7 +235,7 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "xgb_dist-doc"
+htmlhelp_basename = "xgboost_distribution-doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
