@@ -1,19 +1,23 @@
 """Distribution base class
-
-TODO:
-- param names property
-
 """
 from abc import ABC, abstractmethod
 
 
 class BaseDistribution(ABC):
-    def __repr__(self):
-        return self.__class__.__name__.lower()
+    """Base class distribution for XGBDistribution.
+
+    Note that by design all distributions are **stateless**.
+    A distribution is thus a collection of functions that operate on the data
+    (`y`) and the output of the xgboost Booster (`params`).
+    """
 
     @property
     @abstractmethod
     def params(self):
+        pass
+
+    @abstractmethod
+    def starting_params(self, y):
         pass
 
     @abstractmethod

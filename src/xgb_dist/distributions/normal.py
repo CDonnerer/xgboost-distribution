@@ -41,7 +41,6 @@ class Normal(BaseDistribution):
         return grad, hess
 
     def loss(self, y, params):
-        """Loss function to minimise"""
         mean, scale = self.predict(params)
         return "NormalError", -norm.logpdf(y, loc=mean, scale=scale).mean()
 
