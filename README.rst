@@ -59,7 +59,7 @@ we can fit a model:
 
 After fitting, we can predict the parameters of the distribution for new data.
 This will return a namedtuple of numpy arrays for each parameter of the
-distribution (note that we use scipy naming conventions for the parameters, e.g.
+distribution (note that we use scipy naming conventions, see e.g.
 `scipy.stats.norm`_):
 
 .. code-block:: python
