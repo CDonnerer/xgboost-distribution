@@ -2,6 +2,8 @@ name: Tests
 
 on:
   push:
+  schedule:
+    - cron: "0 15 * * 5"
 
 jobs:
   test:
