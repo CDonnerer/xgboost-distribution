@@ -13,7 +13,7 @@ class BaseDistribution(ABC):
 
     @property
     @abstractmethod
-    def params(self) -> tuple[str]:
+    def params(self):
         pass
 
     @abstractmethod
