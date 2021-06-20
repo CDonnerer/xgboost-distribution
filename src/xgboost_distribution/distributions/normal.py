@@ -62,7 +62,6 @@ class Normal(BaseDistribution):
 
         # TODO: this should go elsewhere
         Predictions = namedtuple("Predictions", (p for p in self.params))
-
         return Predictions(loc=loc, scale=scale)
 
     def starting_params(self, y):

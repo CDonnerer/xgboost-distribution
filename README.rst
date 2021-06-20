@@ -73,9 +73,8 @@ the two models is essentially identical, XGBDistribution is **50x faster**
 (timed on both fit and predict steps).
 
 Note that the speed-up will decrease with dataset size, as it is ultimately
-limited by the natural gradient computation (via `LAPACK gesv`_, which scales
-with O(N^3)), with 1m rows of data ``XGBDistribution`` is still 10x faster than
-``NGBRegressor``.
+limited by the natural gradient computation (via `LAPACK gesv`_), with 1m rows
+of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
