@@ -3,7 +3,7 @@
 Module Reference
 ===================
 
-.. currentmodule:: xgb_dist
+.. currentmodule:: xgboost_distribution
 
 XGBDistribution
 -------------------
@@ -11,5 +11,5 @@ XGBDistribution
 .. autosummary::
     :toctree: api/
 
-    xgb_dist.XGBDistribution
+    xgboost_distribution.XGBDistribution
     :members:
