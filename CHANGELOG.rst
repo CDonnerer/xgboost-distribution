@@ -2,9 +2,9 @@
 Changelog
 =========
 
-Version 0.x
-===========
+Version 0.1.0
+=============
 
-- First release of xgboost-distribution
-- Contains XGBDistribution estimator, a xgboost wrapper with natural gradients
+- First release of xgboost-distribution package
+- Contains XGBDistribution estimator, an xgboost wrapper with natural gradients
 - Normal distribution implemented
