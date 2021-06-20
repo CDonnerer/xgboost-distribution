@@ -8,6 +8,10 @@
   :target: https://xgboost-distribution.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/v/xgboost-distribution.svg
+  :alt: PyPI-Server
+  :target: https://pypi.org/project/xgboost-distribution/
+
 
 ====================
 xgboost-distribution
@@ -19,6 +23,14 @@ XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the `XG
     :align: center
     :width: 600px
     :alt: XGBDistribution example
+
+
+Installation
+============
+
+.. code-block:: console
+
+    $ pip install --upgrade xgboost-distribution
 
 
 Usage
@@ -51,7 +63,7 @@ we can fit a model:
 
 After fitting, we can predict the parameters of the distribution for new data.
 This will return a namedtuple of numpy arrays for each parameter of the
-distribution (note that we use scipy naming conventions for the parameters, e.g.
+distribution (note that we use scipy naming conventions, see e.g.
 `scipy.stats.norm`_):
 
 .. code-block:: python
