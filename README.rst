@@ -8,6 +8,10 @@
   :target: https://xgboost-distribution.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
 
+.. image:: https://img.shields.io/pypi/v/xgboost-distribution.svg
+  :alt: PyPI-Server
+  :target: https://pypi.org/project/xgboost-distribution/
+
 
 ====================
 xgboost-distribution
