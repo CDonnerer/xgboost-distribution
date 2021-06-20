@@ -181,8 +181,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
         Returns
         -------
         predictions : namedtuple
-            A namedtuple of the distribution parameters, each of which is a
-            numpy array of shape (n_samples), for each data example.
+            A namedtuple of the distribution parameters. Each parameter is a
+            numpy array of shape (n_samples,).
         """
         check_is_fitted(self, attributes=("_distribution", "_starting_params"))
 

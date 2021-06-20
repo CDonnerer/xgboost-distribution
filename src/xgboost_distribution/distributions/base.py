@@ -8,12 +8,12 @@ class BaseDistribution(ABC):
 
     Note that by design all distributions are **stateless**.
     A distribution is thus a collection of functions that operate on the data
-    (`y`) and the output of the xgboost Booster (`params`).
+    (`y`) and the outputs of the xgboost Booster (`params`).
     """
 
     @property
     @abstractmethod
-    def params(self):
+    def params(self) -> tuple[str]:
         pass
 
     @abstractmethod
