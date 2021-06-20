@@ -21,6 +21,14 @@ XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the `XG
     :alt: XGBDistribution example
 
 
+Installation
+============
+
+.. code-block:: console
+
+    $ pip install --upgrade xgboost-distribution
+
+
 Usage
 ===========
 
