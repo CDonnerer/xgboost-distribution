@@ -51,25 +51,31 @@ we can fit a model:
 
 After fitting, we can predict the parameters of the distribution for new data.
 This will return a namedtuple of numpy arrays for each parameter of the
-distribution:
+distribution (note that we use scipy naming conventions for the parameters, e.g.
+`scipy.stats.norm`_):
 
 .. code-block:: python
 
       preds = model.predict(X_test)
-      mean, scale = preds.mean, preds.scale
+      mean, std = preds.loc, preds.scale
 
 
 NGBoost performance comparison
 ===============================
 
-``XGBDistribution`` follows the method shown in the `NGBoost`_ library, namely using
-natural gradients to estimate the parameters of the distribution.
+``XGBDistribution`` follows the method shown in the `NGBoost`_ library, namely
+using natural gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison of the `NGBoost`_ ``NGBRegressor`` and
 ``XGBDistribution`` models, using the Boston Housing dataset and a normal
 distribution (similar hyperparameters). We note that while the performance of
 the two models is essentially identical, XGBDistribution is **50x faster**
 (timed on both fit and predict steps).
+
+Note that the speed-up will decrease with dataset size, as it is ultimately
+limited by the natural gradient computation (via `LAPACK gesv`_, which scales
+with O(N^3)), with 1m rows of data ``XGBDistribution`` is still 10x faster than
+``NGBRegressor``.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
@@ -102,3 +108,5 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _ngboost: https://github.com/stanfordmlgroup/ngboost
 .. _xgboost scikit-learn api: https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn
 .. _monotonic constraints: https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html
+.. _scipy.stats.norm: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
+.. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
