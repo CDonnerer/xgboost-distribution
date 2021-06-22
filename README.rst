@@ -116,8 +116,8 @@ This package would not exist without the excellent work from:
 can be used to estimate parameters of distributions. Much of the distributions
 code and gradient calculations were been adapted from there.
 
-2. `XGBoost`_ - Which provides the gradient boosting algorithms used, in
-particular the ``sklearn`` API implementations were taken as a blue-print here.
+2. `XGBoost`_ - Which provides the gradient boosting algorithms used here, in
+particular the ``sklearn`` APIs were taken as a blue-print.
 
 
 .. _pyscaffold-notes:
