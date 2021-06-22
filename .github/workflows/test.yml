@@ -2,6 +2,8 @@ name: Tests
 
 on:
   push:
+  schedule:
+    - cron: "0 15 * * 5"
 
 jobs:
   test:
@@ -17,13 +19,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .[testing]
+        python -m pip install .[testing]
     - name: Test with pytest
       run: |
-        pytest
+        python -m pytest
     - name: Coverage with coveralls
       run: |
-        pip install coveralls
+        python -m pip install coveralls
         python -m coveralls
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

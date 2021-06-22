@@ -107,6 +107,19 @@ Full XGBoost features
           :alt: XGBDistribution monotonic constraints
 
 
+Acknowledgements
+=================
+
+This package would not exist without the excellent work from:
+
+- `NGBoost`_ - Which demonstrated how gradient boosting with natural gradients
+  can be used to estimate parameters of distributions. Much of the distributions
+  code and gradient calculations were been adapted from there.
+
+- `XGBoost`_ - Which provides the gradient boosting algorithms used here, in
+  particular the ``sklearn`` APIs were taken as a blue-print.
+
+
 .. _pyscaffold-notes:
 
 Note
@@ -121,3 +134,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _monotonic constraints: https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html
 .. _scipy.stats.norm: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
+.. _xgboost: https://github.com/dmlc/xgboost
