@@ -1,7 +1,5 @@
 """Normal distribution
 """
-from collections import namedtuple
-
 import numpy as np
 from scipy.stats import norm
 
@@ -60,9 +58,7 @@ class Normal(BaseDistribution):
         # log_scale = np.clip(log_scale, -100, 100)  # TODO: is this needed?
         scale = np.exp(log_scale)
 
-        # TODO: this should go elsewhere
-        Predictions = namedtuple("Predictions", (p for p in self.params))
-        return Predictions(loc=loc, scale=scale)
+        return self.Predictions(loc=loc, scale=scale)
 
     def starting_params(self, y):
         return np.mean(y), np.log(np.std(y))

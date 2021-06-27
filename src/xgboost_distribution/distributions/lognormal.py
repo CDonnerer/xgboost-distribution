@@ -58,8 +58,9 @@ class LogNormal(BaseDistribution):
         return self.Predictions(s=s, scale=scale)
 
     def starting_params(self, y):
-        return 1, 1
-        # np.log(np.std(y)), np.log(np.mean(y))
+        log_y = np.log(y)
+
+        return np.mean(log_y), np.log(np.std(log_y))
 
     def _split_params(self, params):
         """Return loc and log_scale from params"""

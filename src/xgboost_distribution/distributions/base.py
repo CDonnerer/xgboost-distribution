@@ -1,6 +1,7 @@
 """Distribution base class
 """
 from abc import ABC, abstractmethod
+from collections import namedtuple
 
 
 class BaseDistribution(ABC):
@@ -10,6 +11,9 @@ class BaseDistribution(ABC):
     A distribution is thus a collection of functions that operate on the data
     (`y`) and the outputs of the xgboost Booster (`params`).
     """
+
+    def __init__(self):
+        self.Predictions = namedtuple("Predictions", (p for p in self.params))
 
     @property
     @abstractmethod
