@@ -46,14 +46,13 @@ class LogNormal(BaseDistribution):
 
     def predict(self, params):
         loc, log_scale = self._split_params(params)
-        s = np.exp(log_scale)
-        scale = np.exp(loc)
+        s = np.exp(log_scale)  # s in scipy is the shape
+        scale = np.exp(loc)  # scale in scipy is the location
 
         return self.Predictions(s=s, scale=scale)
 
     def starting_params(self, y):
         log_y = np.log(y)
-
         return np.mean(log_y), np.log(np.std(log_y))
 
     def _split_params(self, params):
