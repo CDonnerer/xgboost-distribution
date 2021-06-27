@@ -16,13 +16,13 @@ def lognormal():
             np.array([1, 1]),
             np.array([[np.log(1), 2], [1, 0]]),
             True,
-            np.array([[0, 0.5], [1, 0.0]]),
+            np.array([[0, 0.5], [1, 0]]),
         ),
         (
             np.array([1, 1]),
             np.array([[np.log(1), 2], [1, 0]]),
             False,
-            np.array([[0, 1], [1, 0.0]]),
+            np.array([[0, 1], [1, 0]]),
         ),
     ],
 )
