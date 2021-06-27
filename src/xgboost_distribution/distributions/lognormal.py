@@ -7,13 +7,7 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 
 class LogNormal(BaseDistribution):
-    """LogNormal distribution
-
-    We estimate two parameters, say a and b, such that:
-        - a = mean
-        - b = log ( variance ** (1/2) )
-
-    """
+    """LogNormal distribution"""
 
     @property
     def params(self):
