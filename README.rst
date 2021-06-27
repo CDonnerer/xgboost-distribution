@@ -136,4 +136,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _scipy.stats.norm: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
 .. _xgboost: https://github.com/dmlc/xgboost
-.. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/?badge=latest
+.. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/api/xgboost_distribution.XGBDistribution.html#xgboost_distribution.XGBDistribution
