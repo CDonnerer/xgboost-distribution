@@ -29,12 +29,17 @@ def get_distribution_doc():
     """Construct docstring for `distribution` param in XGBDistribution model"""
 
     param_doc = f"""
-    distribution : {str(set(AVAILABLE_DISTRIBUTIONS.keys()))}, default='normal'
+    distribution : {set(AVAILABLE_DISTRIBUTIONS.keys())}, default='normal'
         Which distribution to estimate. Available choices:
     """
 
     for name, subclass in AVAILABLE_DISTRIBUTIONS.items():
         param_doc += f"""
-                '{name}' : parameters = {subclass().params}"""
+                - \"{name}\" - parameters {subclass().params}\n"""
+
+    param_doc += """
+        Please see `scipy.stats` for a full description of the parameters of
+        each distribution: https://docs.scipy.org/doc/scipy/reference/stats.html
+    """
 
     return param_doc
