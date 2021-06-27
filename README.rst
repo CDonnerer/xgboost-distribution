@@ -71,12 +71,14 @@ distribution (note that we use scipy naming conventions, see e.g.
       preds = model.predict(X_test)
       mean, std = preds.loc, preds.scale
 
+The full list of available distributions can be found in the `documentation`_.
+
 
 NGBoost performance comparison
 ===============================
 
-``XGBDistribution`` follows the method shown in the `NGBoost`_ library, namely
-using natural gradients to estimate the parameters of the distribution.
+``XGBDistribution`` follows the method shown in the `NGBoost`_ library, using
+natural gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison of the `NGBoost`_ ``NGBRegressor`` and
 ``XGBDistribution`` models, using the Boston Housing dataset and a normal
@@ -85,8 +87,8 @@ the two models is essentially identical, XGBDistribution is **50x faster**
 (timed on both fit and predict steps).
 
 Note that the speed-up will decrease with dataset size, as it is ultimately
-limited by the natural gradient computation (via `LAPACK gesv`_), with 1m rows
-of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
+limited by the natural gradient computation (via `LAPACK gesv`_). However, with
+1m rows of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
@@ -113,8 +115,8 @@ Acknowledgements
 This package would not exist without the excellent work from:
 
 - `NGBoost`_ - Which demonstrated how gradient boosting with natural gradients
-  can be used to estimate parameters of distributions. Much of the distributions
-  code and gradient calculations were been adapted from there.
+  can be used to estimate parameters of distributions. Much of the gradient
+  calculations code were adapted from there.
 
 - `XGBoost`_ - Which provides the gradient boosting algorithms used here, in
   particular the ``sklearn`` APIs were taken as a blue-print.
@@ -135,3 +137,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _scipy.stats.norm: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
 .. _xgboost: https://github.com/dmlc/xgboost
+.. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/?badge=latest
