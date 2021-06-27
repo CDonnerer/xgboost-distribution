@@ -38,8 +38,7 @@ Usage
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, except for an additional
 keyword in the constructor for specifying the distribution. The full list of
-available distributions can be found in the `documentation`_. Given some data,
-we can fit a model:
+available distributions can be found in the `documentation`_.
 
 .. code-block:: python
 
