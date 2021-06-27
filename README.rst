@@ -37,7 +37,8 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, except for an additional
-keyword in the constructor for specifying the distribution. Given some data,
+keyword in the constructor for specifying the distribution. The full list of
+available distributions can be found in the `documentation`_. Given some data,
 we can fit a model:
 
 .. code-block:: python
@@ -70,8 +71,6 @@ distribution (note that we use scipy naming conventions, see e.g.
 
       preds = model.predict(X_test)
       mean, std = preds.loc, preds.scale
-
-The full list of available distributions can be found in the `documentation`_.
 
 
 NGBoost performance comparison
