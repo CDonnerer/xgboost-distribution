@@ -3,6 +3,7 @@
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
+from xgboost import config_context
 from xgboost.core import DMatrix
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
@@ -97,6 +98,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
+        # params["objective"] = f"distribution:{self.distribution}"
 
         # we set base score to zero to instead use base_margin in dmatrices
         # this allows different starting values for the distribution params
@@ -136,19 +138,21 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 "Please reshape the input data X into 2-dimensional matrix."
             )
 
-        self._Booster = train(
-            params,
-            train_dmatrix,
-            num_boost_round=self.get_num_boosting_rounds(),
-            evals=evals,
-            early_stopping_rounds=early_stopping_rounds,
-            evals_result=evals_result,
-            obj=self._objective_func(),
-            feval=self._evaluation_func(),
-            verbose_eval=verbose,
-            xgb_model=model,
-            callbacks=callbacks,
-        )
+        # hack to suppress warnings from the extra distribution parameter
+        with config_context(verbosity=0):
+            self._Booster = train(
+                params,
+                train_dmatrix,
+                num_boost_round=self.get_num_boosting_rounds(),
+                evals=evals,
+                early_stopping_rounds=early_stopping_rounds,
+                evals_result=evals_result,
+                obj=self._objective_func(),
+                feval=self._evaluation_func(),
+                verbose_eval=verbose,
+                xgb_model=model,
+                callbacks=callbacks,
+            )
         self._set_evaluation_result(evals_result)
         return self
 
