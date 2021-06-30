@@ -132,8 +132,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         evals_result = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
         if len(X.shape) != 2:
-            # Simply raise an error here since there might be many
-            # different ways of reshaping
             raise ValueError(
                 "Please reshape the input data X into 2-dimensional matrix."
             )
