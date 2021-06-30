@@ -35,7 +35,7 @@ def get_distribution_doc():
 
     for name, subclass in AVAILABLE_DISTRIBUTIONS.items():
         param_doc += f"""
-                - \"{name}\" - parameters {subclass().params}\n"""
+                - \"{name}\" - parameters: {subclass().params}\n"""
 
     param_doc += """
         Please see `scipy.stats` for a full description of the parameters of
