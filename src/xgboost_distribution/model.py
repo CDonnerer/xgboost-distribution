@@ -206,8 +206,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def load_model(self, fname) -> None:
         super().load_model(fname)
 
-        # self._distribution does not get saved in self.save_model(): reinstantiate
-        # Note: This is safe, as the distributions are always stateless
+        # self._distribution does not get saved in self.save_model(), as we
+        # can't just run json.dumps({"_distribution": self._distribution}) on it
+        # Hence we reinstantiate on loading. Note that this is safe, as the
+        # distributions are always stateless
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self):
