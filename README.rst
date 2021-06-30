@@ -37,8 +37,8 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, except for an additional
-keyword in the constructor for specifying the distribution. The full list of
-available distributions can be found in the `documentation`_.
+keyword in the constructor for specifying the distribution (see the
+`documentation`_ for a full list of available distributions):
 
 .. code-block:: python
 
@@ -61,15 +61,16 @@ available distributions can be found in the `documentation`_.
           early_stopping_rounds=10
       )
 
-After fitting, we can predict the parameters of the distribution for new data.
-This will return a namedtuple of numpy arrays for each parameter of the
-distribution (note that we use scipy naming conventions, see e.g.
-`scipy.stats.norm`_):
+After fitting, we can predict the parameters of the distribution:
 
 .. code-block:: python
 
       preds = model.predict(X_test)
       mean, std = preds.loc, preds.scale
+
+
+Note that this returned a namedtuple of numpy arrays for each parameter of
+the distribution (we use the scipy naming conventions, see e.g. `scipy.stats.norm`_).
 
 
 NGBoost performance comparison
@@ -98,8 +99,8 @@ Full XGBoost features
 ======================
 
 ``XGBDistribution`` offers the full set of XGBoost features available in the
-`XGBoost scikit-learn API`_, allowing, for example, probabilistic prediction with
-`monotonic constraints`_:
+`XGBoost scikit-learn API`_, allowing, for example, probabilistic regression
+with `monotonic constraints`_:
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/monotone_constraint.png
           :align: center
