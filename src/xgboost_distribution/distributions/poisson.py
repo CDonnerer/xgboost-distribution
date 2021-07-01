@@ -35,8 +35,8 @@ class Poisson(BaseDistribution):
         return grad, hess
 
     def loss(self, y, params):
-        loc, scale = self.predict(params)
-        return "PoissonError", -poisson.logpdf(y, loc=loc, scale=scale).mean()
+        mu = self.predict(params)
+        return "PoissonError", -poisson.logpmf(y, mu=mu).mean()
 
     def predict(self, params):
         log_mu = params

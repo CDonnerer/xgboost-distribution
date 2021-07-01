@@ -1,6 +1,7 @@
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.lognormal import LogNormal  # noqa
 from xgboost_distribution.distributions.normal import Normal  # noqa
+from xgboost_distribution.distributions.poisson import Poisson  # noqa
 
 # TOTA: alternative way of importing distribution subclasses?
 # __all__ = ["normal"]
