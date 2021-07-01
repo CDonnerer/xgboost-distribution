@@ -100,7 +100,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
-        # params["objective"] = f"distribution:{self.distribution}"
 
         # we set base score to zero to instead use base_margin in dmatrices
         # this allows different starting values for the distribution params
