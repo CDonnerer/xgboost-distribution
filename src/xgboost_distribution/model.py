@@ -1,8 +1,11 @@
 """XGBDistribution model
 """
+import warnings
+
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
+from xgboost import config_context
 from xgboost.core import DMatrix
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
@@ -136,19 +139,21 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 "Please reshape the input data X into 2-dimensional matrix."
             )
 
-        self._Booster = train(
-            params,
-            train_dmatrix,
-            num_boost_round=self.get_num_boosting_rounds(),
-            evals=evals,
-            early_stopping_rounds=early_stopping_rounds,
-            evals_result=evals_result,
-            obj=self._objective_func(),
-            feval=self._evaluation_func(),
-            verbose_eval=verbose,
-            xgb_model=model,
-            callbacks=callbacks,
-        )
+        # hack to suppress warnings from the extra distribution parameter
+        with config_context(verbosity=0):
+            self._Booster = train(
+                params,
+                train_dmatrix,
+                num_boost_round=self.get_num_boosting_rounds(),
+                evals=evals,
+                early_stopping_rounds=early_stopping_rounds,
+                evals_result=evals_result,
+                obj=self._objective_func(),
+                feval=self._evaluation_func(),
+                verbose_eval=verbose,
+                xgb_model=model,
+                callbacks=callbacks,
+            )
         self._set_evaluation_result(evals_result)
         return self
 
@@ -197,13 +202,18 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return self._distribution.predict(params)
 
     def save_model(self, fname) -> None:
-        super().save_model(fname)
+        with warnings.catch_warnings():
+            # required as we can't save self._distribution, see also below
+            warnings.simplefilter("ignore")
+            super().save_model(fname)
 
     def load_model(self, fname) -> None:
         super().load_model(fname)
 
-        # self._distribution does not get saved in self.save_model(): reinstantiate
-        # Note: This is safe, as the distributions are always stateless
+        # self._distribution does not get saved in self.save_model(), as we
+        # can't just run json.dumps({"_distribution": self._distribution}) on it
+        # Hence we reinstantiate on loading. Note that this is safe, as the
+        # distributions are always stateless
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self):
