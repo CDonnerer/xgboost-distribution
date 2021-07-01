@@ -83,17 +83,18 @@ Below, we show a performance comparison of the `NGBoost`_ ``NGBRegressor`` and
 ``XGBDistribution`` models, using the Boston Housing dataset and a normal
 distribution (similar hyperparameters). We note that while the performance of
 the two models is essentially identical, XGBDistribution is **50x faster**
-(timed on both fit and predict steps).
+(timed on both fit and predict steps):
 
-Note that the speed-up will decrease with dataset size, as it is ultimately
-limited by the natural gradient computation (via `LAPACK gesv`_). However, with
-1m rows of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
           :width: 600px
           :alt: XGBDistribution vs NGBoost
 
+
+Note that the speed-up will decrease with dataset size, as it is ultimately
+limited by the natural gradient computation (via `LAPACK gesv`_). However, with
+1m rows of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
 
 Full XGBoost features
 ======================
