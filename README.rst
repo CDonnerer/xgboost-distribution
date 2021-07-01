@@ -17,7 +17,7 @@
 xgboost-distribution
 ====================
 
-XGBoost for probabilistic prediction. Like `NGBoost`_, but faster and in the `XGBoost scikit-learn API`_.
+XGBoost for probabilistic prediction. Like `NGBoost`_, but faster, and in the `XGBoost scikit-learn API`_.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/xgb_dist.png
     :align: center
@@ -36,8 +36,8 @@ Installation
 Usage
 ===========
 
-``XGBDistribution`` follows the `XGBoost scikit-learn API`_, except for an additional
-keyword in the constructor for specifying the distribution (see the
+``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an
+additional keyword in the constructor for specifying the distribution (see the
 `documentation`_ for a full list of available distributions):
 
 .. code-block:: python
@@ -46,6 +46,7 @@ keyword in the constructor for specifying the distribution (see the
       from sklearn.model_selection import train_test_split
 
       from xgboost_distribution import XGBDistribution
+
 
       data = load_boston()
       X, y = data.data, data.target
