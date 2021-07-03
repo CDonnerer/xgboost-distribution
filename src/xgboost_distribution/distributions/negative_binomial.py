@@ -39,16 +39,16 @@ class NegativeBinomial(BaseDistribution):
 
     def loss(self, y, params):
         n, p = self.predict(params)
-        # print(n[:5], p[:5])
         return "NegativeBinomialError", -nbinom.logpmf(y, n=n, p=p).mean()
 
     def predict(self, params):
         log_n, raw_p = params[:, 0], params[:, 1]
         n = np.exp(log_n)
-        eps = 1e-6
-        p = np.clip(expit(raw_p), a_min=eps, a_max=1 - eps)
+        # eps = 1e-9
+        # p = np.clip(expit(raw_p), a_min=eps, a_max=1 - eps)
+        p = expit(raw_p)
 
         return self.Predictions(n=n, p=p)
 
     def starting_params(self, y):
-        return (3, 0.5)
+        return (np.log(np.mean(y)), 0.0)  # expit(0)=0.5

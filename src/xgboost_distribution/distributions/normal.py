@@ -10,18 +10,28 @@ class Normal(BaseDistribution):
     """Normal distribution with log scoring rule
 
     We estimate two parameters, say a and b, such that:
-        - a = mean
-        - b = log ( variance ** (1/2) )
+        a = mean
+        b = log ( std )
 
-    where mean, variance are the parameters of the normal distribution.
+    where mean, std are the parameters of the normal distribution:
 
-    https://www.wolframalpha.com/input/?i=d%2Fda+-log%28e%5E%28-%28%28x-a%29%2F%28sqrt%282%29*e%5Eb%29%29%5E2%29+%2F+sqrt%282*pi%29%29
-    https://www.wolframalpha.com/input/?i=d%2Fdb+-log%28e%5E%28-%28%28x-a%29%2F%28sqrt%282%29*e%5Eb%29%29%5E2%29+%2F+sqrt%282*pi%29%29
+        f(x) = exp( -[ (x-a) / e^b ]^2 / 2 ) / e^b
 
+    NB: Here, reparameterizing ensures that std >= 0, regardless of what the
+    xgboost booster internally outputs, as std = e^b.
 
-    Note that we follow the `scipy.stats.norm` notation where:
-        - loc = mean
-        - scale = standard deviation
+    We can then calculate the gradients:
+
+        d/da -log[f(x)] = e^(-2b) * (x-a) = (x-a) / var
+        d/db -log[f(x)] = 1 - e^(-2b) * (x-a)^2 = 1 - (x-a)^2 / var
+
+    as var = std^2 = e^(2b)
+
+    Ref:
+
+    https://www.wolframalpha.com/input/?i=d%2Fda+-log%28%28e%5E%28-%5B%28x-a%29%2Fe%5Eb%29%5D%5E2+%2F+2%29+%2F+e%5Eb%29%29
+    https://www.wolframalpha.com/input/?i=d%2Fdb+-log%28%28e%5E%28-%5B%28x-a%29%2Fe%5Eb%29%5D%5E2+%2F+2%29+%2F+e%5Eb%29%29
+
     """
 
     @property
