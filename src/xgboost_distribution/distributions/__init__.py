@@ -1,5 +1,8 @@
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.lognormal import LogNormal  # noqa
+from xgboost_distribution.distributions.negative_binomial import (  # noqa
+    NegativeBinomial,
+)
 from xgboost_distribution.distributions.normal import Normal  # noqa
 from xgboost_distribution.distributions.poisson import Poisson  # noqa
 

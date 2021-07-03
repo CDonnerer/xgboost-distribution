@@ -45,4 +45,4 @@ class Poisson(BaseDistribution):
         return self.Predictions(mu=mu)
 
     def starting_params(self, y):
-        return (1,)
+        return (np.mean(y),)

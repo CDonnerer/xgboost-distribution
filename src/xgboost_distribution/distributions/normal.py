@@ -15,6 +15,10 @@ class Normal(BaseDistribution):
 
     where mean, variance are the parameters of the normal distribution.
 
+    https://www.wolframalpha.com/input/?i=d%2Fda+-log%28e%5E%28-%28%28x-a%29%2F%28sqrt%282%29*e%5Eb%29%29%5E2%29+%2F+sqrt%282*pi%29%29
+    https://www.wolframalpha.com/input/?i=d%2Fdb+-log%28e%5E%28-%28%28x-a%29%2F%28sqrt%282%29*e%5Eb%29%29%5E2%29+%2F+sqrt%282*pi%29%29
+
+
     Note that we follow the `scipy.stats.norm` notation where:
         - loc = mean
         - scale = standard deviation
