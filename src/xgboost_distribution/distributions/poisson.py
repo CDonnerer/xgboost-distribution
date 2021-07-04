@@ -7,21 +7,20 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 
 class Poisson(BaseDistribution):
-    """Poisson distribution
+    """Poisson distribution with log score
 
-    The Fisher information:
+        f(k) = e^(-mu) mu^k / k!
 
-        I_eta = 1 / mu
+    We reparameterize mu -> log(mu) = a to ensure mu >= 0. Gradient:
 
-    defining eta = (mu,) and theta = (log(mu),), then
+        d/da -log[f(k)] = e^a - k  = mu - k
 
-        I_eta = I_theta (d theta / d eta)^ 2
+    The Fisher information = 1 / mu, which needs to be expressed in the
+    reparameterized form:
 
-        (d theta / d eta)^2  = (1 / mu)^2
+        1 / mu = I ( d/dmu log(mu) )^2 = I ( 1/ mu )^2
 
-    thus
-
-        I_theta = I_eta mu ^2 = mu
+    Hence we find: I = mu
 
     """
 
@@ -32,8 +31,7 @@ class Poisson(BaseDistribution):
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
 
-        log_mu = params
-        mu = np.exp(log_mu)
+        (mu,) = self.predict(params)
 
         grad = np.zeros(shape=(len(y), 1))
         grad[:, 0] = mu - y
@@ -46,7 +44,7 @@ class Poisson(BaseDistribution):
 
             hess = np.ones(shape=(len(y), 1))  # we set the hessian constant
         else:
-            raise NotImplementedError("TODO")
+            hess = mu
 
         return grad, hess
 
@@ -57,8 +55,7 @@ class Poisson(BaseDistribution):
     def predict(self, params):
         log_mu = params
         mu = np.exp(log_mu)
-
         return self.Predictions(mu=mu)
 
     def starting_params(self, y):
-        return (np.mean(y),)
+        return (np.log(np.mean(y)),)
