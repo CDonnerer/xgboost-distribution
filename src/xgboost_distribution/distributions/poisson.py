@@ -9,6 +9,8 @@ from xgboost_distribution.distributions.base import BaseDistribution
 class Poisson(BaseDistribution):
     """Poisson distribution with log score
 
+    Definition:
+
         f(k) = e^(-mu) mu^k / k!
 
     We reparameterize mu -> log(mu) = a to ensure mu >= 0. Gradient:

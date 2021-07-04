@@ -8,39 +8,42 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 
 class NegativeBinomial(BaseDistribution):
-    """Negative binomial distribution
+    """Negative binomial distribution with log score
 
-    We reparameterize from eta -> theta, such that:
+    Definition:
 
-        eta = (n, p)
-        theta = (log(n), log(p/(1-p)))
+        f(k) = p^n (1 - p)^k binomial(n + k - 1, n - 1)
 
-    Jacobian = [
-        [1/n, 0],
-        [0, 1/(p - p^2)]
-    ]
-    J^(-1) = [
-        [n, 0],
-        [0, p - p^2]
-    ]
+    with parameter (n, p), where n >= 0 and 1 >= p >= 0
 
-    I_eta =
-        [n / [(1 - p)^2 * p], 0],
-        [0, n / [(1 - p)^2 * p]]
+    We reparameterize:
+        n -> log(n) = a        |  e^a = n           |
+        p -> log(p/(1-p)) = b  |  e^b = p / (1-p)   |  p = 1 / (1 + e^(-b))
 
-        =
-    [n,       0] [    , 0] [n,       0  ]
-    [0, p - p^2] [0, n / [(1 - p)^2 * p]] [0, p - p^2]
+    Thus the gradients become:
 
+        d/da -log[f(k)] = -e^a [ digamma(k+e^a) - digamma(e^a) + log(p) ]
+                        = -n * [ digamma(k+n) - digamma(n) + log(p) ]
 
-    (x_1) = n / [(1 - p)^2 * p] / n^2
-          = 1 / (n * p * (1-p)^2 )
+        d/db -log[f(k)] = ( k * e^b - e^a ) / (e^b + 1)
+                        = ( k - e^a * e^-b ) / (e^-b + 1)
+                        = p *( k - e^a * e^-b )
+                        = p * ( k - n e^-b)
 
-    (x_2) = n / [(1 - p)^2 * p] / (p - p^2)^2
+    The Fisher Information = n / [ (1-p) p^2 ]
 
+    In reparameterized form:
 
-    I_eta = J^(-1) I_theta J^(-1)
+        n / [ (1-p) p^2 ] = I ( d/dn log(n) )^2 = I ( 1/n )^2
+        n / [ (1-p) p^2 ] = I ( d/dp log(p/(1-p)) )^2 = I ( 1/(p-p^2) )^2
 
+    We find:
+
+        [  n**3 / [ (1-p) p^2 ], 0  ]
+        [  0,  n / p ]
+
+    Ref:
+        https://www.wolframalpha.com/input/?i=d%2Fda+-log%28+%5B1+%2F+%281+%2B+e%5E%28-b%29%29%5D+%5E%28e%5Ea%29+%281+-+%5B1+%2F+%281+%2B+e%5E%28-b%29%29%5D%29%5Ek+binomial%28%28e%5Ea%29+%2B+k+-+1%2C+%28e%5Ea%29+-+1%29+%29
 
 
     """
@@ -59,19 +62,19 @@ class NegativeBinomial(BaseDistribution):
         grad = np.zeros(shape=(len(y), 2))
 
         grad[:, 0] = -n * (digamma(y + n) - digamma(n) + np.log(p))
-        grad[:, 1] = p * (y * np.exp(raw_p) - n)
+        grad[:, 1] = p * (y - n * np.exp(-raw_p))
 
         if natural_gradient:
 
             fisher_matrix = np.zeros(shape=(len(y), 2, 2))
-            fisher_matrix[:, 0, 0] = 1 / (p * (1 - p) ** 2)
-            fisher_matrix[:, 1, 1] = (n * p ** 2) / (1 - p)
-            # fisher_matrix[:, 0, 0] = 1 / (n * p * (1 - p) ** 2)
-            # fisher_matrix[:, 1, 1] = n / (p ** 4 -
+            fisher_matrix[:, 0, 0] = n / (p * (1 - p) ** 2)
+            fisher_matrix[:, 1, 1] = 1 / (n * p)
 
             grad = np.linalg.solve(fisher_matrix, grad)
+            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
 
-        hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
+        else:
+            raise NotImplementedError("TODO?")
 
         return grad, hess
 
@@ -82,11 +85,8 @@ class NegativeBinomial(BaseDistribution):
     def predict(self, params):
         log_n, raw_p = params[:, 0], params[:, 1]
         n = np.exp(log_n)
-        # eps = 1e-9
-        # p = np.clip(expit(raw_p), a_min=eps, a_max=1 - eps)
         p = expit(raw_p)
-
         return self.Predictions(n=n, p=p)
 
     def starting_params(self, y):
-        return (np.log(np.mean(y)), 0.0)  # expit(0)=0.5
+        return (np.log(np.mean(y)), -2)
