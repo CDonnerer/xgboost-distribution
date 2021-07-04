@@ -7,7 +7,7 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 
 class Normal(BaseDistribution):
-    """Normal distribution with log scoring rule
+    """Normal distribution with log scoring
 
     We estimate two parameters, say a and b, such that:
         a = mean
@@ -17,8 +17,8 @@ class Normal(BaseDistribution):
 
         f(x) = exp( -[ (x-a) / e^b ]^2 / 2 ) / e^b
 
-    NB: Here, reparameterizing ensures that std >= 0, regardless of what the
-    xgboost booster internally outputs, as std = e^b.
+    NB: Here, reparameterizing to log(std) ensures that std >= 0, regardless of
+    what the xgboost booster internally outputs, as std = e^b > 0.
 
     We can then calculate the gradients:
 
@@ -27,10 +27,32 @@ class Normal(BaseDistribution):
 
     as var = std^2 = e^(2b)
 
+    The Fisher Information of the normal distribution is:
+
+        I = [
+                [ 1 / var, 0 ],
+                [ 0, 2 / var ]
+            ]
+
+    The Jacobian becomes:
+
+        J_{ij} = [
+            [1, 0],
+            [0, 1 / std]
+        ]
+
+    Thus we find the Fisher Information in reparameterized space:
+
+        I = [
+                [ 1 / var, 0 ],
+                [ 0, 2]
+        ]
+
     Ref:
 
     https://www.wolframalpha.com/input/?i=d%2Fda+-log%28%28e%5E%28-%5B%28x-a%29%2Fe%5Eb%29%5D%5E2+%2F+2%29+%2F+e%5Eb%29%29
     https://www.wolframalpha.com/input/?i=d%2Fdb+-log%28%28e%5E%28-%5B%28x-a%29%2Fe%5Eb%29%5D%5E2+%2F+2%29+%2F+e%5Eb%29%29
+
 
     """
 

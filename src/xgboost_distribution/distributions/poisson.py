@@ -7,7 +7,23 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 
 class Poisson(BaseDistribution):
-    """Poisson distribution"""
+    """Poisson distribution
+
+    The Fisher information:
+
+        I_eta = 1 / mu
+
+    defining eta = (mu,) and theta = (log(mu),), then
+
+        I_eta = I_theta (d theta / d eta)^ 2
+
+        (d theta / d eta)^2  = (1 / mu)^2
+
+    thus
+
+        I_theta = I_eta mu ^2 = mu
+
+    """
 
     @property
     def params(self):
