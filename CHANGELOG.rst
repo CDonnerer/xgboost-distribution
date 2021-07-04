@@ -3,10 +3,16 @@ Changelog
 =========
 
 
+Version x
+==============
+
+- Added poisson distribution
+
+
 Version 0.1.1
 ==============
 
-- Added lognormal distribution option
+- Added lognormal distribution
 - Cleanup of distribution code, tested
 - Silenced warnings during fit and predict steps
 - Explicit link to RTD, showing available distributions
