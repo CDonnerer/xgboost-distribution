@@ -9,13 +9,13 @@ from xgboost_distribution.distributions.base import BaseDistribution
 class Normal(BaseDistribution):
     """Normal distribution with log scoring
 
-    We estimate two parameters, say a and b, such that:
-        a = mean
-        b = log ( std )
+    Definition:
 
-    where mean, std are the parameters of the normal distribution:
+        f(x) = exp( -[ (x-mean) / std ]^2 / 2 ) / std
 
-        f(x) = exp( -[ (x-a) / e^b ]^2 / 2 ) / e^b
+    we reparameterize to
+        a = mean         |  mean = a
+        b = log ( std )  |  std = e^b
 
     NB: Here, reparameterizing to log(std) ensures that std >= 0, regardless of
     what the xgboost booster internally outputs, as std = e^b > 0.
