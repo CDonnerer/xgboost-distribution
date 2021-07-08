@@ -1,6 +1,7 @@
+import pytest
+
 import numpy as np
 import pandas as pd
-import pytest
 
 from xgboost_distribution.distributions import LogNormal
 
