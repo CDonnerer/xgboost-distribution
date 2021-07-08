@@ -17,7 +17,7 @@ class NegativeBinomial(BaseDistribution):
     with parameter (n, p), where n >= 0 and 1 >= p >= 0
 
     We reparameterize:
-        n -> log(n) = a        |  e^a = n           |
+        n -> log(n) = a        |  e^a = n
         p -> log(p/(1-p)) = b  |  e^b = p / (1-p)   |  p = 1 / (1 + e^(-b))
 
     Thus the gradients become:
@@ -49,7 +49,6 @@ class NegativeBinomial(BaseDistribution):
 
     Ref:
         https://www.wolframalpha.com/input/?i=d%2Fda+-log%28+%5B1+%2F+%281+%2B+e%5E%28-b%29%29%5D+%5E%28e%5Ea%29+%281+-+%5B1+%2F+%281+%2B+e%5E%28-b%29%29%5D%29%5Ek+binomial%28%28e%5Ea%29+%2B+k+-+1%2C+%28e%5Ea%29+-+1%29+%29
-
 
     """
 
