@@ -55,6 +55,5 @@ def test_loss(lognormal):
         y=np.array([0, ]),
         params=np.array([[1, 0], ]),
     )
-
     assert loss_name == "LogNormalError"
     assert loss_value == np.inf
