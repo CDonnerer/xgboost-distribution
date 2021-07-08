@@ -1,5 +1,7 @@
-import numpy as np
 import pytest
+
+import numpy as np
+import pandas as pd
 
 from xgboost_distribution.distributions import LogNormal
 
@@ -31,3 +33,17 @@ def test_gradient_calculation(lognormal, y, params, natural_gradient, expected_g
         y, params, natural_gradient=natural_gradient
     )
     np.testing.assert_array_equal(grad, expected_grad)
+
+
+def test_target_validation(lognormal):
+    valid_target = np.array([0, 1, 4, 5, 10])
+    lognormal.check_target(valid_target)
+
+
+@pytest.mark.parametrize(
+    "invalid_target",
+    [np.array([-0.1, 1.2]), pd.Series([-1.1, 0.4, 2.3])],
+)
+def test_target_validation_raises(lognormal, invalid_target):
+    with pytest.raises(ValueError):
+        lognormal.check_target(invalid_target)

@@ -97,6 +97,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
         """
         self._distribution = get_distribution(self.distribution)
 
+        self._distribution.check_target(y)
+
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
