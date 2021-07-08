@@ -4,6 +4,7 @@ import numpy as np
 from scipy.stats import poisson
 
 from xgboost_distribution.distributions.base import BaseDistribution
+from xgboost_distribution.utils import check_is_integer, check_is_positive
 
 
 class Poisson(BaseDistribution):
@@ -27,6 +28,10 @@ class Poisson(BaseDistribution):
     @property
     def params(self):
         return ("mu",)
+
+    def check_data(self, y):
+        check_is_integer(y)
+        check_is_positive(y)
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
