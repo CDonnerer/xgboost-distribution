@@ -1,7 +1,8 @@
 import os
 
-import numpy as np
 import pytest
+
+import numpy as np
 from sklearn.exceptions import NotFittedError
 
 from xgboost_distribution.model import XGBDistribution
