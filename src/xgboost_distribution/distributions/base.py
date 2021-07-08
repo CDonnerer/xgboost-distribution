@@ -15,7 +15,7 @@ class BaseDistribution(ABC):
     def __init__(self):
         self.Predictions = namedtuple("Predictions", (p for p in self.params))
 
-    def check_data(self, y):
+    def check_target(self, y):
         pass
 
     @property
