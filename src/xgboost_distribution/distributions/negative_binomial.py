@@ -67,6 +67,7 @@ class NegativeBinomial(BaseDistribution):
         log_n, raw_p = params[:, 0], params[:, 1]
         n = np.exp(log_n)
         p = expit(raw_p)
+        # eps = 1e-9
 
         grad = np.zeros(shape=(len(y), 2))
 
