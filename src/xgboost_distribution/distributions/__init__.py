@@ -13,13 +13,12 @@ from xgboost_distribution.distributions.poisson import Poisson  # noqa
 # from . import *
 
 
-def _format_distribution_name(subclass):
-    name = subclass.__name__
-    return re.sub(r"(?<!^)(?=[A-Z])", "-", name).lower()
+def format_distribution_name(class_name):
+    return re.sub(r"(?<!^)(?=[A-Z])", "-", class_name).lower()
 
 
 AVAILABLE_DISTRIBUTIONS = {
-    _format_distribution_name(subclass): subclass
+    format_distribution_name(subclass.__name__): subclass
     for subclass in BaseDistribution.__subclasses__()
 }
 
