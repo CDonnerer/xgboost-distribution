@@ -51,16 +51,9 @@ def test_gradient_calculation(lognormal, y, params, natural_gradient, expected_g
 
 def test_loss(lognormal):
     loss_name, loss_value = lognormal.loss(
-        y=np.array(
-            [
-                0,
-            ]
-        ),
-        params=np.array(
-            [
-                [1, 0],
-            ]
-        ),
+        # fmt: off
+        y=np.array([0, ]),
+        params=np.array([[1, 0], ]),
     )
 
     assert loss_name == "LogNormalError"
