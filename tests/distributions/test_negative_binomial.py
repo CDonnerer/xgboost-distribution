@@ -16,22 +16,10 @@ def negative_binomial():
     "y, params, natural_gradient, expected_grad",
     [
         (
-            np.array(
-                [
-                    1,
-                ]
-            ),
-            np.array(
-                [
-                    [np.log(2), logit(1.0)],
-                ]
-            ),
+            np.array([0, 1]),
+            np.array([[np.log(2), logit(1.0)], [np.log(2), logit(1.0)]]),
             True,
-            np.array(
-                [
-                    [-1, 0.5],
-                ]
-            ),
+            np.array([[-1, 0.5], [1, 0]]),
         ),
     ],
 )
