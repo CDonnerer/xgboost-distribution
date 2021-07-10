@@ -12,13 +12,13 @@ def lognormal():
 
 
 def test_target_validation(lognormal):
-    valid_target = np.array([0, 1, 4, 5, 10])
+    valid_target = np.array([0.5, 1, 4, 5, 10])
     lognormal.check_target(valid_target)
 
 
 @pytest.mark.parametrize(
     "invalid_target",
-    [np.array([-0.1, 1.2]), pd.Series([-1.1, 0.4, 2.3])],
+    [np.array([0, 1.2]), pd.Series([-1.1, 0.4, 2.3])],
 )
 def test_target_validation_raises(lognormal, invalid_target):
     with pytest.raises(ValueError):

@@ -87,7 +87,10 @@ class NegativeBinomial(BaseDistribution):
             hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
 
         else:
-            raise NotImplementedError("TODO?")
+            raise NotImplementedError(
+                "Normal gradients are currently not supported by this "
+                "distribution. Please use natural gradients!"
+            )
 
         return grad, hess
 
