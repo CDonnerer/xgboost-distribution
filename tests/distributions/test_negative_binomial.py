@@ -29,16 +29,10 @@ def negative_binomial():
             True,
             np.array(
                 [
-                    [0, 1.0],
+                    [-1, 0.5],
                 ]
             ),
         ),
-        # (
-        #     np.array([0, 0]),
-        #     np.array([[0, 1], [1, 0]]),
-        #     False,
-        #     np.array([[0, 1], [1, 0]]),
-        # ),
     ],
 )
 def test_gradient_calculation(
