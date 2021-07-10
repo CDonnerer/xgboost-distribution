@@ -7,6 +7,9 @@ Version x
 ==============
 
 - Added poisson distribution
+- Added negative-binomial distribution
+- Changed naming conventions of distributions
+- Safety checks on distribution parameters
 
 
 Version 0.1.1

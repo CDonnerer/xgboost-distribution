@@ -1,5 +1,10 @@
+import re
+
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.lognormal import LogNormal  # noqa
+from xgboost_distribution.distributions.log_normal import LogNormal  # noqa
+from xgboost_distribution.distributions.negative_binomial import (  # noqa
+    NegativeBinomial,
+)
 from xgboost_distribution.distributions.normal import Normal  # noqa
 from xgboost_distribution.distributions.poisson import Poisson  # noqa
 
@@ -8,8 +13,12 @@ from xgboost_distribution.distributions.poisson import Poisson  # noqa
 # from . import *
 
 
+def format_distribution_name(class_name):
+    return re.sub(r"(?<!^)(?=[A-Z])", "-", class_name).lower()
+
+
 AVAILABLE_DISTRIBUTIONS = {
-    subclass.__name__.lower(): subclass
+    format_distribution_name(subclass.__name__): subclass
     for subclass in BaseDistribution.__subclasses__()
 }
 

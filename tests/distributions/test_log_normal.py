@@ -11,6 +11,20 @@ def lognormal():
     return LogNormal()
 
 
+def test_target_validation(lognormal):
+    valid_target = np.array([0.5, 1, 4, 5, 10])
+    lognormal.check_target(valid_target)
+
+
+@pytest.mark.parametrize(
+    "invalid_target",
+    [np.array([0, 1.2]), pd.Series([-1.1, 0.4, 2.3])],
+)
+def test_target_validation_raises(lognormal, invalid_target):
+    with pytest.raises(ValueError):
+        lognormal.check_target(invalid_target)
+
+
 @pytest.mark.parametrize(
     "y, params, natural_gradient, expected_grad",
     [
@@ -35,15 +49,11 @@ def test_gradient_calculation(lognormal, y, params, natural_gradient, expected_g
     np.testing.assert_array_equal(grad, expected_grad)
 
 
-def test_target_validation(lognormal):
-    valid_target = np.array([0, 1, 4, 5, 10])
-    lognormal.check_target(valid_target)
-
-
-@pytest.mark.parametrize(
-    "invalid_target",
-    [np.array([-0.1, 1.2]), pd.Series([-1.1, 0.4, 2.3])],
-)
-def test_target_validation_raises(lognormal, invalid_target):
-    with pytest.raises(ValueError):
-        lognormal.check_target(invalid_target)
+def test_loss(lognormal):
+    loss_name, loss_value = lognormal.loss(
+        # fmt: off
+        y=np.array([0, ]),
+        params=np.array([[1, 0], ]),
+    )
+    assert loss_name == "LogNormalError"
+    assert loss_value == np.inf

@@ -11,6 +11,20 @@ def poisson():
     return Poisson()
 
 
+def test_target_validation(poisson):
+    valid_target = np.array([0, 1, 4, 5, 10])
+    poisson.check_target(valid_target)
+
+
+@pytest.mark.parametrize(
+    "invalid_target",
+    [np.array([-0.1, 1.2]), pd.Series([1.1, 0.4, 2.3])],
+)
+def test_target_validation_raises(poisson, invalid_target):
+    with pytest.raises(ValueError):
+        poisson.check_target(invalid_target)
+
+
 @pytest.mark.parametrize(
     "y, params, natural_gradient, expected_grad",
     [
@@ -35,15 +49,11 @@ def test_gradient_calculation(poisson, y, params, natural_gradient, expected_gra
     np.testing.assert_array_equal(grad, expected_grad)
 
 
-def test_target_validation(poisson):
-    valid_target = np.array([0, 1, 4, 5, 10])
-    poisson.check_target(valid_target)
-
-
-@pytest.mark.parametrize(
-    "invalid_target",
-    [np.array([-0.1, 1.2]), pd.Series([1.1, 0.4, 2.3])],
-)
-def test_target_validation_raises(poisson, invalid_target):
-    with pytest.raises(ValueError):
-        poisson.check_target(invalid_target)
+def test_loss(poisson):
+    loss_name, loss_value = poisson.loss(
+        # fmt: off
+        y=np.array([1, ]),
+        params=np.array([[np.log(1)], ]),
+    )
+    assert loss_name == "PoissonError"
+    assert loss_value == 1.0

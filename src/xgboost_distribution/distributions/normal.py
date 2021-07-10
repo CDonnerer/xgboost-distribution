@@ -7,17 +7,47 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 
 class Normal(BaseDistribution):
-    """Normal distribution with log scoring rule
+    """Normal distribution with log scoring
 
-    We estimate two parameters, say a and b, such that:
-        - a = mean
-        - b = log ( variance ** (1/2) )
+    Definition:
 
-    where mean, variance are the parameters of the normal distribution.
+        f(x) = exp( -[ (x-mean) / std ]^2 / 2 ) / std
 
-    Note that we follow the `scipy.stats.norm` notation where:
-        - loc = mean
-        - scale = standard deviation
+    We reparameterize:
+
+        a = mean         |  a = mean
+        b = log ( std )  |  e^b = std
+
+    (Note: reparameterizing to log(std) ensures that std >= 0, regardless of
+    what the xgboost booster internally outputs, as std = e^b > 0.)
+
+    The gradients are:
+
+        d/da -log[f(x)] = e^(-2b) * (x-a) = (x-a) / var
+        d/db -log[f(x)] = 1 - e^(-2b) * (x-a)^2 = 1 - (x-a)^2 / var
+
+    as var = std^2 = e^(2b)
+
+    The Fisher Information (diagonal):
+
+        I(mean) = 1 / var
+        I(std) = 2 / var
+
+    In reparameterized form, we find I_r:
+
+        1 / var = I_r [ d/d(mean) mean ]^2 = I
+        2 / var = I_r [ d/d(std) log(std) ]^2 = I ( 1/(std) )^2
+
+    Hence the reparameterized Fisher information:
+
+        [ 1 / var, 0 ]
+        [ 0,       2 ]
+
+    Ref:
+
+        https://www.wolframalpha.com/input/?i=d%2Fda+-log%28%28e%5E%28-%5B%28x-a%29%2Fe%5Eb%29%5D%5E2+%2F+2%29+%2F+e%5Eb%29%29
+        https://www.wolframalpha.com/input/?i=d%2Fdb+-log%28%28e%5E%28-%5B%28x-a%29%2Fe%5Eb%29%5D%5E2+%2F+2%29+%2F+e%5Eb%29%29
+
     """
 
     @property
