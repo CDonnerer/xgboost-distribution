@@ -18,37 +18,40 @@ class NegativeBinomial(BaseDistribution):
     with parameter (n, p), where n >= 0 and 1 >= p >= 0
 
     We reparameterize:
-        n -> log(n) = a        |  e^a = n
-        p -> log(p/(1-p)) = b  |  e^b = p / (1-p)   |  p = 1 / (1 + e^(-b))
 
-    Thus the gradients become:
+        n -> log(n) = a        |  e^a = n
+        p -> log(p/(1-p)) = b  |  e^b = p / (1-p)   |  p = 1 / [1 + e^(-b)]
+
+    The gradients are:
 
         d/da -log[f(k)] = -e^a [ digamma(k+e^a) - digamma(e^a) + log(p) ]
-                        = -n * [ digamma(k+n) - digamma(n) + log(p) ]
+                        = -n   [ digamma(k+n) - digamma(n) + log(p) ]
 
-        d/db -log[f(k)] = ( k * e^b - e^a ) / (e^b + 1)
-                        = ( k - e^a * e^-b ) / (e^-b + 1)
-                        = p *( k - e^a * e^-b )
-                        = p * ( k - n e^-b)
+        d/db -log[f(k)] = (k e^b - e^a) / (e^b + 1)
+                        = (k - e^a e^-b) / (e^-b + 1)
+                        = p * (k - e^a e^-b)
+                        = p * (k - n e^-b)
 
     The Fisher Information:
+
         I(n) ~ p / [ n*(p + 1) ]
         I(p) = n / [ (1-p) p^2 ]
 
-    where we used the approximation shown here:
-    http://erepository.uonbi.ac.ke:8080/xmlui/handle/123456789/33803
+    where we used an approximation for I(n) presented here:
+        http://erepository.uonbi.ac.ke:8080/xmlui/handle/123456789/33803
 
-    In reparameterized form:
+    In reparameterized form, we find I_r:
 
-        p / [ n*(p + 1) ] = I ( d/dn log(n) )^2 = I ( 1/n )^2
-        n / [ (1-p) p^2 ] = I ( d/dp log(p/(1-p)) )^2 = I ( 1/(p-p^2) )^2
+        p / [ n*(p + 1) ] = I_r [ d/dn log(n) ]^2 = I_r ( 1/n )^2
+        n / [ (1-p) p^2 ] = I_r [ d/dp log(p/(1-p)) ]^2 = I_r ( 1/(p-p^2) )^2
 
-    We find:
+    Hence the reparameterized Fisher information:
 
         [  np / (p+1), 0  ]
         [  0,    n / p    ]
 
     Ref:
+
         https://www.wolframalpha.com/input/?i=d%2Fda+-log%28+%5B1+%2F+%281+%2B+e%5E%28-b%29%29%5D+%5E%28e%5Ea%29+%281+-+%5B1+%2F+%281+%2B+e%5E%28-b%29%29%5D%29%5Ek+binomial%28%28e%5Ea%29+%2B+k+-+1%2C+%28e%5Ea%29+-+1%29+%29
 
     """
