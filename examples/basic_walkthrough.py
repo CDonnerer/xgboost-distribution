@@ -45,7 +45,7 @@ def main():
     )
     preds = model.predict(X_test)
 
-    plot_residuals(y_true=y_test, y_pred=preds.mean, y_err=preds.scale)
+    plot_residuals(y_true=y_test, y_pred=preds.loc, y_err=preds.scale)
 
 
 if __name__ == "__main__":

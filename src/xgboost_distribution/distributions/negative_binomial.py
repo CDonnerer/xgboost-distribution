@@ -20,7 +20,7 @@ class NegativeBinomial(BaseDistribution):
     We reparameterize:
 
         n -> log(n) = a        |  e^a = n
-        p -> log(p/(1-p)) = b  |  e^b = p / (1-p)   |  p = 1 / [1 + e^(-b)]
+        p -> log(p/(1-p)) = b  |  e^b = p / (1-p)   |  p = 1 / (1 + e^-b)
 
     The gradients are:
 
@@ -34,21 +34,28 @@ class NegativeBinomial(BaseDistribution):
 
     The Fisher Information:
 
-        I(n) ~ p / [ n*(p + 1) ]
-        I(p) = n / [ (1-p) p^2 ]
+        I(n) ~ p / [ n (p+1) ]
+        I(p) = n / [ p (1-p)^2 ]
 
     where we used an approximation for I(n) presented here:
         http://erepository.uonbi.ac.ke:8080/xmlui/handle/123456789/33803
 
-    In reparameterized form, we find I_r:
+    In reparameterized form, we find I_r(n) and I_r(p):
 
-        p / [ n*(p + 1) ] = I_r [ d/dn log(n) ]^2 = I_r ( 1/n )^2
-        n / [ (1-p) p^2 ] = I_r [ d/dp log(p/(1-p)) ]^2 = I_r ( 1/(p-p^2) )^2
+        p / [ n (p+1) ] = I_r(n) [ d/dn log(n) ]^2
+                        = I_r(n) ( 1/n )^2
+
+        -> I_r(n) = np / (p+1)
+
+        n / [ p (1-p)^2 ] = I_r(p) [ d/dp log(p/(1-p)) ]^2
+                          = I_r(p) ( 1/ [ p (1-p) ] )^2
+
+        -> I_r(p) = [ p^2 (1-p)^2 n ] / [ p (1-p)^2 ] = np
 
     Hence the reparameterized Fisher information:
 
-        [  np / (p+1), 0  ]
-        [  0,    n / p    ]
+        [  np / (p+1), 0 ]
+        [  0,         np ]
 
     Ref:
 
@@ -70,18 +77,17 @@ class NegativeBinomial(BaseDistribution):
         log_n, raw_p = params[:, 0], params[:, 1]
         n = np.exp(log_n)
         p = expit(raw_p)
-        # eps = 1e-9
 
         grad = np.zeros(shape=(len(y), 2))
 
         grad[:, 0] = -n * (digamma(y + n) - digamma(n) + np.log(p))
-        grad[:, 1] = p * (y - n * np.exp(-raw_p))
+        grad[:, 1] = p * (y - n * (1 - p) / p)
 
         if natural_gradient:
 
             fisher_matrix = np.zeros(shape=(len(y), 2, 2))
-            fisher_matrix[:, 0, 0] = n / (p * (1 - p) ** 2)
-            fisher_matrix[:, 1, 1] = (n * p) / (p + 1)
+            fisher_matrix[:, 0, 0] = (n * p) / (p + 1)
+            fisher_matrix[:, 1, 1] = n * p
 
             grad = np.linalg.solve(fisher_matrix, grad)
             hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
@@ -105,4 +111,5 @@ class NegativeBinomial(BaseDistribution):
         return self.Predictions(n=n, p=p)
 
     def starting_params(self, y):
-        return (np.log(np.mean(y)), -2)
+        # TODO: starting params can matter a lot?
+        return (np.log(np.mean(y)), 0)  # expit(0) = 0.5
