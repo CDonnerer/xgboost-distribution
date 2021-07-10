@@ -3,7 +3,7 @@ Changelog
 =========
 
 
-Version x
+Version 0.1.2
 ==============
 
 - Added poisson distribution
