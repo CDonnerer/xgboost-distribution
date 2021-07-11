@@ -51,3 +51,6 @@ MANIFEST
 # Per-project virtualenvs
 .venv*/
 .conda*/
+
+# Data
+data/*
