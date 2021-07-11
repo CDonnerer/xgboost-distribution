@@ -1,9 +1,11 @@
+import os
 import time
 from argparse import ArgumentParser
 from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+import requests
 from ngboost import NGBRegressor
 from ngboost.learners import default_linear_learner, default_tree_learner
 from scipy.stats import norm
@@ -13,6 +15,60 @@ from sklearn.model_selection import KFold, train_test_split
 from xgboost_distribution import XGBDistribution
 
 np.random.seed(1)
+
+
+@dataclass
+class Dataset:
+    # name: str
+    url: str
+    load_func: callable
+    load_kwargs: dict
+
+
+housing = Dataset(
+    url=(
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/"
+        "housing/housing.data"
+    ),
+    load_func=pd.read_csv,
+    load_kwargs={"header": None, "delim_whitespace": True},
+)
+
+wine = Dataset(
+    url=(
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/"
+        "wine-quality/winequality-red.csv"
+    ),
+    load_func=pd.read_csv,
+    load_kwargs={"delimiter": ";"},
+)
+
+yacht = Dataset(
+    url=(
+        "http://archive.ics.uci.edu/ml/machine-learning-databases/00243/"
+        "yacht_hydrodynamics.data"
+    ),
+    load_func=pd.read_csv,
+    load_kwargs={"header": None, "delim_whitespace": True},
+)
+
+datasets = {"housing": housing, "wine": wine, "yacht": yacht}
+
+
+def load_dataset(name):
+    dataset = datasets[name]
+    local_path = f"data/{name}.data"
+
+    if os.path.exists(local_path):
+        return dataset.load_func(local_path, **dataset.load_kwargs)
+    else:
+        print("Dataset not locally cached, downloading from url...")
+        r = requests.get(dataset.url)
+        with open(local_path, "wb") as f:
+            f.write(r.content)
+        print(f"Downloaded file to {local_path}")
+        return load_dataset(name)
+
 
 dataset_name_to_loader = {
     "housing": lambda: pd.read_csv(
@@ -38,7 +94,7 @@ dataset_name_to_loader = {
     ),
     "kin8nm": lambda: pd.read_csv("data/uci/kin8nm.csv"),
     "naval": lambda: pd.read_csv(
-        "data/uci/naval-propulsion.txt", delim_whitespace=True, header=None
+        "data/naval/data.txt", delim_whitespace=True, header=None
     ).iloc[:, :-1],
     "power": lambda: pd.read_excel("data/uci/power-plant.xlsx"),
     "energy": lambda: pd.read_excel(
@@ -119,7 +175,7 @@ def fit_predict_ngb(data):
         Y_val=data.y_val,
         early_stopping_rounds=10,
     )
-    preds = ngb.pred_dist(data.X_test)
+    preds = ngb.pred_dist(data.X_test, max_iter=ngb.best_val_loss_itr)
 
     elapsed_time = time.time() - start_time
     return EvalResults(
@@ -167,7 +223,7 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     # load dataset -- use last column as label
-    data = dataset_name_to_loader[args.dataset]()
+    data = load_dataset(args.dataset)
     X, y = data.iloc[:, :-1].values, data.iloc[:, -1].values
 
     if not args.minibatch_frac:
