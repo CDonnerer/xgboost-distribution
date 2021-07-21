@@ -8,12 +8,14 @@ import time
 import zipfile
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from functools import partial
+from datetime import datetime
+from functools import partial, wraps
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import requests
+import sqlalchemy as sa
 from ngboost import NGBRegressor
 from scipy.stats import norm
 from sklearn.metrics import mean_squared_error
@@ -84,6 +86,14 @@ Dataset(
     load_func=pd.read_excel,
 )
 
+Dataset(
+    name="protein",
+    url="https://archive.ics.uci.edu/ml/machine-learning-databases/00265/CASP.csv",
+    processing_func=lambda x: x.loc[
+        :, ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "RMSD"]
+    ],
+)
+
 
 def load_dataset(name, data_dir=DATA_DIR):
     dataset = DATASETS[name]
@@ -130,6 +140,11 @@ def unpack_file_from_zip(zip_file, to_unpack, path):
 # }
 
 
+# -----------------------------------------------------------------------------
+# Metrics to evaluate
+# -----------------------------------------------------------------------------
+
+
 @dataclass
 class SplitData:
     X_train: np.ndarray
@@ -140,7 +155,7 @@ class SplitData:
     y_test: np.ndarray
 
 
-def rmse(y_pred, y_test):
+def root_mean_squared_error(y_pred, y_test):
     return np.sqrt(mean_squared_error(y_pred, y_test))
 
 
@@ -149,39 +164,47 @@ def normal_nll(loc, scale, y_test):
 
 
 @dataclass
-class EvalResults:
-    name: str
+class EvalResult:
     total_time: float
     rmse: float
     nll: float
 
 
 def summarize_results(results):
-    # records = [(result.rmse, result.nll, result.total_time) for result in results]
-    df = pd.DataFrame(results)
-    # df = df.set_index("name")
-    # records, columns=["rmse", "nll", "total_time"])
-    return df.agg(["mean", "std"], axis=0)
+    return (
+        pd.DataFrame(results)
+        .agg(["mean", "std"], axis=0)
+        .melt(ignore_index=False, var_name="metric")
+        .rename_axis("agg_func")
+        .reset_index()
+    )
 
 
 evaluations = []
 
 
 def evaluate(evaluation_func):
+    @wraps(evaluation_func)
     def measured(data):
         t0 = time.perf_counter()
         preds = evaluation_func(data)
         elapsed = time.perf_counter() - t0
-        return EvalResults(
-            name=evaluation_func.__name__,
-            rmse=rmse(preds.loc, data.y_test),
-            nll=normal_nll(preds.loc, preds.scale, data.y_test),
-            total_time=elapsed,
-        )
+
+        if isinstance(preds, np.ndarray):
+            rmse = root_mean_squared_error(preds, data.y_test)
+            nll = None
+        else:
+            rmse = root_mean_squared_error(preds.loc, data.y_test)
+            nll = normal_nll(preds.loc, preds.scale, data.y_test)
+        return EvalResult(rmse=rmse, nll=nll, total_time=elapsed)
 
     evaluations.append(measured)
-    # evaluate.update({evaluation_func.__name__: measured})
     return measured
+
+
+# -----------------------------------------------------------------------------
+# Model functions, everything decorated by @evaluate will be evaluated
+# -----------------------------------------------------------------------------
 
 
 @evaluate
@@ -203,44 +226,35 @@ def xgb_distribution(data):
     xgbd.fit(
         data.X_train,
         data.y_train,
-        eval_set=[(data.X_test, data.y_test)],
+        eval_set=[(data.X_val, data.y_val)],
         early_stopping_rounds=10,
         verbose=False,
     )
     return xgbd.predict(data.X_test)
 
 
-# @evaluate
+@evaluate
 def xgb_regressor(data):
     xgb = XGBRegressor(max_depth=3, n_estimators=500)
     xgb.fit(
         data.X_train,
         data.y_train,
-        eval_set=[(data.X_test, data.y_test)],
+        eval_set=[(data.X_val, data.y_val)],
         early_stopping_rounds=10,
         verbose=False,
     )
     return xgb.predict(data.X_test)
 
 
-def setup_logging(loglevel=logging.INFO):
-    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    logging.basicConfig(
-        level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
-    )
+# -----------------------------------------------------------------------------
+# Main method for running cross-validation becnhmark experiment
+# -----------------------------------------------------------------------------
 
 
-def parse_args():
-    argparser = ArgumentParser()
-    argparser.add_argument("--dataset", type=str, default="concrete")
-    argparser.add_argument("--random-seed", type=int, default=42)
-    argparser.add_argument("--n-folds", type=int, default=10)
-    return argparser.parse_args()
-
-
-if __name__ == "__main__":
+def main():
     args = parse_args()
     setup_logging()
+    db = DataBase()
 
     np.random.seed(args.random_seed)
 
@@ -271,5 +285,102 @@ if __name__ == "__main__":
         for eval_func, result in zip(evaluations, results):
             result.append(eval_func(split_data))
 
-    for result in results:
-        _logger.info(f"{result[0].name}\n{summarize_results(result)}")
+    for eval_func, result in zip(evaluations, results):
+        df_summary = summarize_results(result)
+        df_summary["dataset"] = args.dataset
+        df_summary["model"] = eval_func.__name__
+
+        _logger.info(f"{eval_func.__name__}\n{df_summary}")
+
+        db.insert_metrics(df_summary.to_dict("records"))
+
+    # query = (
+    #     sa.select(
+    #         [
+    #             db.metrics.c.dataset,
+    #             db.metrics.c.model,
+    #             db.metrics.c.metric,
+    #             db.metrics.c.agg_func,
+    #             func.coalesce(db.metrics.c.value, None).label("value"),
+    #         ]
+    #     )
+    #     .order_by(db.metrics.c.created_on.desc())
+    #     .group_by(
+    #         db.metrics.c.dataset,
+    #         db.metrics.c.model,
+    #         db.metrics.c.metric,
+    #         db.metrics.c.agg_func,
+    #     )
+    # )
+    # print(pd.read_sql(query, db.connection))
+
+    df = db.get_metrics_pdf()
+    df_pivot = df.pivot_table(
+        values=["value"],
+        index=["dataset", "agg_func"],
+        columns=["model", "metric"],
+    )
+    # df_pivot.columns = df_pivot.columns.get_level_values(1)
+    #
+    # def number_with_error(val, err):
+    #     dist = -int(np.floor(np.log10(err)))
+    #     if dist > 0:
+    #         return f"{str(round(val, dist))}({str(round(err, dist))[-1]})"
+    #     else:
+    #         return f"{str(round(val, 0))}({str(round(err, 0))})"
+    #
+    # df_pivot["col_3"] = df_pivot.apply(
+    #     lambda x: number_with_error(x["mean"], x["std"]), axis=1
+    # )
+    print(df_pivot)
+    # print(df_pivot.transpose())
+
+
+class DataBase:
+    def __init__(self, data_dir=DATA_DIR, db_name="results.db"):
+        self.metadata = sa.MetaData()
+        self.engine = sa.create_engine(f"sqlite:///{data_dir}/{db_name}")
+        self.connection = self.engine.connect()
+        self._create_tables()
+
+    def _create_tables(self):
+        self.metrics = sa.Table(
+            "metrics",
+            self.metadata,
+            sa.Column("dataset", sa.String(), nullable=False),
+            sa.Column("model", sa.String(), nullable=False),
+            sa.Column("metric", sa.String(), nullable=False),
+            sa.Column("agg_func", sa.String(), nullable=False),
+            sa.Column("value", sa.Float(), nullable=True),
+            sa.Column("created_on", sa.DateTime(), default=datetime.now),
+        )
+        self.metadata.create_all(self.engine)
+
+    def insert_metrics(self, records):
+        ins = self.metrics.insert()
+        self.connection.execute(ins, records)
+
+    def get_metrics_pdf(self):
+        return pd.read_sql(
+            sa.select(self.metrics).order_by(self.metrics.c.created_on.desc()),
+            self.connection,
+        )
+
+
+def setup_logging(loglevel=logging.INFO):
+    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    logging.basicConfig(
+        level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
+    )
+
+
+def parse_args():
+    argparser = ArgumentParser()
+    argparser.add_argument("--dataset", type=str, default="concrete")
+    argparser.add_argument("--random-seed", type=int, default=42)
+    argparser.add_argument("--n-folds", type=int, default=10)
+    return argparser.parse_args()
+
+
+if __name__ == "__main__":
+    main()
