@@ -52,10 +52,7 @@ additional keyword in the constructor for specifying the distribution (see the
       X, y = data.data, data.target
       X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-      model = XGBDistribution(
-          distribution="normal",
-          n_estimators=500
-      )
+      model = XGBDistribution(distribution="normal", n_estimators=500)
       model.fit(
           X_train, y_train,
           eval_set=[(X_test, y_test)],
