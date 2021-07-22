@@ -54,9 +54,15 @@ Dataset(
 )
 
 Dataset(
-    name="wine",
-    url="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",  # noqa: E501
-    load_func=partial(pd.read_csv, delimiter=";"),
+    name="concrete",
+    url="https://archive.ics.uci.edu/ml/machine-learning-databases/concrete/compressive/Concrete_Data.xls",  # noqa: E501
+    load_func=pd.read_excel,
+)
+
+Dataset(
+    name="energy",
+    url="https://archive.ics.uci.edu/ml/machine-learning-databases/00242/ENB2012_data.xlsx",  # noqa: E501
+    load_func=partial(pd.read_excel, usecols=[f"X{i}" for i in range(1, 9)] + ["Y1"]),
 )
 
 Dataset(
@@ -68,21 +74,9 @@ Dataset(
 )
 
 Dataset(
-    name="energy",
-    url="https://archive.ics.uci.edu/ml/machine-learning-databases/00242/ENB2012_data.xlsx",  # noqa: E501
-    load_func=pd.read_excel,
-    processing_func=lambda x: x.iloc[:, :-1],
-)
-
-Dataset(
-    name="yacht",
-    url="http://archive.ics.uci.edu/ml/machine-learning-databases/00243/yacht_hydrodynamics.data",  # noqa: E501
-    load_func=partial(pd.read_csv, header=None, delim_whitespace=True),
-)
-
-Dataset(
-    name="concrete",
-    url="https://archive.ics.uci.edu/ml/machine-learning-databases/concrete/compressive/Concrete_Data.xls",  # noqa: E501
+    name="power",
+    url="https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip",
+    unpack="Folds5x2_pp.xlsx",
     load_func=pd.read_excel,
 )
 
@@ -92,6 +86,26 @@ Dataset(
     processing_func=lambda x: x.loc[
         :, ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "RMSD"]
     ],
+)
+
+Dataset(
+    name="wine",
+    url="https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",  # noqa: E501
+    load_func=partial(pd.read_csv, delimiter=";"),
+)
+
+Dataset(
+    name="yacht",
+    url="http://archive.ics.uci.edu/ml/machine-learning-databases/00243/yacht_hydrodynamics.data",  # noqa: E501
+    load_func=partial(pd.read_csv, header=None, delim_whitespace=True),
+)
+
+Dataset(
+    name="msd",
+    url="https://archive.ics.uci.edu/ml/machine-learning-databases/00203/YearPredictionMSD.txt.zip",  # noqa: E501
+    unpack="YearPredictionMSD.txt",
+    load_func=pd.read_csv,
+    processing_func=lambda x: x.iloc[:, ::-1],
 )
 
 
@@ -128,16 +142,6 @@ def unpack_file_from_zip(zip_file, to_unpack, path):
             inzipfile.extractall(path=temp_dir)
             data_file = glob.glob(f"{temp_dir}/**/{to_unpack}", recursive=True)[0]
             shutil.copyfile(data_file, path)
-
-
-# dataset_name_to_loader = {
-#     "kin8nm": lambda: pd.read_csv("data/uci/kin8nm.csv"),
-#     "power": lambda: pd.read_excel("data/uci/power-plant.xlsx"),
-#     "protein": lambda: pd.read_csv("data/uci/protein.csv")[
-#         ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "RMSD"]
-#     ],
-#     "msd": lambda: pd.read_csv("data/uci/YearPredictionMSD.txt").iloc[:, ::-1],
-# }
 
 
 # -----------------------------------------------------------------------------
@@ -207,7 +211,7 @@ def evaluate(evaluation_func):
 # -----------------------------------------------------------------------------
 
 
-@evaluate
+# @evaluate
 def ngb_regressor(data):
     ngb = NGBRegressor(verbose=False)
     ngb.fit(
@@ -222,7 +226,7 @@ def ngb_regressor(data):
 
 @evaluate
 def xgb_distribution(data):
-    xgbd = XGBDistribution(max_depth=3, natural_gradient=True, n_estimators=500)
+    xgbd = XGBDistribution(max_depth=None, natural_gradient=True, n_estimators=500)
     xgbd.fit(
         data.X_train,
         data.y_train,
@@ -235,7 +239,7 @@ def xgb_distribution(data):
 
 @evaluate
 def xgb_regressor(data):
-    xgb = XGBRegressor(max_depth=3, n_estimators=500)
+    xgb = XGBRegressor(max_depth=None, n_estimators=500)
     xgb.fit(
         data.X_train,
         data.y_train,
@@ -254,7 +258,7 @@ def xgb_regressor(data):
 def main():
     args = parse_args()
     setup_logging()
-    db = DataBase()
+    db = DataBase(db_name=args.db_name)
 
     np.random.seed(args.random_seed)
 
@@ -294,50 +298,18 @@ def main():
 
         db.insert_metrics(df_summary.to_dict("records"))
 
-    # query = (
-    #     sa.select(
-    #         [
-    #             db.metrics.c.dataset,
-    #             db.metrics.c.model,
-    #             db.metrics.c.metric,
-    #             db.metrics.c.agg_func,
-    #             func.coalesce(db.metrics.c.value, None).label("value"),
-    #         ]
-    #     )
-    #     .order_by(db.metrics.c.created_on.desc())
-    #     .group_by(
-    #         db.metrics.c.dataset,
-    #         db.metrics.c.model,
-    #         db.metrics.c.metric,
-    #         db.metrics.c.agg_func,
-    #     )
-    # )
-    # print(pd.read_sql(query, db.connection))
-
     df = db.get_metrics_pdf()
     df_pivot = df.pivot_table(
         values=["value"],
         index=["dataset", "agg_func"],
         columns=["model", "metric"],
     )
-    # df_pivot.columns = df_pivot.columns.get_level_values(1)
-    #
-    # def number_with_error(val, err):
-    #     dist = -int(np.floor(np.log10(err)))
-    #     if dist > 0:
-    #         return f"{str(round(val, dist))}({str(round(err, dist))[-1]})"
-    #     else:
-    #         return f"{str(round(val, 0))}({str(round(err, 0))})"
-    #
-    # df_pivot["col_3"] = df_pivot.apply(
-    #     lambda x: number_with_error(x["mean"], x["std"]), axis=1
-    # )
-    print(df_pivot)
-    # print(df_pivot.transpose())
+    _logger.info(f"\n{df_pivot}")
 
 
 class DataBase:
     def __init__(self, data_dir=DATA_DIR, db_name="results.db"):
+        _logger.info(f"Using SQLite database at {data_dir}/{db_name}")
         self.metadata = sa.MetaData()
         self.engine = sa.create_engine(f"sqlite:///{data_dir}/{db_name}")
         self.connection = self.engine.connect()
@@ -379,6 +351,7 @@ def parse_args():
     argparser.add_argument("--dataset", type=str, default="concrete")
     argparser.add_argument("--random-seed", type=int, default=42)
     argparser.add_argument("--n-folds", type=int, default=10)
+    argparser.add_argument("--db-name", type=str, default="results.db")
     return argparser.parse_args()
 
 
