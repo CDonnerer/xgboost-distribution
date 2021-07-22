@@ -226,7 +226,7 @@ def ngb_regressor(data):
 
 @evaluate
 def xgb_distribution(data):
-    xgbd = XGBDistribution(max_depth=None, natural_gradient=True, n_estimators=500)
+    xgbd = XGBDistribution(max_depth=3, natural_gradient=True, n_estimators=500)
     xgbd.fit(
         data.X_train,
         data.y_train,
@@ -239,7 +239,7 @@ def xgb_distribution(data):
 
 @evaluate
 def xgb_regressor(data):
-    xgb = XGBRegressor(max_depth=None, n_estimators=500)
+    xgb = XGBRegressor(max_depth=3, n_estimators=500)
     xgb.fit(
         data.X_train,
         data.y_train,
