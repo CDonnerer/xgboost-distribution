@@ -130,9 +130,9 @@ Across a variety of datasets we find ``XGBDistribution`` performs similarly to
 | Power   |9568 | 2.77(11)  | 3.79(24)  | 1.21(52)  | 2.77(7)   | 3.93(19)  | 14.9(3.1) | 3.31(22)  | 0.59(19)   |
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
 
-Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance,
-compared with ``XGBDistribution``, which will incur some performance and speed
-penalty for providing a probabilistic regression.
+Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance.
+Compared with ``XGBRegressor``, ``XGBDistribution``, which will incur some
+performance and speed penalty for providing a probabilistic regression.
 
 Setup
 --------
