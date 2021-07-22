@@ -111,14 +111,8 @@ with `monotonic constraints`_:
 Benchmarking
 ======================
 
-Across a variety of datasets we find:
-
-- ``XGBDistribution`` performs similarly to ``NGBRegressor``, but is typically
-  at least an order of magnitude faster.
-
-- For point estimates (RMSE), ``XGBRegressor`` offers the best performance,
-  compared with ``XGBDistribution``, which will incur some performance and speed
-  penalty for providing a probabilistic regression.
+Across a variety of datasets we find ``XGBDistribution`` performs similarly to
+``NGBRegressor``, but is typically at least an order of magnitude faster:
 
 +---------------+-----------------------------------+-----------------------------------+------------------------+
 |               | XGBDistribution                   | NGBRegressor                      |  XGBRegressor          |
@@ -133,15 +127,20 @@ Across a variety of datasets we find:
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
 | Naval   |11934| -5.11(6)  | 0.0014(1) | 5.8(8)    | -3.91(2)  | 0.0059(1) | 43.6(5)   | 0.00123(5)| 1.93(7)    |
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
-| Power   |9568 | 2.77(11)  | 3.79(24)  | 1.21(52)  | 2.77(7)   | 3.93(19)  | 14(3)     | 3.31(22)  | 0.59(19)   |
+| Power   |9568 | 2.77(11)  | 3.79(24)  | 1.21(52)  | 2.77(7)   | 3.93(19)  | 14.9(3.1) | 3.31(22)  | 0.59(19)   |
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
 
+Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance,
+compared with ``XGBDistribution``, which will incur some performance and speed
+penalty for providing a probabilistic regression.
+
+Setup
+--------
 
 We used 10-fold cross-validation, where in each training fold 10% of the data
-were split off as a validation set, repeated over 5 random seeds. All models were
-trained using early stopping on this validation set. The negative log-likelihood
-(NLL) and root mean squared error (RMSE) were estimated for each test set, the
-above quote the mean and standard deviation of these metrics.
+were split off as a validation set for early stopping (repeated over 5 random seeds.)
+The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
+for each test set, the above quote the mean and standard deviation of these metrics.
 
 All hyperparameters were defaults, except for ``max_depth=3`` in ``XGBDistribution``
 and ``XGBRegressor``, since this is the default value of ``NGBRegressor``. Both
