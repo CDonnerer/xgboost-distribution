@@ -133,22 +133,13 @@ and speed penalty for providing a probabilistic regression.
 Benchmarking Details
 -------------------
 
-<details>
-<summary>Log</summary>
-
-he `log_locals` argument, which outputs a table containing the local variables where the log method was called.
-
-The log method could be used for logging to the terminal for long running applications such as servers, but is also a very nice debugging aid.
-
-</details>
-
-We used 10-fold cross-validation, where in each training fold 10% of the data
-were split off as a validation set for early stopping (repeated over 5 random seeds.)
+We used 10-fold cross-validation, in each training fold 10% of the data were
+used as a validation set for early stopping (repeated over 5 random seeds.)
 The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
-for each test set, the above quote the mean and standard deviation of these metrics.
+for each test set, the above are the mean and standard deviation of these metrics.
 
 All hyperparameters were defaults, except for ``max_depth=3`` in ``XGBDistribution``
-and ``XGBRegressor``, since this is the default value of ``NGBRegressor``. Both
+and ``XGBRegressor``, since this is the default value of ``NGBRegressor``.
 ``XGBDistribution`` and ``NGBRegressor`` estimated normal distributions.
 
 
