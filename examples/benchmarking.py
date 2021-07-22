@@ -258,12 +258,13 @@ def xgb_regressor(data):
 def main():
     args = parse_args()
     setup_logging()
-    db = DataBase(db_name=args.db_name)
 
     np.random.seed(args.random_seed)
 
     X, y = load_dataset(args.dataset)
     _logger.info(f"Loaded dataset: `{args.dataset}`, X.shape={X.shape}")
+
+    db = DataBase(db_name=args.db_name)
 
     kf = KFold(n_splits=args.n_folds, shuffle=True, random_state=args.random_seed)
     _logger.info(f"Cross-validation with {args.n_folds} folds...")
