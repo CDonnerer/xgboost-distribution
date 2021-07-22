@@ -211,7 +211,7 @@ def evaluate(evaluation_func):
 # -----------------------------------------------------------------------------
 
 
-# @evaluate
+@evaluate
 def ngb_regressor(data):
     ngb = NGBRegressor(verbose=False)
     ngb.fit(
