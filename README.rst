@@ -114,11 +114,11 @@ Benchmarking
 Across a variety of datasets we find:
 
 - ``XGBDistribution`` performs similarly to ``NGBRegressor``, but is typically
-at least an order of magnitude faster.
+  at least an order of magnitude faster.
 
 - For point estimates (RMSE), ``XGBRegressor`` offers the best performance,
-compared with ``XGBDistribution``, which will incur some performance and speed
-penalty for providing a probabilistic regression.
+  compared with ``XGBDistribution``, which will incur some performance and speed
+  penalty for providing a probabilistic regression.
 
 +---------------+-----------------------------------+-----------------------------------+------------------------+
 |               | XGBDistribution                   | NGBRegressor                      |  XGBRegressor          |
