@@ -133,6 +133,15 @@ and speed penalty for providing a probabilistic regression.
 Benchmarking Details
 -------------------
 
+<details>
+<summary>Log</summary>
+
+he `log_locals` argument, which outputs a table containing the local variables where the log method was called.
+
+The log method could be used for logging to the terminal for long running applications such as servers, but is also a very nice debugging aid.
+
+</details>
+
 We used 10-fold cross-validation, where in each training fold 10% of the data
 were split off as a validation set for early stopping (repeated over 5 random seeds.)
 The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
