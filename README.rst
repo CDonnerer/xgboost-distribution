@@ -93,9 +93,7 @@ the two models is essentially identical, XGBDistribution is **50x faster**
           :alt: XGBDistribution vs NGBoost
 
 
-Note that the speed-up will decrease with dataset size, as it is ultimately
-limited by the natural gradient computation (via `LAPACK gesv`_). However, with
-1m rows of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
+Please see below for detailed benchmarking results.
 
 Full XGBoost features
 ======================
@@ -113,6 +111,9 @@ with `monotonic constraints`_:
 Benchmarking
 ======================
 
+Across a variety of datasets, `XGBDistribution` performs similarly to
+`NGBRegressor`, but is substantially faster.
+
 +--------------+------------------------------------+-----------------------------------+------------------------+
 |              | XGBDistribution                    | NGBRegressor                      |  XGBRegressor          |
 +---------+----+-----------+-----------+------------+-----------+-----------+-----------+-----------+------------+
@@ -123,6 +124,15 @@ Benchmarking
 | Concrete|1030| 3.14±0.21 | 5.41±0.74 | 0.13±0.03  | 3.09±0.13 | 5.62±0.69 | 5.79±0.59 | 4.38±0.70 | 0.09±0.02  |
 +---------+----+-----------+-----------+------------+-----------+-----------+-----------+-----------+------------+
 
+We used 10-fold cross-validation, where in each training fold 10% of the data
+were split off as a validation set, repeated over 5 random seeds. All models were
+trained using early stopping on this validation set. The negative log-likelihood
+(NLL) and root mean squared error (RMSE) were estimated for each test set, the
+above quote the mean and standard deviation of these metrics.
+
+All hyperparameters were defaults, except for `max_depth=3` in `XGBDistribution`
+and `XGBRegressor`, since this is the default value of `NGBRegressor`. Both
+`XGBDistribution` and `NGBRegressor` estimated normal distributions.
 
 
 Acknowledgements
