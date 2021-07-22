@@ -111,8 +111,8 @@ with `monotonic constraints`_:
 Benchmarking
 ======================
 
-Across a variety of datasets, `XGBDistribution` performs similarly to
-`NGBRegressor`, but is substantially faster.
+Across a variety of datasets, ``XGBDistribution`` performs similarly to
+``NGBRegressor``, but is substantially faster.
 
 +--------------+------------------------------------+-----------------------------------+------------------------+
 |              | XGBDistribution                    | NGBRegressor                      |  XGBRegressor          |
@@ -130,9 +130,9 @@ trained using early stopping on this validation set. The negative log-likelihood
 (NLL) and root mean squared error (RMSE) were estimated for each test set, the
 above quote the mean and standard deviation of these metrics.
 
-All hyperparameters were defaults, except for `max_depth=3` in `XGBDistribution`
-and `XGBRegressor`, since this is the default value of `NGBRegressor`. Both
-`XGBDistribution` and `NGBRegressor` estimated normal distributions.
+All hyperparameters were defaults, except for ``max_depth=3`` in ``XGBDistribution``
+and ``XGBRegressor``, since this is the default value of ``NGBRegressor``. Both
+``XGBDistribution`` and ``NGBRegressor`` estimated normal distributions.
 
 
 Acknowledgements
