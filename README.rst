@@ -127,11 +127,11 @@ Across a variety of datasets we find ``XGBDistribution`` performs similarly to
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
 
 Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance.
-Compared with ``XGBRegressor``, ``XGBDistribution``, which will incur some
-performance and speed penalty for providing a probabilistic regression.
+Compared with ``XGBRegressor``, ``XGBDistribution`` will incur some performance
+and speed penalty for providing a probabilistic regression.
 
-Setup
---------
+Benchmarking Details
+-------------------
 
 We used 10-fold cross-validation, where in each training fold 10% of the data
 were split off as a validation set for early stopping (repeated over 5 random seeds.)
