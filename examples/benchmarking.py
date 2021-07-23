@@ -111,9 +111,7 @@ Dataset(
 
 def load_dataset(name, data_dir=DATA_DIR):
     dataset = DATASETS[name]
-
-    os.makedirs(data_dir, exist_ok=True)
-    local_path = f"{DATA_DIR}/{name}.data"
+    local_path = f"{data_dir}/{name}.data"
 
     if os.path.exists(local_path):
         df = dataset.load_func(local_path)
@@ -149,16 +147,6 @@ def unpack_file_from_zip(zip_file, to_unpack, path):
 # -----------------------------------------------------------------------------
 
 
-@dataclass
-class SplitData:
-    X_train: np.ndarray
-    y_train: np.ndarray
-    X_val: np.ndarray
-    y_val: np.ndarray
-    X_test: np.ndarray
-    y_test: np.ndarray
-
-
 def root_mean_squared_error(y_pred, y_test):
     return np.sqrt(mean_squared_error(y_pred, y_test))
 
@@ -187,6 +175,21 @@ def summarize_results(results):
 evaluations = []
 
 
+# -----------------------------------------------------------------------------
+# Model functions, everything decorated by @evaluate will be evaluated
+# -----------------------------------------------------------------------------
+
+
+@dataclass
+class SplitData:
+    X_train: np.ndarray
+    y_train: np.ndarray
+    X_val: np.ndarray
+    y_val: np.ndarray
+    X_test: np.ndarray
+    y_test: np.ndarray
+
+
 def evaluate(evaluation_func):
     @wraps(evaluation_func)
     def measured(data):
@@ -204,11 +207,6 @@ def evaluate(evaluation_func):
 
     evaluations.append(measured)
     return measured
-
-
-# -----------------------------------------------------------------------------
-# Model functions, everything decorated by @evaluate will be evaluated
-# -----------------------------------------------------------------------------
 
 
 @evaluate
@@ -259,12 +257,17 @@ def main():
     args = parse_args()
     setup_logging()
 
-    np.random.seed(args.random_seed)
+    _logger.info(f"Storing datasets and results in {args.data_dir}")
+    os.makedirs(args.data_dir, exist_ok=True)
 
-    X, y = load_dataset(args.dataset)
+    db = DataBase(data_dir=args.data_dir, db_name=args.db_name)
+    _logger.info("Connected to database")
+
+    X, y = load_dataset(args.dataset, data_dir=args.data_dir)
     _logger.info(f"Loaded dataset: `{args.dataset}`, X.shape={X.shape}")
 
-    db = DataBase(db_name=args.db_name)
+    _logger.info(f"Setting random seed to {args.random_state}")
+    np.random.seed(args.random_seed)
 
     kf = KFold(n_splits=args.n_folds, shuffle=True, random_state=args.random_seed)
     _logger.info(f"Cross-validation with {args.n_folds} folds...")
@@ -290,6 +293,7 @@ def main():
         for eval_func, result in zip(evaluations, results):
             result.append(eval_func(split_data))
 
+    _logger.info("Inserting results into database...")
     for eval_func, result in zip(evaluations, results):
         df_summary = summarize_results(result)
         df_summary["dataset"] = args.dataset
@@ -299,13 +303,24 @@ def main():
 
         db.insert_metrics(df_summary.to_dict("records"))
 
-    df = db.get_metrics_pdf()
-    df_pivot = df.pivot_table(
-        values=["value"],
-        index=["dataset", "agg_func"],
-        columns=["model", "metric"],
-    )
-    _logger.info(f"\n{df_pivot}")
+    df_metrics = db.get_metrics_pdf()
+    df = summarize_metrics(df_metrics)
+    _logger.info(f"\n{df}")
+
+
+def parse_args():
+    argparser = ArgumentParser()
+    argparser.add_argument("--data-dir", type=str, default=DATA_DIR)
+    argparser.add_argument("--dataset", type=str, default="concrete")
+    argparser.add_argument("--random-seed", type=int, default=42)
+    argparser.add_argument("--n-folds", type=int, default=10)
+    argparser.add_argument("--db-name", type=str, default="results.db")
+    return argparser.parse_args()
+
+
+# -----------------------------------------------------------------------------
+# Database for storing results of each experiment run
+# -----------------------------------------------------------------------------
 
 
 class DataBase:
@@ -340,20 +355,19 @@ class DataBase:
         )
 
 
+def summarize_metrics(df_metrics):
+    return df_metrics.pivot_table(
+        values=["value"],
+        index=["dataset", "agg_func"],
+        columns=["model", "metric"],
+    )
+
+
 def setup_logging(loglevel=logging.INFO):
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     logging.basicConfig(
         level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
     )
-
-
-def parse_args():
-    argparser = ArgumentParser()
-    argparser.add_argument("--dataset", type=str, default="concrete")
-    argparser.add_argument("--random-seed", type=int, default=42)
-    argparser.add_argument("--n-folds", type=int, default=10)
-    argparser.add_argument("--db-name", type=str, default="results.db")
-    return argparser.parse_args()
 
 
 if __name__ == "__main__":
