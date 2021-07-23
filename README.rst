@@ -107,8 +107,8 @@ with `monotonic constraints`_:
 Benchmarking
 ======================
 
-Across a variety of datasets we find ``XGBDistribution`` performs very similarly
-to ``NGBRegressor``, but is typically at least an order of magnitude faster:
+Across a variety of datasets we find ``XGBDistribution`` **performs similarly**
+to ``NGBRegressor``, but is typically at least an **order of magnitude faster**:
 
 +---------------+-----------------------------------+-----------------------------------+------------------------+
 |               | XGBDistribution                   | NGBRegressor                      |  XGBRegressor          |
