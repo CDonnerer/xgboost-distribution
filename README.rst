@@ -37,7 +37,7 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an
-additional keyword in the constructor for specifying the distribution (see the
+additional keyword argument specifying the distribution (see the
 `documentation`_ for a full list of available distributions):
 
 .. code-block:: python
