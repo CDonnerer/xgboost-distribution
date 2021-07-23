@@ -107,7 +107,7 @@ with `monotonic constraints`_:
 Benchmarking
 ======================
 
-Across a variety of datasets we find ``XGBDistribution`` **performs similarly**
+Across various datasets, we find ``XGBDistribution`` **performs similarly**
 to ``NGBRegressor``, but is typically at least an **order of magnitude faster**:
 
 +---------------+-----------------------------------+-----------------------------------+------------------------+
@@ -133,10 +133,10 @@ to ``NGBRegressor``, but is typically at least an **order of magnitude faster**:
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
 
 
-
 Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance.
 Compared with ``XGBRegressor``, ``XGBDistribution`` will incur some performance
 and speed penalty for providing a probabilistic regression.
+
 
 Methodology
 -------------------
@@ -144,11 +144,14 @@ Methodology
 We used 10-fold cross-validation, in each training fold 10% of the data were
 used as a validation set for early stopping (repeated over 5 random seeds.)
 The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
-for each test set, the above are the mean and standard deviation of these metrics.
+for each test set, the above are the mean and standard deviation of these metrics
+(across folds and random seeds).
 
 All hyperparameters were defaults, except for ``max_depth=3`` in ``XGBDistribution``
 and ``XGBRegressor``, since this is the default value of ``NGBRegressor``.
 ``XGBDistribution`` and ``NGBRegressor`` estimated normal distributions.
+
+Please see the `benchmarking script`_ for full details.
 
 
 Acknowledgements
@@ -180,3 +183,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
 .. _xgboost: https://github.com/dmlc/xgboost
 .. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/api/xgboost_distribution.XGBDistribution.html#xgboost_distribution.XGBDistribution
+.. _benchmarking script: https://github.com/CDonnerer/xgboost-distribution/blob/benchmarking/examples/benchmarking.py
