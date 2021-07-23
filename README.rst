@@ -107,8 +107,8 @@ with `monotonic constraints`_:
 Benchmarking
 ======================
 
-Across a variety of datasets we find ``XGBDistribution`` performs similarly to
-``NGBRegressor``, but is typically at least an order of magnitude faster:
+Across a variety of datasets we find ``XGBDistribution`` performs very similarly
+to ``NGBRegressor``, but is typically at least an order of magnitude faster:
 
 +---------------+-----------------------------------+-----------------------------------+------------------------+
 |               | XGBDistribution                   | NGBRegressor                      |  XGBRegressor          |
@@ -125,12 +125,20 @@ Across a variety of datasets we find ``XGBDistribution`` performs similarly to
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
 | Power   |9568 | 2.77(11)  | 3.79(24)  | 1.21(52)  | 2.77(7)   | 3.93(19)  | 14.9(3.1) | 3.31(22)  | 0.59(19)   |
 +---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
+| Protein |45730| 2.81(4)   | 4.35(12)  | 12.2(4.0) | 2.91(1)   | 4.78(5)   | 146.5(1.8)| 4.09(7)   | 8.26(1.4)  |
++---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
+| Wine    |1588 | 0.98(15)  | 0.63(11)  | 0.11(3)   | 0.93(7)   | 0.62(3)   | 4.85(99)  | 0.62(3)   | 0.035(13)  |
++---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
+| Yacht   |308  | 0.89(1.1) | 0.76(29)  | 0.093(25) | 0.75(64)  | 0.74(28)  | 4.95(50)  | 0.74(37)  | 0.047(35)  |
++---------+-----+-----------+-----------+-----------+-----------+-----------+-----------+-----------+------------+
+
+
 
 Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance.
 Compared with ``XGBRegressor``, ``XGBDistribution`` will incur some performance
 and speed penalty for providing a probabilistic regression.
 
-Benchmarking Details
+Methodology
 -------------------
 
 We used 10-fold cross-validation, in each training fold 10% of the data were
