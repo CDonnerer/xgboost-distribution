@@ -266,7 +266,7 @@ def main():
     X, y = load_dataset(args.dataset, data_dir=args.data_dir)
     _logger.info(f"Loaded dataset: `{args.dataset}`, X.shape={X.shape}")
 
-    _logger.info(f"Setting random seed to {args.random_state}")
+    _logger.info(f"Setting random seed to {args.random_seed}")
     np.random.seed(args.random_seed)
 
     kf = KFold(n_splits=args.n_folds, shuffle=True, random_state=args.random_seed)
