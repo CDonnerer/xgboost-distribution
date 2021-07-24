@@ -108,9 +108,8 @@ Benchmarking
 ======================
 
 Across various datasets, we find ``XGBDistribution`` **performs similarly**
-to ``NGBRegressor``, but is typically at least an **order of magnitude faster**.
-For example, for the largest dataset, MSD, we found that `XGBDistribution``
-took an average of 18 minutes vs 6.7 hours for ``NGBRegressor``:
+to ``NGBRegressor``, but is typically at least an **order of magnitude faster**
+(e.g. for the MSD dataset, 18 minutes vs 6.7 hours, respectively):
 
 +----------------+---------------------------------------+-------------------------------------+---------------------------+
 |                | XGBDistribution                       | NGBRegressor                        |  XGBRegressor             |
