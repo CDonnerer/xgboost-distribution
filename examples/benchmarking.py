@@ -305,10 +305,6 @@ def run_experiment():
     _logger.info(f"\n{df_summary}")
 
 
-if __name__ == "__main__":
-    run_experiment()
-
-
 def _cross_validate_evaluations(kfold, X, y, args):
     results = [list() for eval in evaluations]
 
@@ -396,3 +392,7 @@ def setup_logging(loglevel=logging.INFO):
     logging.basicConfig(
         level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
     )
+
+
+if __name__ == "__main__":
+    run_experiment()
