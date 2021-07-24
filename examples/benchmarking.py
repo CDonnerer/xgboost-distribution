@@ -1,3 +1,6 @@
+"""Benchmarking of XGBDistribution vs NGBRegressor and XGBRegressor
+"""
+
 import glob
 import logging
 import os
@@ -27,9 +30,9 @@ from xgboost_distribution import XGBDistribution
 _logger = logging.getLogger(__name__)
 
 
-# -----------------------------------------------------------------------------
-# Datasets for benchmarking
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+# Datasets defintions for benchmarking
+# -------------------------------------------------------------------------------------
 
 DATASETS = {}  # each instantiated dataset will be stored here, keyed by name
 DATA_DIR = Path(__file__).parent.parent.absolute().joinpath("data")
@@ -39,7 +42,7 @@ DATA_DIR = Path(__file__).parent.parent.absolute().joinpath("data")
 class Dataset:
     name: str
     url: str
-    unpack: str = None
+    file_to_unpack: str = None  # if url refers to zip, we mark the file to unpack
     load_func: callable = pd.read_csv
     processing_func: callable = None
 
@@ -68,7 +71,7 @@ Dataset(
 Dataset(
     name="naval",
     url="https://archive.ics.uci.edu/ml/machine-learning-databases/00316/UCI%20CBM%20Dataset.zip",  # noqa: E501
-    unpack="data.txt",
+    file_to_unpack="data.txt",
     load_func=partial(pd.read_csv, header=None, delim_whitespace=True),
     processing_func=lambda x: x.iloc[:, :-1],
 )
@@ -76,7 +79,7 @@ Dataset(
 Dataset(
     name="power",
     url="https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip",
-    unpack="Folds5x2_pp.xlsx",
+    file_to_unpack="Folds5x2_pp.xlsx",
     load_func=pd.read_excel,
 )
 
@@ -103,10 +106,14 @@ Dataset(
 Dataset(
     name="msd",
     url="https://archive.ics.uci.edu/ml/machine-learning-databases/00203/YearPredictionMSD.txt.zip",  # noqa: E501
-    unpack="YearPredictionMSD.txt",
+    file_to_unpack="YearPredictionMSD.txt",
     load_func=pd.read_csv,
     processing_func=lambda x: x.iloc[:, ::-1],
 )
+
+# -------------------------------------------------------------------------------------
+# Datasets loading functions
+# -------------------------------------------------------------------------------------
 
 
 def load_dataset(name, data_dir=DATA_DIR):
@@ -114,24 +121,32 @@ def load_dataset(name, data_dir=DATA_DIR):
     local_path = f"{data_dir}/{name}.data"
 
     if os.path.exists(local_path):
-        df = dataset.load_func(local_path)
-        if dataset.processing_func:
-            df = dataset.processing_func(df)
-        return df.iloc[:, :-1].values, df.iloc[:, -1].values
+        _logger.info(f"Loading dataset from local {local_path}...")
+        return load_local_dataset(dataset, local_path)
     else:
         _logger.info("Dataset not locally cached, downloading from url...")
-        r = requests.get(dataset.url)
-
-        if dataset.unpack is not None:
-            with tempfile.TemporaryFile() as fp:
-                fp.write(r.content)
-                unpack_file_from_zip(fp, dataset.unpack, local_path)
-        else:
-            with open(local_path, "wb") as f:
-                f.write(r.content)
-
-        _logger.info(f"Downloaded file to {local_path}")
+        download_dataset(dataset, local_path)
         return load_dataset(name)
+
+
+def load_local_dataset(dataset, local_path):
+    df = dataset.load_func(local_path)
+    if dataset.processing_func:
+        df = dataset.processing_func(df)
+    return df.iloc[:, :-1].values, df.iloc[:, -1].values
+
+
+def download_dataset(dataset, local_path):
+    r = requests.get(dataset.url)
+
+    if dataset.file_to_unpack is not None:
+        with tempfile.TemporaryFile() as fp:
+            fp.write(r.content)
+            unpack_file_from_zip(fp, dataset.file_to_unpack, local_path)
+    else:
+        with open(local_path, "wb") as f:
+            f.write(r.content)
+    _logger.info(f"Downloaded {dataset.name} to {local_path}")
 
 
 def unpack_file_from_zip(zip_file, to_unpack, path):
@@ -142,9 +157,9 @@ def unpack_file_from_zip(zip_file, to_unpack, path):
             shutil.copyfile(data_file, path)
 
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 # Metrics to evaluate
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 
 
 def root_mean_squared_error(y_pred, y_test):
@@ -162,22 +177,9 @@ class EvalResult:
     nll: float
 
 
-def summarize_results(results):
-    return (
-        pd.DataFrame(results)
-        .agg(["mean", "std"], axis=0)
-        .melt(ignore_index=False, var_name="metric")
-        .rename_axis("agg_func")
-        .reset_index()
-    )
-
-
-evaluations = []
-
-
-# -----------------------------------------------------------------------------
-# Model functions, everything decorated by @evaluate will be evaluated
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+# Evaluate decorator, which evaluates the pattern function(split_data) -> predictions
+# -------------------------------------------------------------------------------------
 
 
 @dataclass
@@ -188,6 +190,9 @@ class SplitData:
     y_val: np.ndarray
     X_test: np.ndarray
     y_test: np.ndarray
+
+
+evaluations = []
 
 
 def evaluate(evaluation_func):
@@ -207,6 +212,11 @@ def evaluate(evaluation_func):
 
     evaluations.append(measured)
     return measured
+
+
+# -------------------------------------------------------------------------------------
+# Model functions, everything decorated by @evaluate will be evaluated
+# -------------------------------------------------------------------------------------
 
 
 @evaluate
@@ -249,11 +259,21 @@ def xgb_regressor(data):
 
 
 # -----------------------------------------------------------------------------
-# Main method for running cross-validation becnhmark experiment
+# Functions for running cross-validation becnhmark experiment
 # -----------------------------------------------------------------------------
 
 
-def main():
+def parse_args():
+    argparser = ArgumentParser()
+    argparser.add_argument("--data-dir", type=str, default=DATA_DIR)
+    argparser.add_argument("--dataset", type=str, default="concrete")
+    argparser.add_argument("--random-seed", type=int, default=42)
+    argparser.add_argument("--n-folds", type=int, default=10)
+    argparser.add_argument("--db-name", type=str, default="results.db")
+    return argparser.parse_args()
+
+
+def run_experiment():
     args = parse_args()
     setup_logging()
 
@@ -271,10 +291,28 @@ def main():
 
     kf = KFold(n_splits=args.n_folds, shuffle=True, random_state=args.random_seed)
     _logger.info(f"Cross-validation with {args.n_folds} folds...")
+    results = _cross_validate_evaluations(kf, X, y, args)
 
+    _logger.info("Inserting results into database...")
+    for eval_func, result in zip(evaluations, results):
+        df_metrics = aggregate_results(result)
+        df_metrics["dataset"] = args.dataset
+        df_metrics["model"] = eval_func.__name__
+        db.insert_metrics_pdf(df_metrics)
+
+    df_metrics = db.get_metrics_pdf()
+    df_summary = summarize_metrics(df_metrics)
+    _logger.info(f"\n{df_summary}")
+
+
+if __name__ == "__main__":
+    run_experiment()
+
+
+def _cross_validate_evaluations(kfold, X, y, args):
     results = [list() for eval in evaluations]
 
-    for ii, (train_index, test_index) in enumerate(kf.split(X)):
+    for ii, (train_index, test_index) in enumerate(kfold.split(X)):
         _logger.info(f"Fold {ii+1} / {args.n_folds}...")
 
         X_train, X_test = X[train_index], X[test_index]
@@ -292,35 +330,30 @@ def main():
         )
         for eval_func, result in zip(evaluations, results):
             result.append(eval_func(split_data))
-
-    _logger.info("Inserting results into database...")
-    for eval_func, result in zip(evaluations, results):
-        df_summary = summarize_results(result)
-        df_summary["dataset"] = args.dataset
-        df_summary["model"] = eval_func.__name__
-
-        _logger.info(f"{eval_func.__name__}\n{df_summary}")
-
-        db.insert_metrics(df_summary.to_dict("records"))
-
-    df_metrics = db.get_metrics_pdf()
-    df = summarize_metrics(df_metrics)
-    _logger.info(f"\n{df}")
+    return results
 
 
-def parse_args():
-    argparser = ArgumentParser()
-    argparser.add_argument("--data-dir", type=str, default=DATA_DIR)
-    argparser.add_argument("--dataset", type=str, default="concrete")
-    argparser.add_argument("--random-seed", type=int, default=42)
-    argparser.add_argument("--n-folds", type=int, default=10)
-    argparser.add_argument("--db-name", type=str, default="results.db")
-    return argparser.parse_args()
+def aggregate_results(results):
+    return (
+        pd.DataFrame(results)
+        .agg(["mean", "std"], axis=0)
+        .melt(ignore_index=False, var_name="metric")
+        .rename_axis("agg_func")
+        .reset_index()
+    )
 
 
-# -----------------------------------------------------------------------------
+def summarize_metrics(df_metrics):
+    return df_metrics.pivot_table(
+        values=["value"],
+        index=["dataset", "agg_func"],
+        columns=["model", "metric"],
+    )
+
+
+# -------------------------------------------------------------------------------------
 # Database for storing results of each experiment run
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 
 
 class DataBase:
@@ -344,9 +377,12 @@ class DataBase:
         )
         self.metadata.create_all(self.engine)
 
-    def insert_metrics(self, records):
-        ins = self.metrics.insert()
+    def insert_records(self, records, table="metrics"):
+        ins = getattr(self, table).insert()
         self.connection.execute(ins, records)
+
+    def insert_metrics_pdf(self, df):
+        self.insert_records(df.to_dict("records"), table="metrics")
 
     def get_metrics_pdf(self):
         return pd.read_sql(
@@ -355,20 +391,8 @@ class DataBase:
         )
 
 
-def summarize_metrics(df_metrics):
-    return df_metrics.pivot_table(
-        values=["value"],
-        index=["dataset", "agg_func"],
-        columns=["model", "metric"],
-    )
-
-
 def setup_logging(loglevel=logging.INFO):
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     logging.basicConfig(
         level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
     )
-
-
-if __name__ == "__main__":
-    main()
