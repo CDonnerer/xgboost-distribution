@@ -137,21 +137,22 @@ to ``NGBRegressor``, but is typically at least an **order of magnitude faster**
 
 
 Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance.
-Compared with ``XGBRegressor``, ``XGBDistribution`` will incur some performance
-and speed penalties, which, are generally small, making ``XGBDistribution`` a
-viable "drop-in" replacement.
+Compared with ``XGBRegressor``, ``XGBDistribution`` will incur (small) performance
+and speed penalties, making ``XGBDistribution`` a viable "drop-in" replacement.
 
 
 Methodology
 -------------------
 
 We used 10-fold cross-validation, in each training fold 10% of the data were
-used as a validation set for early stopping (repeated over 5 random seeds.)
+used as a validation set for early stopping (repeated over 5 random seeds.) For
+the MSD dataset, we used a single 5-fold cross-validation.
+
 The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
 for each test set, the above are the mean and standard deviation of these metrics
-(across folds and random seeds).
+(across all folds and random seeds).
 
-All hyperparameters were defaults, except for ``max_depth=3`` in ``XGBDistribution``
+Default hyperparameters were used, except for ``max_depth=3`` in ``XGBDistribution``
 and ``XGBRegressor``, since this is the default value of ``NGBRegressor``.
 ``XGBDistribution`` and ``NGBRegressor`` estimated normal distributions.
 
