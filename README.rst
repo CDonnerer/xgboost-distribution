@@ -37,7 +37,7 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an
-additional keyword in the constructor for specifying the distribution (see the
+additional keyword argument specifying the distribution (see the
 `documentation`_ for a full list of available distributions):
 
 .. code-block:: python
@@ -52,10 +52,7 @@ additional keyword in the constructor for specifying the distribution (see the
       X, y = data.data, data.target
       X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-      model = XGBDistribution(
-          distribution="normal",
-          n_estimators=500
-      )
+      model = XGBDistribution(distribution="normal", n_estimators=500)
       model.fit(
           X_train, y_train,
           eval_set=[(X_test, y_test)],
@@ -82,9 +79,8 @@ natural gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison of the `NGBoost`_ ``NGBRegressor`` and
 ``XGBDistribution`` models, using the Boston Housing dataset and a normal
-distribution (similar hyperparameters). We note that while the performance of
-the two models is essentially identical, XGBDistribution is **50x faster**
-(timed on both fit and predict steps):
+distribution. We note that while the performance of the two models is essentially
+identical, XGBDistribution is **50x faster** (timed on both fit and predict steps):
 
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
@@ -93,9 +89,7 @@ the two models is essentially identical, XGBDistribution is **50x faster**
           :alt: XGBDistribution vs NGBoost
 
 
-Note that the speed-up will decrease with dataset size, as it is ultimately
-limited by the natural gradient computation (via `LAPACK gesv`_). However, with
-1m rows of data ``XGBDistribution`` is still 10x faster than ``NGBRegressor``.
+Please see below for detailed benchmarking results.
 
 Full XGBoost features
 ======================
@@ -108,6 +102,61 @@ with `monotonic constraints`_:
           :align: center
           :width: 600px
           :alt: XGBDistribution monotonic constraints
+
+
+Benchmarking
+======================
+
+Across various datasets, we find ``XGBDistribution`` **performs similarly**
+to ``NGBRegressor``, but is typically at least an **order of magnitude faster**
+(e.g. for the MSD dataset, 18 minutes vs 6.7 hours, respectively):
+
++----------------+---------------------------------------+-------------------------------------+---------------------------+
+|                | XGBDistribution                       | NGBRegressor                        |  XGBRegressor             |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Dataset | N    | NLL       | RMSE      | Time  (s)     | NLL       | RMSE      | Time (s)    | RMSE      | Time (s)      |
++=========+======+===========+===========+===============+===========+===========+=============+===========+===============+
+| Boston  |506   | 2.62(26)  | 3.41(69)  | 0.067(1)      | 2.55(24)  | 3.25(66)  | 2.68(45)    | 3.27(65)  | 0.035(1)      |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Concrete|1030  | 3.14(21)  | 5.41(74)  | 0.13(3)       | 3.09(13)  | 5.62(69)  | 5.79(59)    | 4.38(70)  | 0.09(2)       |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Energy  |768   | 0.58(41)  | 0.45(7)   | 0.15(3)       | 0.62(28)  | 0.49(7)   | 5.33(35)    | 0.40(6)   | 0.05(2)       |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Naval   |11934 | -5.11(6)  | 0.0014(1) | 5.8(8)        | -3.91(2)  | 0.0059(1) | 43.6(5)     | 0.00123(5)| 1.93(7)       |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Power   |9568  | 2.77(11)  | 3.79(24)  | 1.21(52)      | 2.77(7)   | 3.93(19)  | 14.9(3.1)   | 3.31(22)  | 0.59(19)      |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Protein |45730 | 2.81(4)   | 4.35(12)  | 12.2(4.0)     | 2.91(1)   | 4.78(5)   | 146.5(1.8)  | 4.09(7)   | 8.26(1.4)     |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Wine    |1588  | 0.98(15)  | 0.63(4)   | 0.11(3)       | 0.93(7)   | 0.62(3)   | 4.85(99)    | 0.62(3)   | 0.035(13)     |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| Yacht   |308   | 0.89(1.1) | 0.76(29)  | 0.093(25)     | 0.75(64)  | 0.74(28)  | 4.95(50)    | 0.74(37)  | 0.047(35)     |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+| MSD     |515345| 3.450(4)  | 9.03(4)   | 18.9(1.5) (m) | 3.526(4)  | 9.47(4)   | 6.70(7) (h) | 8.97(3)   | 16.3(1.7) (m) |
++---------+------+-----------+-----------+---------------+-----------+-----------+-------------+-----------+---------------+
+
+
+Note that for point estimates (RMSE), ``XGBRegressor`` offers the best performance.
+Compared with ``XGBRegressor``, ``XGBDistribution`` will incur (small) performance
+and speed penalties, making ``XGBDistribution`` a viable "drop-in" replacement.
+
+
+Methodology
+-------------------
+
+We used 10-fold cross-validation, in each training fold 10% of the data were
+used as a validation set for early stopping (repeated over 5 random seeds.) For
+the MSD dataset, we used a single 5-fold cross-validation.
+
+The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
+for each test set, the above are the mean and standard deviation of these metrics
+(across all folds and random seeds).
+
+Default hyperparameters were used, except for ``max_depth=3`` in ``XGBDistribution``
+and ``XGBRegressor``, since this is the default value of ``NGBRegressor``.
+``XGBDistribution`` and ``NGBRegressor`` estimated normal distributions.
+
+Please see the `benchmarking script`_ for full details.
 
 
 Acknowledgements
@@ -139,3 +188,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
 .. _xgboost: https://github.com/dmlc/xgboost
 .. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/api/xgboost_distribution.XGBDistribution.html#xgboost_distribution.XGBDistribution
+.. _benchmarking script: https://github.com/CDonnerer/xgboost-distribution/blob/benchmarking/examples/benchmarking.py
