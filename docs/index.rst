@@ -12,6 +12,7 @@ Contents
    :maxdepth: 2
 
    Overview <readme>
+   Experiments <experiments>
    Module Reference <api>
    License <license>
    Changelog <changelog>
