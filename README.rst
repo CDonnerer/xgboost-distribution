@@ -30,7 +30,7 @@ Installation
 
 .. code-block:: console
 
-    $ pip install --upgrade xgboost-distribution
+    $ pip install xgboost-distribution
 
 
 Usage
@@ -74,8 +74,8 @@ the distribution (we use the scipy naming conventions, see e.g. `scipy.stats.nor
 NGBoost performance comparison
 ===============================
 
-``XGBDistribution`` follows the method shown in the `NGBoost`_ library, using
-natural gradients to estimate the parameters of the distribution.
+``XGBDistribution`` follows the method shown in the `NGBoost`_ library, using natural
+gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison of the `NGBoost`_ ``NGBRegressor`` and
 ``XGBDistribution`` models, using the Boston Housing dataset and a normal
@@ -89,7 +89,8 @@ identical, XGBDistribution is **50x faster** (timed on both fit and predict step
           :alt: XGBDistribution vs NGBoost
 
 
-Please see below for detailed benchmarking results.
+Please see the `experiments page`_ in the documentation for detailed results.
+
 
 Full XGBoost features
 ======================
@@ -133,3 +134,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html
 .. _xgboost: https://github.com/dmlc/xgboost
 .. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/api/xgboost_distribution.XGBDistribution.html#xgboost_distribution.XGBDistribution
+.. _experiments page: https://xgboost-distribution.readthedocs.io/en/latest/experiments.html

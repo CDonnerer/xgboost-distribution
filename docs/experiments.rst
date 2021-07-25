@@ -93,4 +93,4 @@ and ``XGBRegressor``, since this is the default value of ``NGBRegressor``.
 Please see the `experiments script`_ for the full details.
 
 
-.. _experiments script: https://github.com/CDonnerer/xgboost-distribution/blob/benchmarking/examples/benchmarking.py
+.. _experiments script: https://github.com/CDonnerer/xgboost-distribution/blob/main/examples/experiments.py
