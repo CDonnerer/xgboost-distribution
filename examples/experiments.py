@@ -1,4 +1,4 @@
-"""Benchmarking of XGBDistribution vs NGBRegressor and XGBRegressor
+"""Exeperiments of XGBDistribution vs NGBRegressor and XGBRegressor
 """
 
 import glob
@@ -31,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 
 # -------------------------------------------------------------------------------------
-# Datasets defintions for benchmarking
+# Datasets defintions
 # -------------------------------------------------------------------------------------
 
 DATASETS = {}  # each instantiated dataset will be stored here, keyed by name
