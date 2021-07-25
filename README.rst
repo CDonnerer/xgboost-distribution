@@ -90,7 +90,8 @@ identical (measured on negative log-likelihood of a normal distribution and the 
           :alt: XGBDistribution vs NGBoost
 
 
-Please see the `experiments page`_ in the documentation for detailed results.
+Please see the `experiments page`_ in the documentation for detailed results across
+various datasets.
 
 
 Full XGBoost features
