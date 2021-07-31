@@ -12,13 +12,15 @@ class Exponential(BaseDistribution):
 
     Definition:
 
-        f(x) = e^(-x / scale)
+        f(x) = 1 / scale * e^(-x / scale)
+
+    where scale = 1 / lambda, with lambda being the rate parameter
 
     We reparameterize scale -> log(scale) = a to ensure scale >= 0. Gradient:
 
-        d/da -log[f(x)] = d/da -log[e^(-x / e^a)]
-                        = -x e^-a
-                        = -x / scale
+        d/da -log[f(x)] = d/da -log[1/e^a e^(-x / e^a)]
+                        = 1 - x e^-a
+                        = 1 - x / scale
 
     The Fisher information = 1.
 
@@ -37,7 +39,7 @@ class Exponential(BaseDistribution):
         (scale,) = self.predict(params)
 
         grad = np.zeros(shape=(len(y), 1))
-        grad[:, 0] = -y / scale
+        grad[:, 0] = 1 - y / scale
 
         if natural_gradient:
             fisher_matrix = np.ones(shape=(len(y), 1, 1))
@@ -45,7 +47,7 @@ class Exponential(BaseDistribution):
             grad = np.linalg.solve(fisher_matrix, grad)
             hess = np.ones(shape=(len(y), 1))  # we set the hessian constant
         else:
-            hess = -grad
+            hess = -(grad - 1)
 
         return grad, hess
 
@@ -59,4 +61,4 @@ class Exponential(BaseDistribution):
         return self.Predictions(scale=scale)
 
     def starting_params(self, y):
-        return (np.log(1.0 / np.mean(y)),)  # NB: mean = 1 / scale
+        return (np.log(np.mean(y)),)
