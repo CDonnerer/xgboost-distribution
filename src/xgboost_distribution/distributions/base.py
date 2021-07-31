@@ -7,9 +7,8 @@ from collections import namedtuple
 class BaseDistribution(ABC):
     """Base class distribution for XGBDistribution.
 
-    Note that by design all distributions are **stateless**.
-    A distribution is thus a collection of functions that operate on the data
-    (`y`) and the outputs of the xgboost Booster (`params`).
+    Note that distributions are stateless, hence a distribution is just a collection of
+    functions that operate on the data (`y`) and the outputs of the xgboost (`params`).
     """
 
     def __init__(self):
