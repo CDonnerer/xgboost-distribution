@@ -14,8 +14,6 @@ class Exponential(BaseDistribution):
 
         f(x) = 1 / scale * e^(-x / scale)
 
-    where scale = 1 / lambda, with lambda being the rate parameter
-
     We reparameterize scale -> log(scale) = a to ensure scale >= 0. Gradient:
 
         d/da -log[f(x)] = d/da -log[1/e^a e^(-x / e^a)]
