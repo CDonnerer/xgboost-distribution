@@ -3,6 +3,13 @@ Changelog
 =========
 
 
+Version x.x.x
+=============
+
+- Experiments on standard datasets, comparison with NGBRegressor & XGBRegressor
+- Added exponential distribution
+
+
 Version 0.1.2
 ==============
 
