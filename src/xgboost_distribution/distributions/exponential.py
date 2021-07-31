@@ -22,7 +22,11 @@ class Exponential(BaseDistribution):
                         = 1 - x e^-a
                         = 1 - x / scale
 
-    The Fisher information = 1.
+    The Fisher information = 1 / scale^2, when reparameterized:
+
+        1 / scale^2 = I ( d/d(scale) log(scale) )^2 = I ( 1/ scale )^2
+
+    Hence we find: I = 1
 
     """
 
