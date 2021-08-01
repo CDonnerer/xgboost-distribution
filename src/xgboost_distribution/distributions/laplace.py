@@ -1,7 +1,7 @@
 """Laplace distribution
 """
 import numpy as np
-from scipy.stats import laplace
+from scipy.stats import cauchy, laplace
 
 from xgboost_distribution.distributions.base import BaseDistribution
 
@@ -25,6 +25,11 @@ class Laplace(BaseDistribution):
 
         d/da -log[f(x)] = (a - x) / (scale * | a-x | )
         d/db -log[f(x)] = 1 - | a-x | / scale
+
+    To second order:
+
+        d2/da2 -log[f(x)] = 2 δ(x-a) / scale
+        d2/db2 -log[f(x)] = | a-x | / scale
 
     The Fisher information is:
 
@@ -66,13 +71,12 @@ class Laplace(BaseDistribution):
             fisher_matrix[:, 1, 1] = 1
 
             grad = np.linalg.solve(fisher_matrix, grad)
-
             hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
         else:
-            raise NotImplementedError()
-            # hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
-            # hess[:, 0] = 1 / var
-            # hess[:, 1] = 2 * ((y - loc) ** 2) / var
+            hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
+            # Note: Delta functions won't work well, hence we approximate with cauchy
+            hess[:, 0] = 2 * cauchy.pdf(y, loc, scale) / scale
+            hess[:, 1] = 1 - grad[:, 1]
 
         return grad, hess
 
