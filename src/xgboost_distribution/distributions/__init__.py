@@ -2,6 +2,7 @@ import re
 
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.exponential import Exponential  # noqa
+from xgboost_distribution.distributions.laplace import Laplace  # noqa
 from xgboost_distribution.distributions.log_normal import LogNormal  # noqa
 from xgboost_distribution.distributions.negative_binomial import (  # noqa
     NegativeBinomial,
