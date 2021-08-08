@@ -1,5 +1,7 @@
-"""Minimal example of XGBDistribution on Boston Housing dataset
+"""Minimal example of using XGBDistribution on Boston Housing dataset
 """
+from argparse import ArgumentParser
+
 from matplotlib import pyplot as plt
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
@@ -25,7 +27,7 @@ def plot_residuals(y_true, y_pred, y_err):
     plt.show()
 
 
-def main():
+def main(args):
     data = load_boston()
     X, y = data.data, data.target
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
@@ -45,8 +47,12 @@ def main():
     )
     preds = model.predict(X_test)
 
-    plot_residuals(y_true=y_test, y_pred=preds.loc, y_err=preds.scale)
+    if not args.no_plot:
+        plot_residuals(y_true=y_test, y_pred=preds.loc, y_err=preds.scale)
 
 
 if __name__ == "__main__":
-    main()
+    parser = ArgumentParser()
+    parser.add_argument("--no-plot", action="store_true")
+    args = parser.parse_args()
+    main(args)
