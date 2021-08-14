@@ -53,11 +53,7 @@ available distributions):
       X_train, X_test, y_train, y_test = train_test_split(X, y)
 
       model = XGBDistribution(distribution="normal", n_estimators=500)
-      model.fit(
-          X_train, y_train,
-          eval_set=[(X_test, y_test)],
-          early_stopping_rounds=10
-      )
+      model.fit(X_train, y_train, eval_set=[(X_test, y_test)], early_stopping_rounds=10)
 
 After fitting, we can predict the parameters of the distribution:
 
