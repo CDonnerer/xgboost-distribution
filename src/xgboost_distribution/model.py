@@ -1,7 +1,5 @@
 """XGBDistribution model
 """
-import warnings
-
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
@@ -204,10 +202,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return self._distribution.predict(params)
 
     def save_model(self, fname) -> None:
-        with warnings.catch_warnings():
-            # required as we can't save self._distribution, see also below
-            warnings.simplefilter("ignore")
-            super().save_model(fname)
+        del self._distribution  # delete distribution class as it can't be saved out
+        super().save_model(fname)
+        self._distribution = get_distribution(self.distribution)
 
     def load_model(self, fname) -> None:
         super().load_model(fname)
