@@ -9,10 +9,7 @@ Current version
 Version 0.2.0, 2021-08-14
 --------------------------
 
-- Performed experiments on various datasets to quantify XGBDistribution performance
-  - Added comparisons with NGBRegressor and XGBRegressor models
-  - Self-contained script for experiment run
-  - Detailed writeup in documentation of results
+- Performed experiments on various datasets to assess XGBDistribution performance
 - Added exponential distribution
 - Added Laplace distribution
 
