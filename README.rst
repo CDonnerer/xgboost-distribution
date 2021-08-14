@@ -67,7 +67,7 @@ After fitting, we can predict the parameters of the distribution:
       mean, std = preds.loc, preds.scale
 
 
-Note that this returned a `namedtuple`_ of `numpy`_ arrays for each parameter of the
+Note that this returned a `namedtuple`_ of `numpy arrays`_ for each parameter of the
 distribution (we use the `scipy stats`_ naming conventions for the parameters, see e.g.
 `scipy.stats.norm`_ for the normal distribution).
 
@@ -139,6 +139,6 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _xgboost: https://github.com/dmlc/xgboost
 .. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/api/xgboost_distribution.XGBDistribution.html#xgboost_distribution.XGBDistribution
 .. _experiments page: https://xgboost-distribution.readthedocs.io/en/latest/experiments.html
-.. _numpy: https://numpy.org/doc/stable/
+.. _numpy arrays: https://numpy.org/doc/stable/reference/generated/numpy.array.html
 .. _scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
 .. _namedtuple: https://docs.python.org/3/library/collections.html#collections.namedtuple
