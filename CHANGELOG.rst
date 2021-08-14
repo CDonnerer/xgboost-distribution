@@ -3,15 +3,21 @@ Changelog
 =========
 
 
-Version x.x.x
-=============
+Current version
+===============
 
-- Experiments on standard datasets, comparison with NGBRegressor & XGBRegressor
+Version 0.2.0, 2021-08-14
+--------------------------
+
+- Performed experiments on various datasets to assess XGBDistribution performance
 - Added exponential distribution
+- Added Laplace distribution
 
+Older versions
+===============
 
-Version 0.1.2
-==============
+Version 0.1.2, 2021-07-10
+-------------------------
 
 - Added poisson distribution
 - Added negative-binomial distribution
@@ -19,8 +25,8 @@ Version 0.1.2
 - Safety checks on distribution parameters
 
 
-Version 0.1.1
-==============
+Version 0.1.1, 2021-07-01
+-------------------------
 
 - Added lognormal distribution
 - Cleanup of distribution code, tested
@@ -29,8 +35,8 @@ Version 0.1.1
 - CI tests running in Python 3.6, 3.7, 3.8
 
 
-Version 0.1.0
-==============
+Version 0.1.0, 2021-06-20
+-------------------------
 
 - First release of xgboost-distribution package
 - Contains XGBDistribution estimator, an xgboost wrapper with natural gradients
