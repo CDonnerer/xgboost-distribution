@@ -50,14 +50,18 @@ def test_distribution_set_param(small_X_y_data):
     assert isinstance(params[0], np.ndarray)
 
 
-def test_XGBDistribution_save_and_load(small_X_y_data, tmpdir):
+@pytest.mark.parametrize(
+    "model_format",
+    ["bst", "json"],
+)
+def test_XGBDistribution_save_and_load(small_X_y_data, model_format, tmpdir):
     X, y = small_X_y_data
 
     model = XGBDistribution(n_estimators=10)
     model.fit(X, y)
     preds = model.predict(X)
 
-    model_path = os.path.join(tmpdir, "model.bst")
+    model_path = os.path.join(tmpdir, f"model.{model_format}")
     model.save_model(model_path)
 
     saved_model = XGBDistribution()
