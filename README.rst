@@ -17,7 +17,7 @@
 xgboost-distribution
 ====================
 
-XGBoost for probabilistic prediction. Like `NGBoost`_, but faster, and in the `XGBoost scikit-learn API`_.
+XGBoost for probabilistic prediction. Like `NGBoost`_, but `faster`_, and in the `XGBoost scikit-learn API`_.
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/xgb_dist.png
     :align: center
@@ -36,9 +36,9 @@ Installation
 Usage
 ===========
 
-``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an
-additional keyword argument specifying the distribution (see the
-`documentation`_ for a full list of available distributions):
+``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an additional keyword
+argument specifying the distribution (see the `documentation`_ for a full list of
+available distributions):
 
 .. code-block:: python
 
@@ -67,8 +67,9 @@ After fitting, we can predict the parameters of the distribution:
       mean, std = preds.loc, preds.scale
 
 
-Note that this returned a namedtuple of numpy arrays for each parameter of
-the distribution (we use the scipy naming conventions, see e.g. `scipy.stats.norm`_).
+Note that this returned a `namedtuple`_ of `numpy`_ arrays for each parameter of the
+distribution (we use the `scipy stats`_ naming conventions for the parameters, see e.g.
+`scipy.stats.norm`_ for the normal distribution).
 
 
 NGBoost performance comparison
@@ -130,6 +131,7 @@ information on PyScaffold see https://pyscaffold.org/.
 
 
 .. _ngboost: https://github.com/stanfordmlgroup/ngboost
+.. _faster:  https://xgboost-distribution.readthedocs.io/en/latest/experiments.html
 .. _xgboost scikit-learn api: https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn
 .. _monotonic constraints: https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html
 .. _scipy.stats.norm: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
@@ -137,3 +139,6 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _xgboost: https://github.com/dmlc/xgboost
 .. _documentation: https://xgboost-distribution.readthedocs.io/en/latest/api/xgboost_distribution.XGBDistribution.html#xgboost_distribution.XGBDistribution
 .. _experiments page: https://xgboost-distribution.readthedocs.io/en/latest/experiments.html
+.. _numpy: https://numpy.org/doc/stable/
+.. _scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
+.. _namedtuple: https://docs.python.org/3/library/collections.html#collections.namedtuple
