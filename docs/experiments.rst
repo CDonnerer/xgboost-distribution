@@ -2,8 +2,9 @@
 Experiments
 ======================
 
-We compared ``XGBDistribution`` with NGBoost's ``NGBRegressor``, as well as a standard
-xgboost model, ``XGBRegressor``, across various datasets.
+We performed experiments on ``XGBDistribution`` across various datasets for probabilistic
+regression tasks. Comparison were made with both `NGBoost`_'s ``NGBRegressor``, as well
+as a standard `xgboost`_ ``XGBRegressor`` (point estimate only).
 
 Probabilistic regression
 ========================
@@ -12,9 +13,9 @@ For probabilistic regression, within errorbars, ``XGBDistribution`` performs ess
 identically to ``NGBRegressor`` (measured on the negative log likelihood [NLL] of a normal
 distribution).
 
-However, ``XGBDistribution`` is substantially faster, **typically at least an order of
+However, ``XGBDistribution`` is **substantially faster, typically at least an order of
 magnitude**. For example, for the MSD dataset, the fit and predict steps took 18 minutes
-for ``XGBDistribution`` vs 6.7 hours for ``NGBRegressor``:
+for ``XGBDistribution`` vs a full 6.7 hours for ``NGBRegressor``:
 
 +-----------------+---------------------------+---------------------------+
 |                 | XGBDistribution           | NGBRegressor              |
@@ -46,9 +47,9 @@ Point estimation
 
 For point estimates, we compared ``XGBDistribution`` to both the ``NGBRegressor`` and the
 ``XGBRegressor`` (measured on the RMSE). Generally, the ``XGBRegressor`` will offer the
-best performance. However, compared with ``XGBRegressor``, ``XGBDistribution`` only
-incurs small penalties on both performance and speed, making ``XGBDistribution`` a
-viable "drop-in" replacement.
+best performance for this task. However, compared with ``XGBRegressor``,
+``XGBDistribution`` only incurs small penalties on both performance and speed, thus
+making ``XGBDistribution`` a viable "drop-in" replacement to obtain probabilistic predictions.
 
 +---------+---------------------------+---------------------------+---------------------------+
 |         | XGBDistribution           | NGBRegressor              | XGBRegressor              |
@@ -83,14 +84,17 @@ validation set for early stopping. This process was repeated over 5 random seeds
 the MSD dataset, we used a single 5-fold cross-validation.
 
 The negative log-likelihood (NLL) and root mean squared error (RMSE) were estimated
-for each test set, the above are the mean and standard deviation of these metrics
-(across all folds and random seeds).
+for each test fold, the above are the mean and standard deviation of these metrics
+(across folds and random seeds).
 
-Default hyperparameters were used, except for ``max_depth=3`` in ``XGBDistribution``
-and ``XGBRegressor``, since this is the default value of ``NGBRegressor``.
-``XGBDistribution`` and ``NGBRegressor`` estimated normal distributions.
+For all estimators, we used default hyperparameters, with the exception of setting
+``max_depth=3`` in ``XGBDistribution`` and ``XGBRegressor``, since this is the default
+value of ``NGBRegressor``. For all experiments, ``XGBDistribution`` and ``NGBRegressor``
+estimated normal distributions, with natural gradients.
 
 Please see the `experiments script`_ for the full details.
 
 
+.. _ngboost: https://github.com/stanfordmlgroup/ngboost
+.. _xgboost: https://xgboost.readthedocs.io/en/latest/
 .. _experiments script: https://github.com/CDonnerer/xgboost-distribution/blob/main/examples/experiments.py
