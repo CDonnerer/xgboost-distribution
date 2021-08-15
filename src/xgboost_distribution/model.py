@@ -1,7 +1,5 @@
 """XGBDistribution model
 """
-import warnings
-
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
@@ -204,18 +202,16 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return self._distribution.predict(params)
 
     def save_model(self, fname) -> None:
-        with warnings.catch_warnings():
-            # required as we can't save self._distribution, see also below
-            warnings.simplefilter("ignore")
-            super().save_model(fname)
+        # self._distribution class cannot be saved within `super().save_model`, as it
+        # tries to call `json.dumps({"_distribution": self._distribution})` on it
+        # Hence we delete and then reinstantiate (safe as distributions are stateless)
+        del self._distribution
+        super().save_model(fname)
+        self._distribution = get_distribution(self.distribution)
 
     def load_model(self, fname) -> None:
         super().load_model(fname)
-
-        # self._distribution does not get saved in self.save_model(), as we
-        # can't just run json.dumps({"_distribution": self._distribution}) on it
-        # Hence we reinstantiate on loading. Note that this is safe, as the
-        # distributions are always stateless
+        # See above: Currently need to reinstantiate distribution post loading
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self):
