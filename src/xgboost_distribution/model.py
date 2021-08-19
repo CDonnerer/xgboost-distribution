@@ -8,7 +8,7 @@ from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
 from xgboost.callback import TrainingCallback
-from xgboost.compat import DataFrame  # , scipy_csr
+from xgboost.compat import DataFrame  # , scipy_csr  - this is breaking?
 from xgboost.core import Booster, DMatrix
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
@@ -103,7 +103,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         """
         self._distribution = get_distribution(self.distribution)
-
         self._distribution.check_target(y)
 
         params = self.get_xgb_params()
@@ -220,7 +219,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
     def load_model(self, fname: Union[str, bytearray, os.PathLike]) -> None:
         super().load_model(fname)
-        # See above: Currently need to reinstantiate distribution post loading
+        # See above: Reinstantiate distribution post loading as it is not saved
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self):
