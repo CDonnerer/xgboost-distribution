@@ -1,11 +1,20 @@
 """XGBDistribution model
 """
+import os
+from typing import Any, List, Optional, Tuple, Union
+
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
-from xgboost.core import DMatrix
-from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
+from xgboost.callback import TrainingCallback
+from xgboost.core import Booster, DMatrix
+from xgboost.sklearn import (
+    XGBModel,
+    _wrap_evaluation_matrices,
+    array_like,
+    xgboost_model_doc,
+)
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
@@ -20,25 +29,27 @@ from xgboost_distribution.distributions import get_distribution, get_distributio
         Whether or not natural gradients should be used.""",
 )
 class XGBDistribution(XGBModel, RegressorMixin):
-    def __init__(self, distribution=None, natural_gradient=True, **kwargs):
+    def __init__(
+        self, distribution: str = None, natural_gradient: bool = True, **kwargs: Any
+    ):
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
         super().__init__(objective=None, **kwargs)
 
     def fit(
         self,
-        X,
-        y,
+        X: array_like,
+        y: array_like,
         *,
-        sample_weight=None,
-        eval_set=None,
-        early_stopping_rounds=None,
-        verbose=False,
-        xgb_model=None,
-        sample_weight_eval_set=None,
-        feature_weights=None,
-        callbacks=None,
-    ):
+        sample_weight: Optional[array_like] = None,
+        eval_set: Optional[List[Tuple[array_like, array_like]]] = None,
+        early_stopping_rounds: Optional[int] = None,
+        verbose: Optional[bool] = False,
+        xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
+        sample_weight_eval_set: Optional[List[array_like]] = None,
+        feature_weights: Optional[array_like] = None,
+        callbacks: Optional[List[TrainingCallback]] = None,
+    ) -> "XGBDistribution":
         """Fit gradient boosting distribution model.
 
         Note that calling ``fit()`` multiple times will cause the model object to be
@@ -159,10 +170,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
     def predict(
         self,
-        X,
-        ntree_limit=None,
-        validate_features=False,
-        iteration_range=None,
+        X: array_like,
+        ntree_limit: Optional[int] = None,
+        validate_features: bool = False,
+        iteration_range: Optional[Tuple[int, int]] = None,
     ):
         """Predict all params of distribution of each `X` example.
 
@@ -201,7 +212,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         )
         return self._distribution.predict(params)
 
-    def save_model(self, fname) -> None:
+    def save_model(self, fname: Union[str, os.PathLike]) -> None:
         # self._distribution class cannot be saved within `super().save_model`, as it
         # tries to call `json.dumps({"_distribution": self._distribution})` on it
         # Hence we delete and then reinstantiate (safe as distributions are stateless)
@@ -209,7 +220,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         super().save_model(fname)
         self._distribution = get_distribution(self.distribution)
 
-    def load_model(self, fname) -> None:
+    def load_model(self, fname: Union[str, bytearray, os.PathLike]) -> None:
         super().load_model(fname)
         # See above: Currently need to reinstantiate distribution post loading
         self._distribution = get_distribution(self.distribution)
