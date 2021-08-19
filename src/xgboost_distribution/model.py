@@ -13,7 +13,7 @@ from xgboost_distribution.distributions import get_distribution, get_distributio
 
 @xgboost_model_doc(
     "Implementation of XGBoost to estimate distributions (in scikit-learn API).",
-    ["model"],
+    ["estimators", "model"],
     extra_parameters=get_distribution_doc()
     + """
     natural_gradient : bool, default=True
