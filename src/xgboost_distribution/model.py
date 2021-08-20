@@ -8,14 +8,14 @@ from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
 from xgboost.callback import TrainingCallback
-from xgboost.compat import DataFrame  # , scipy_csr  - this is breaking?
+from xgboost.compat import DataFrame
 from xgboost.core import Booster, DMatrix
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
 
-array_like = TypeVar("array_like", bound=Union[np.ndarray, DataFrame])
+array_like = TypeVar("array_like", bound=Union[np.ndarray, DataFrame])  # scipy sparse
 
 
 @xgboost_model_doc(
@@ -76,7 +76,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             for early stopping.
 
             If early stopping occurs, the model will have three additional fields:
-            ``clf.best_score``, ``clf.best_iteration``.
+            ``model.best_score``, ``model.best_iteration``.
         verbose : bool
             If `verbose` and an evaluation set is used, writes the evaluation metric
             measured on the validation set to stderr.
