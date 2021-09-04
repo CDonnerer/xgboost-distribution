@@ -8,6 +8,7 @@ Development version
 Version 0.2.X, 2021-xx-xx
 --------------------------
 
+- Added count data example with distribution heatmap, :issue:`45`
 - Updated docs to include estimators parameter, :issue:`43`
 - Implemented cleaner model saving, tests against binary and json formats
 
