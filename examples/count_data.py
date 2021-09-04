@@ -1,8 +1,8 @@
-"""Example of count data modelled with Poisson
+"""Example of count data sampled from negative-binomial distribution
 """
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.stats import poisson
+from scipy import stats
 from sklearn.model_selection import train_test_split
 
 from xgboost_distribution import XGBDistribution
@@ -17,35 +17,51 @@ def generate_count_data(n_samples=10_000):
     return X[..., np.newaxis], y
 
 
-def plot_distribution_heatmap(model, x_range=(-2, 0), y_range=(0, 100)):
-    xx = np.linspace(x_range[0], x_range[1], 100)
+def predict_distribution(model, X, y):
+    """Predict a distribution for a given X, and evaluate over y"""
+
+    distribution_func = {
+        "normal": getattr(stats, "norm").pdf,
+        "laplace": getattr(stats, "laplace").pdf,
+        "poisson": getattr(stats, "poisson").pmf,
+        "negative-binomial": getattr(stats, "nbinom").pmf,
+    }
+    preds = model.predict(X[..., np.newaxis])
+
+    dists = np.zeros(shape=(len(X), len(y)))
+    for ii, x in enumerate(X):
+        params = {field: param[ii] for (field, param) in zip(preds._fields, preds)}
+        dists[ii] = distribution_func[model.distribution](y, **params)
+
+    return dists
+
+
+def create_distribution_heatmap(
+    model, x_range=(-2, 0), x_steps=100, y_range=(0, 100), normalize=True
+):
+    xx = np.linspace(x_range[0], x_range[1], x_steps)
     yy = np.linspace(y_range[0], y_range[1], y_range[1] - y_range[0] + 1)
-
-    preds = model.predict(xx[..., np.newaxis])
-
     ym, xm = np.meshgrid(xx, yy)
 
-    z = np.array([poisson.pmf(yy, mu=preds.mu[ii]) for ii, x in enumerate(xx)])
-    for val in z:
-        val /= val.max()
-    z = z.transpose()
+    z = predict_distribution(model, xx, yy)
 
-    fig, ax = plt.subplots(figsize=(9, 6))
+    if normalize:
+        z = z / z.max(axis=0)
 
-    ax.pcolormesh(
-        ym, xm, z, cmap="Oranges", vmin=0, vmax=1.608, alpha=1.0, shading="auto"
-    )
-    plt.show()
+    return ym, xm, z.transpose()
 
 
 def main():
-    X, y = generate_count_data()
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+    random_state = 10
+    np.random.seed(random_state)
+
+    X, y = generate_count_data(n_samples=10_000)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=random_state)
 
     model = XGBDistribution(
-        distribution="poisson",
+        distribution="negative-binomial",  # try changing the distribution here
         natural_gradient=True,
-        max_depth=2,
+        max_depth=3,
         n_estimators=500,
     )
     model.fit(
@@ -55,7 +71,15 @@ def main():
         early_stopping_rounds=10,
         verbose=False,
     )
-    plot_distribution_heatmap(model)
+
+    xm, ym, z = create_distribution_heatmap(model)
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    ax.pcolormesh(
+        xm, ym, z, cmap="Oranges", vmin=0, vmax=1.608, alpha=1.0, shading="auto"
+    )
+    ax.scatter(X_test, y_test, s=0.75, alpha=0.25, c="k", label="data")
+    plt.show()
 
 
 if __name__ == "__main__":
