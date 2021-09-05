@@ -94,15 +94,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         """
         self._distribution = get_distribution(self.distribution)
-
         self._distribution.check_target(y)
 
         params = self.get_xgb_params()
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
 
-        # we set base score to zero to instead use base_margin in dmatrices
-        # this allows different starting values for the distribution params
+        # we set `base_score` to zero and instead use base_margin in dmatrices
+        # -> this allows different starting values for each distribution parameter
         params["base_score"] = 0.0
         self._starting_params = self._distribution.starting_params(y)
 
@@ -202,9 +201,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return self._distribution.predict(params)
 
     def save_model(self, fname) -> None:
-        # self._distribution class cannot be saved within `super().save_model`, as it
-        # tries to call `json.dumps({"_distribution": self._distribution})` on it
-        # Hence we delete and then reinstantiate (safe as distributions are stateless)
+        # self._distribution class cannot be saved by `super().save_model`, as it
+        # attempts to call `json.dumps({"_distribution": self._distribution})`
+        # Hence we delete, and then reinstantiate on loading
+        # (this is safe as distributions are by definition stateless)
         del self._distribution
         super().save_model(fname)
         self._distribution = get_distribution(self.distribution)

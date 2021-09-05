@@ -81,6 +81,7 @@ def test_predict_before_fit_fails(small_X_y_data):
 
 
 def test_get_base_margin():
+    """Test that base_margin are created as expected for each sample"""
     model = XGBDistribution(distribution="normal")
     X = np.array([[1], [1]])
     y = np.array([1, 0])
