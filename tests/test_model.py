@@ -1,7 +1,6 @@
 """Test suite for XGBDistribution model
 
 To add:
-- Model pickle test
 - Pandas test
 
 """
