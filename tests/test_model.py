@@ -85,13 +85,13 @@ def test_get_base_margin():
 
 
 def assert_model_equivalence(model_a, model_b, X):
-    preds_a = model_a.predict(X)
-    preds_b = model_b.predict(X)
-
     np.testing.assert_almost_equal(
         model_a._starting_params, model_b._starting_params, decimal=9
     )
     assert model_a._distribution.__class__ == model_b._distribution.__class__
+
+    preds_a = model_a.predict(X)
+    preds_b = model_b.predict(X)
 
     for param_a, param_b in zip(preds_a, preds_b):
         np.testing.assert_array_equal(param_a, param_b)
@@ -115,7 +115,7 @@ def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdi
     assert_model_equivalence(model_a=model, model_b=saved_model, X=X)
 
 
-def test_XGBDistribution_pickle_and_load_model(small_X_y_data, tmpdir):
+def test_XGBDistribution_pickle_dump_and_load(small_X_y_data, tmpdir):
     X, y = small_X_y_data
 
     model = XGBDistribution(n_estimators=10)
