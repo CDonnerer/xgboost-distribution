@@ -1,5 +1,7 @@
 """XGBDistribution model
 """
+from typing import Callable
+
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
@@ -214,7 +216,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         # See above: Currently need to reinstantiate distribution post loading
         self._distribution = get_distribution(self.distribution)
 
-    def _objective_func(self):
+    def _objective_func(self) -> Callable:
         def obj(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
@@ -224,7 +226,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return obj
 
-    def _evaluation_func(self):
+    def _evaluation_func(self) -> Callable:
         def feval(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             return self._distribution.loss(y, params)

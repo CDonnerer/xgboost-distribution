@@ -1,4 +1,13 @@
+"""Test suite for XGBDistribution model
+
+To add:
+- Model pickle test
+- Pandas test
+
+"""
+
 import os
+import pickle
 
 import pytest
 
@@ -50,28 +59,6 @@ def test_distribution_set_param(small_X_y_data):
     assert isinstance(params[0], np.ndarray)
 
 
-@pytest.mark.parametrize(
-    "model_format",
-    ["bst", "json"],
-)
-def test_XGBDistribution_save_and_load(small_X_y_data, model_format, tmpdir):
-    X, y = small_X_y_data
-
-    model = XGBDistribution(n_estimators=10)
-    model.fit(X, y)
-    preds = model.predict(X)
-
-    model_path = os.path.join(tmpdir, f"model.{model_format}")
-    model.save_model(model_path)
-
-    saved_model = XGBDistribution()
-    saved_model.load_model(model_path)
-    saved_preds = saved_model.predict(X)
-
-    np.testing.assert_array_equal(preds[0], saved_preds[0])
-    np.testing.assert_array_equal(preds[1], saved_preds[1])
-
-
 def test_predict_before_fit_fails(small_X_y_data):
     X, y = small_X_y_data
     model = XGBDistribution(n_estimators=10)
@@ -90,3 +77,56 @@ def test_get_base_margin():
     margin = model._get_base_margin(n_samples=2)
     expected_margin = np.array([0.5, np.log(np.std(y)), 0.5, np.log(np.std(y))])
     np.testing.assert_array_equal(margin, expected_margin)
+
+
+# -------------------------------------------------------------------------------------
+#  Model IO tests
+# -------------------------------------------------------------------------------------
+
+
+def assert_model_equivalence(model_a, model_b, X):
+    preds_a = model_a.predict(X)
+    preds_b = model_b.predict(X)
+
+    np.testing.assert_almost_equal(
+        model_a._starting_params, model_b._starting_params, decimal=9
+    )
+    assert model_a._distribution.__class__ == model_b._distribution.__class__
+
+    for param_a, param_b in zip(preds_a, preds_b):
+        np.testing.assert_array_equal(param_a, param_b)
+
+
+@pytest.mark.parametrize(
+    "model_format",
+    ["bst", "json"],
+)
+def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdir):
+    X, y = small_X_y_data
+    model = XGBDistribution(n_estimators=10)
+    model.fit(X, y)
+
+    model_path = os.path.join(tmpdir, f"model.{model_format}")
+    model.save_model(model_path)
+
+    saved_model = XGBDistribution()
+    saved_model.load_model(model_path)
+
+    assert_model_equivalence(model_a=model, model_b=saved_model, X=X)
+
+
+def test_XGBDistribution_pickle_and_load_model(small_X_y_data, tmpdir):
+    X, y = small_X_y_data
+
+    model = XGBDistribution(n_estimators=10)
+    model.fit(X, y)
+
+    model_path = os.path.join(tmpdir, "model.pkl")
+
+    with open(model_path, "wb") as fd:
+        pickle.dump(model, fd)
+
+    with open(model_path, "rb") as fd:
+        saved_model = pickle.load(fd)
+
+    assert_model_equivalence(model_a=model, model_b=saved_model, X=X)
