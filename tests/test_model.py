@@ -50,12 +50,11 @@ def test_distribution_set_param(small_X_y_data):
     X, y = small_X_y_data
 
     model = XGBDistribution(distribution="abnormal")
+    with pytest.raises(ValueError):
+        model.fit(X, y)  # fails as distribution does not exist
+
     model.set_params(**{"distribution": "normal"})
-
     model.fit(X, y)
-    params = model.predict(X)
-
-    assert isinstance(params[0], np.ndarray)
 
 
 def test_predict_before_fit_fails(small_X_y_data):

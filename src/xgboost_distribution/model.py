@@ -205,7 +205,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def save_model(self, fname) -> None:
         # self._distribution class cannot be saved by `super().save_model`, as it
         # attempts to call `json.dumps({"_distribution": self._distribution})`
-        # Hence we delete, and then reinstantiate on loading
+        # Hence we delete, and then reinstantiate
         # (this is safe as distributions are by definition stateless)
         del self._distribution
         super().save_model(fname)
