@@ -220,7 +220,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         def obj(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
-                y, params, self.natural_gradient
+                y=y, params=params, natural_gradient=self.natural_gradient
             )
             return grad.flatten(), hess.flatten()
 
@@ -229,7 +229,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def _evaluation_func(self) -> Callable:
         def feval(params: np.ndarray, data: DMatrix):
             y = data.get_label()
-            return self._distribution.loss(y, params)
+            return self._distribution.loss(y=y, params=params)
 
         return feval
 

@@ -29,7 +29,7 @@ class BaseDistribution(ABC):
         pass
 
     @abstractmethod
-    def gradient_and_hessian(self, y, params):
+    def gradient_and_hessian(self, y, params, natural_gradient=True):
         pass
 
     @abstractmethod
