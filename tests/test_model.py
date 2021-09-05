@@ -13,6 +13,7 @@ import pytest
 import numpy as np
 from sklearn.exceptions import NotFittedError
 
+from xgboost_distribution.distributions import AVAILABLE_DISTRIBUTIONS
 from xgboost_distribution.model import XGBDistribution
 
 
@@ -81,6 +82,16 @@ def test_get_base_margin(distribution, expected_margin):
 
     margin = model._get_base_margin(n_samples=2)
     np.testing.assert_array_equal(margin, expected_margin)
+
+
+@pytest.mark.parametrize(
+    "distribution",
+    list(AVAILABLE_DISTRIBUTIONS.keys()),
+)
+def test_objective_and_evaluation_funcs_callable(distribution):
+    model = XGBDistribution(distribution=distribution)
+    assert callable(model._objective_func())
+    assert callable(model._evaluation_func())
 
 
 # -------------------------------------------------------------------------------------
