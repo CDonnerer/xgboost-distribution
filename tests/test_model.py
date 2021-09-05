@@ -78,3 +78,14 @@ def test_predict_before_fit_fails(small_X_y_data):
 
     with pytest.raises(NotFittedError):
         model.predict(X)
+
+
+def test_get_base_margin():
+    model = XGBDistribution(distribution="normal")
+    X = np.array([[1], [1]])
+    y = np.array([1, 0])
+    model.fit(X, y)
+
+    margin = model._get_base_margin(n_samples=2)
+    expected_margin = np.array([0.5, np.log(np.std(y)), 0.5, np.log(np.std(y))])
+    np.testing.assert_array_equal(margin, expected_margin)

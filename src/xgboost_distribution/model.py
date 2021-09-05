@@ -106,10 +106,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
         params["base_score"] = 0.0
         self._starting_params = self._distribution.starting_params(y)
 
-        base_margin = self._get_base_margins(len(y))
+        base_margin = self._get_base_margin(len(y))
         if eval_set is not None:
             base_margin_eval_set = [
-                self._get_base_margins(len(evals[1])) for evals in eval_set
+                self._get_base_margin(len(evals[1])) for evals in eval_set
             ]
         else:
             base_margin_eval_set = None
@@ -189,7 +189,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         """
         check_is_fitted(self, attributes=("_distribution", "_starting_params"))
 
-        base_margin = self._get_base_margins(X.shape[0])
+        base_margin = self._get_base_margin(X.shape[0])
 
         params = super().predict(
             X=X,
@@ -231,11 +231,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return feval
 
-    def _get_base_margins(self, n_samples):
+    def _get_base_margin(self, n_samples):
         return (
-            np.array(
-                [param * np.ones(shape=(n_samples,)) for param in self._starting_params]
-            )
-            .transpose()
-            .flatten()
-        )
+            np.ones(shape=(n_samples, 1)) * np.array(self._starting_params)
+        ).flatten()
