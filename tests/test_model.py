@@ -30,6 +30,15 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
     assert isinstance(evals_result, dict)
 
 
+def test_XGBDistribution_pandas(small_X_y_data_pandas):
+    """Dummy test that everything runs with pandas"""
+
+    X, y = small_X_y_data_pandas
+    model = XGBDistribution(distribution="normal", n_estimators=10)
+    model.fit(X, y)
+    model.predict(X)
+
+
 def test_XGBDistribution_early_stopping_predict(small_train_test_data):
     """Check that predict with early stopping uses correct ntrees"""
     X_train, X_test, y_train, y_test = small_train_test_data
