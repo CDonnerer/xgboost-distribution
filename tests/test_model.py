@@ -1,8 +1,4 @@
 """Test suite for XGBDistribution model
-
-To add:
-- Pandas test
-- Datasets?
 """
 
 import os
@@ -18,7 +14,7 @@ from xgboost_distribution.model import XGBDistribution
 
 
 def test_XGBDistribution_early_stopping_fit(small_train_test_data):
-    """Dummy test that everything runs"""
+    """Integration test to ensure end-to-end functionality"""
 
     X_train, X_test, y_train, y_test = small_train_test_data
     model = XGBDistribution(distribution="normal", max_depth=3, n_estimators=500)
@@ -28,15 +24,6 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
 
     assert model.best_iteration == 6
     assert isinstance(evals_result, dict)
-
-
-def test_XGBDistribution_pandas(small_X_y_data_pandas):
-    """Dummy test that everything runs with pandas"""
-
-    X, y = small_X_y_data_pandas
-    model = XGBDistribution(distribution="normal", n_estimators=10)
-    model.fit(X, y)
-    model.predict(X)
 
 
 def test_XGBDistribution_early_stopping_predict(small_train_test_data):
@@ -73,6 +60,11 @@ def test_predict_before_fit_fails(small_X_y_data):
 
     with pytest.raises(NotFittedError):
         model.predict(X)
+
+
+# -------------------------------------------------------------------------------------
+#  Model internal tests
+# -------------------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -141,7 +133,6 @@ def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdi
 
 def test_XGBDistribution_pickle_dump_and_load(small_X_y_data, tmpdir):
     X, y = small_X_y_data
-
     model = XGBDistribution(n_estimators=10)
     model.fit(X, y)
 
