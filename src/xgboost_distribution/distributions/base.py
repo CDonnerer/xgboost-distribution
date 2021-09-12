@@ -13,6 +13,8 @@ class BaseDistribution(ABC):
 
     def __init__(self):
         self.Predictions = namedtuple("Predictions", (p for p in self.params))
+        # attach to globals to make pickling of namedtuple work
+        globals()[self.Predictions.__name__] = self.Predictions
 
     def check_target(self, y):
         pass
@@ -27,7 +29,7 @@ class BaseDistribution(ABC):
         pass
 
     @abstractmethod
-    def gradient_and_hessian(self, y, params):
+    def gradient_and_hessian(self, y, params, natural_gradient=True):
         pass
 
     @abstractmethod

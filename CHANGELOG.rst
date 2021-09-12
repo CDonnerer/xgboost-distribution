@@ -8,6 +8,8 @@ Development version
 Version 0.2.X, 2021-xx-xx
 --------------------------
 
+- Fixed the objective parameter in trained model to be reflective of distribution
+- Support for model saving and loading with pickle (please don't use pickle)
 - Added count data example with distribution heatmap, :issue:`45`
 - Updated docs to include estimators parameter, :issue:`43`
 - Implemented cleaner model saving, tests against binary and json formats
