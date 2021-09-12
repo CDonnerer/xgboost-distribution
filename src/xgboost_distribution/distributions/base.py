@@ -13,7 +13,7 @@ class BaseDistribution(ABC):
 
     def __init__(self):
         self.Predictions = namedtuple("Predictions", (p for p in self.params))
-        # attache to globals to make pickling of namedtuple work
+        # attach to globals to make pickling of namedtuple work
         globals()[self.Predictions.__name__] = self.Predictions
 
     def check_target(self, y):
