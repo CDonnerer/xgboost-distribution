@@ -54,9 +54,19 @@ def test_distribution_set_param(small_X_y_data):
     model.fit(X, y)
 
 
+def test_fit_1d_X_fit_fails(small_X_y_data):
+    X, y = small_X_y_data
+    X = X[..., 0]  # single 1d features
+
+    model = XGBDistribution()
+    with pytest.raises(ValueError):
+        model.fit(X, y)
+
+
 def test_predict_before_fit_fails(small_X_y_data):
     X, y = small_X_y_data
-    model = XGBDistribution(n_estimators=10)
+
+    model = XGBDistribution()
 
     with pytest.raises(NotFittedError):
         model.predict(X)
