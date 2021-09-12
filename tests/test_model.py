@@ -43,7 +43,6 @@ def test_XGBDistribution_early_stopping_predict(small_train_test_data):
 
 def test_distribution_set_param(small_X_y_data):
     """Check that updating the distribution params works"""
-
     X, y = small_X_y_data
 
     model = XGBDistribution(distribution="abnormal")
@@ -52,6 +51,11 @@ def test_distribution_set_param(small_X_y_data):
 
     model.set_params(**{"distribution": "normal"})
     model.fit(X, y)
+
+
+# -------------------------------------------------------------------------------------
+# Failure modes
+# -------------------------------------------------------------------------------------
 
 
 def test_fit_1d_X_fit_fails(small_X_y_data):
@@ -67,7 +71,6 @@ def test_predict_before_fit_fails(small_X_y_data):
     X, y = small_X_y_data
 
     model = XGBDistribution()
-
     with pytest.raises(NotFittedError):
         model.predict(X)
 
