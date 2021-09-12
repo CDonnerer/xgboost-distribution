@@ -99,6 +99,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._distribution.check_target(y)
 
         params = self.get_xgb_params()
+        params["objective"] = None
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
 
@@ -136,7 +137,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         evals_result = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
 
-        # hack to suppress warnings from the extra distribution parameter
+        # Suppress warnings from unexpected distribution & natural_gradient params
         with config_context(verbosity=0):
             self._Booster = train(
                 params,

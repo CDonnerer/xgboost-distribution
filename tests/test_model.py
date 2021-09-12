@@ -41,6 +41,17 @@ def test_XGBDistribution_early_stopping_predict(small_train_test_data):
     np.testing.assert_array_equal(var, var_iter)
 
 
+def test_objective_overwrite_by_repeated_fit(small_X_y_data):
+    """In the fit step, we set the objective to distribution:normal (e.g.)
+
+    This needs to be re-set at each fit, as it's not a standard xgboost objective.
+    """
+    X, y = small_X_y_data
+    model = XGBDistribution()
+    model.fit(X, y)
+    model.fit(X, y)
+
+
 def test_distribution_set_param(small_X_y_data):
     """Check that updating the distribution params works"""
     X, y = small_X_y_data
