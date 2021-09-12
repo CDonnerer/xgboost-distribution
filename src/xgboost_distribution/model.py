@@ -151,7 +151,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 xgb_model=model,
                 callbacks=callbacks,
             )
+
         self._set_evaluation_result(evals_result)
+        self.objective = f"distribution:{self.distribution}"
+
         return self
 
     def predict(
