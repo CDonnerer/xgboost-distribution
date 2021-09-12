@@ -135,10 +135,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         evals_result = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
-        # if len(X.shape) != 2:
-        #     raise ValueError(
-        #         "Please reshape the input data X into 2-dimensional matrix."
-        #     )
 
         # hack to suppress warnings from the extra distribution parameter
         with config_context(verbosity=0):
