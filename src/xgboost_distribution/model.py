@@ -13,6 +13,18 @@ from xgboost.training import train
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
 
 
+def clean_model_doc():
+    def cleandoc(cls):
+        original_doc = cls.__doc__
+
+        # TODO: replace objective param description
+        cls.__doc__ = original_doc
+        return cls
+
+    return cleandoc
+
+
+# @clean_model_doc()
 @xgboost_model_doc(
     "Implementation of XGBoost to estimate distributions (in scikit-learn API).",
     ["estimators", "model"],
@@ -30,7 +42,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         if objective is not None:
             raise ValueError(
-                "Please do not set object directly! Use the `distribution` kwarg"
+                "Please do not set objective directly! Use the `distribution` kwarg"
             )
 
         super().__init__(objective=None, **kwargs)
