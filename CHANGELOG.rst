@@ -34,6 +34,7 @@ Version 0.2.0, 2021-08-14
 - Added exponential distribution
 - Added Laplace distribution
 
+
 Version 0.1.2, 2021-07-10
 -------------------------
 
