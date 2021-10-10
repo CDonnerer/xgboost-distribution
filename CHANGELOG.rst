@@ -24,15 +24,15 @@ Version 0.2.1, 2021-10-10
 - Implemented cleaner model saving, tests against binary and json formats
 
 
+Older versions
+===============
+
 Version 0.2.0, 2021-08-14
 --------------------------
 
 - Performed experiments on various datasets to assess XGBDistribution performance
 - Added exponential distribution
 - Added Laplace distribution
-
-Older versions
-===============
 
 Version 0.1.2, 2021-07-10
 -------------------------
