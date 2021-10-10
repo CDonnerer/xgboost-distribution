@@ -22,9 +22,17 @@ from xgboost_distribution.distributions import get_distribution, get_distributio
         Whether or not natural gradients should be used.""",
 )
 class XGBDistribution(XGBModel, RegressorMixin):
-    def __init__(self, distribution=None, natural_gradient=True, **kwargs):
+    def __init__(
+        self, distribution=None, natural_gradient=True, objective=None, **kwargs
+    ):
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
+
+        if objective is not None:
+            raise ValueError(
+                "Please do not set objective directly! Use the `distribution` kwarg"
+            )
+
         super().__init__(objective=None, **kwargs)
 
     def fit(

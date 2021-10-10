@@ -86,6 +86,11 @@ def test_predict_before_fit_fails(small_X_y_data):
         model.predict(X)
 
 
+def test_setting_objective_in_init_fails():
+    with pytest.raises(ValueError):
+        XGBDistribution(objective="binary:logistic")
+
+
 # -------------------------------------------------------------------------------------
 #  Model internal tests
 # -------------------------------------------------------------------------------------
