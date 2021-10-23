@@ -139,6 +139,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             eval_group=None,
             eval_qid=None,
             create_dmatrix=lambda **kwargs: DMatrix(nthread=self.n_jobs, **kwargs),
+            enable_categorical=self.enable_categorical,
             label_transform=lambda x: x,
         )
 
