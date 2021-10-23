@@ -14,6 +14,15 @@ Version 0.2.X, 2021-xx-xx
 Current version
 ===============
 
+Version 0.2.2, 2021-10-23
+--------------------------
+
+- Hot fix to enable compatibility with xgboost v1.5.0 (enable_categorical kwarg)
+
+
+Older versions
+===============
+
 Version 0.2.1, 2021-10-10
 --------------------------
 
@@ -22,10 +31,6 @@ Version 0.2.1, 2021-10-10
 - Added count data example with distribution heatmap, :issue:`45`
 - Updated docs to include estimators parameter, :issue:`43`
 - Implemented cleaner model saving, tests against binary and json formats
-
-
-Older versions
-===============
 
 Version 0.2.0, 2021-08-14
 --------------------------
