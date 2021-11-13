@@ -8,7 +8,7 @@ Development version
 Version 0.2.X, 2021-xx-xx
 --------------------------
 
-- ...
+- Added type hints to XGBDistribution model class
 
 
 Current version
