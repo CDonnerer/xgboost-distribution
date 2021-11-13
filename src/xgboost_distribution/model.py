@@ -258,7 +258,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return feval
 
-    def _get_base_margins(self, n_samples: int) -> np.ndarray:
+    def _get_base_margin(self, n_samples: int) -> np.ndarray:
         return (
             np.ones(shape=(n_samples, 1)) * np.array(self._starting_params)
         ).flatten()
