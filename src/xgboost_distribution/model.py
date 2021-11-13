@@ -1,21 +1,23 @@
 """XGBDistribution model
 """
 import os
-from typing import Any, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
 from xgboost.callback import TrainingCallback
-from xgboost.compat import DataFrame
-from xgboost.core import Booster, DMatrix
-from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
+from xgboost.core import Booster, DMatrix, _deprecate_positional_args
+from xgboost.sklearn import (
+    XGBModel,
+    _wrap_evaluation_matrices,
+    array_like,
+    xgboost_model_doc,
+)
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
-
-array_like = TypeVar("array_like", bound=Union[np.ndarray, DataFrame])  # scipy sparse
 
 
 @xgboost_model_doc(
@@ -27,13 +29,15 @@ array_like = TypeVar("array_like", bound=Union[np.ndarray, DataFrame])  # scipy 
         Whether or not natural gradients should be used.""",
 )
 class XGBDistribution(XGBModel, RegressorMixin):
+    @_deprecate_positional_args
     def __init__(
         self, distribution: str = None, natural_gradient: bool = True, **kwargs: Any
-    ):
+    ) -> None:
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
         super().__init__(objective=None, **kwargs)
 
+    @_deprecate_positional_args
     def fit(
         self,
         X: array_like,
@@ -169,9 +173,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self,
         X: array_like,
         ntree_limit: Optional[int] = None,
-        validate_features: bool = False,
+        validate_features: bool = True,
         iteration_range: Optional[Tuple[int, int]] = None,
-    ):
+    ) -> Tuple[np.ndarray]:
         """Predict all params of distribution of each `X` example.
 
         Parameters
@@ -222,7 +226,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         # See above: Reinstantiate distribution post loading as it is not saved
         self._distribution = get_distribution(self.distribution)
 
-    def _objective_func(self):
+    def _objective_func(self) -> Callable:
         def obj(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
@@ -232,14 +236,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return obj
 
-    def _evaluation_func(self):
+    def _evaluation_func(self) -> Callable:
         def feval(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             return self._distribution.loss(y, params)
 
         return feval
 
-    def _get_base_margins(self, n_samples):
+    def _get_base_margins(self, n_samples: int) -> np.ndarray:
         return (
             np.array(
                 [param * np.ones(shape=(n_samples,)) for param in self._starting_params]
