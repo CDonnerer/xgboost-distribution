@@ -236,7 +236,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
     def load_model(self, fname: Union[str, bytearray, os.PathLike]) -> None:
         super().load_model(fname)
-        # See above: Reinstantiate distribution post loading as it is not saved
+        # See above: Currently need to reinstantiate distribution post loading
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self) -> Callable:
