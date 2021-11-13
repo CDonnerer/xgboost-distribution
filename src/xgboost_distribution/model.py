@@ -31,10 +31,20 @@ from xgboost_distribution.distributions import get_distribution, get_distributio
 class XGBDistribution(XGBModel, RegressorMixin):
     @_deprecate_positional_args
     def __init__(
-        self, distribution: str = None, natural_gradient: bool = True, **kwargs: Any
+        self,
+        distribution: str = None,
+        natural_gradient: bool = True,
+        objective=None,
+        **kwargs: Any,
     ) -> None:
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
+
+        if objective is not None:
+            raise ValueError(
+                "Please do not set objective directly! Use the `distribution` kwarg"
+            )
+
         super().__init__(objective=None, **kwargs)
 
     @_deprecate_positional_args
@@ -110,18 +120,19 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._distribution.check_target(y)
 
         params = self.get_xgb_params()
+        params["objective"] = None
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
 
-        # we set base score to zero to instead use base_margin in dmatrices
-        # this allows different starting values for the distribution params
+        # we set `base_score` to zero and instead use base_margin in dmatrices
+        # -> this allows different starting values for each distribution parameter
         params["base_score"] = 0.0
         self._starting_params = self._distribution.starting_params(y)
 
-        base_margin = self._get_base_margins(len(y))
+        base_margin = self._get_base_margin(len(y))
         if eval_set is not None:
             base_margin_eval_set = [
-                self._get_base_margins(len(evals[1])) for evals in eval_set
+                self._get_base_margin(len(evals[1])) for evals in eval_set
             ]
         else:
             base_margin_eval_set = None
@@ -141,17 +152,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
             eval_group=None,
             eval_qid=None,
             create_dmatrix=lambda **kwargs: DMatrix(nthread=self.n_jobs, **kwargs),
+            enable_categorical=self.enable_categorical,
             label_transform=lambda x: x,
         )
 
         evals_result = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
-        if len(X.shape) != 2:
-            raise ValueError(
-                "Please reshape the input data X into 2-dimensional matrix."
-            )
 
-        # hack to suppress warnings from the extra distribution parameter
+        # Suppress warnings from unexpected distribution & natural_gradient params
         with config_context(verbosity=0):
             self._Booster = train(
                 params,
@@ -166,7 +174,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 xgb_model=model,
                 callbacks=callbacks,
             )
+
         self._set_evaluation_result(evals_result)
+        self.objective = f"distribution:{self.distribution}"
+
         return self
 
     def predict(
@@ -201,7 +212,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         """
         check_is_fitted(self, attributes=("_distribution", "_starting_params"))
 
-        base_margin = self._get_base_margins(X.shape[0])
+        base_margin = self._get_base_margin(X.shape[0])
 
         params = super().predict(
             X=X,
@@ -214,9 +225,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return self._distribution.predict(params)
 
     def save_model(self, fname: Union[str, os.PathLike]) -> None:
-        # self._distribution class cannot be saved within `super().save_model`, as it
-        # tries to call `json.dumps({"_distribution": self._distribution})` on it
-        # Hence we delete and then reinstantiate (safe as distributions are stateless)
+        # self._distribution class cannot be saved by `super().save_model`, as it
+        # attempts to call `json.dumps({"_distribution": self._distribution})`
+        # Hence we delete, and then reinstantiate
+        # (this is safe as distributions are by definition stateless)
         del self._distribution
         super().save_model(fname)
         self._distribution = get_distribution(self.distribution)
@@ -230,7 +242,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         def obj(params: np.ndarray, data: DMatrix):
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
-                y, params, self.natural_gradient
+                y=y, params=params, natural_gradient=self.natural_gradient
             )
             return grad.flatten(), hess.flatten()
 
@@ -239,15 +251,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def _evaluation_func(self) -> Callable:
         def feval(params: np.ndarray, data: DMatrix):
             y = data.get_label()
-            return self._distribution.loss(y, params)
+            return self._distribution.loss(y=y, params=params)
 
         return feval
 
     def _get_base_margins(self, n_samples: int) -> np.ndarray:
         return (
-            np.array(
-                [param * np.ones(shape=(n_samples,)) for param in self._starting_params]
-            )
-            .transpose()
-            .flatten()
-        )
+            np.ones(shape=(n_samples, 1)) * np.array(self._starting_params)
+        ).flatten()

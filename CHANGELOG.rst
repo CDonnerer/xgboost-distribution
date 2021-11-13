@@ -8,12 +8,29 @@ Development version
 Version 0.2.X, 2021-xx-xx
 --------------------------
 
-- Updated docs to include estimators parameter, :issue:`43`
-- Implemented cleaner model saving, tests against binary and json formats
+- ...
 
 
 Current version
 ===============
+
+Version 0.2.2, 2021-10-23
+--------------------------
+
+- Hot fix to enable compatibility with xgboost v1.5.0 (enable_categorical kwarg)
+
+
+Older versions
+===============
+
+Version 0.2.1, 2021-10-10
+--------------------------
+
+- Fixed the objective parameter in trained model to be reflective of distribution
+- Support for model saving and loading with pickle (please don't use pickle)
+- Added count data example with distribution heatmap, :issue:`45`
+- Updated docs to include estimators parameter, :issue:`43`
+- Implemented cleaner model saving, tests against binary and json formats
 
 Version 0.2.0, 2021-08-14
 --------------------------
@@ -22,8 +39,6 @@ Version 0.2.0, 2021-08-14
 - Added exponential distribution
 - Added Laplace distribution
 
-Older versions
-===============
 
 Version 0.1.2, 2021-07-10
 -------------------------
