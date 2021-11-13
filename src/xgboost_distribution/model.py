@@ -239,7 +239,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
         # See above: Currently need to reinstantiate distribution post loading
         self._distribution = get_distribution(self.distribution)
 
-    def _objective_func(self) -> Callable:
+    def _objective_func(
+        self,
+    ) -> Callable[[np.ndarray, DMatrix], Tuple[np.ndarray, np.ndarray]]:
         def obj(params: np.ndarray, data: DMatrix) -> Tuple[np.ndarray, np.ndarray]:
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
@@ -249,7 +251,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return obj
 
-    def _evaluation_func(self) -> Callable:
+    def _evaluation_func(self) -> Callable[[np.ndarray, DMatrix], Tuple[str, float]]:
         def feval(params: np.ndarray, data: DMatrix) -> Tuple[str, float]:
             y = data.get_label()
             return self._distribution.loss(y=y, params=params)
