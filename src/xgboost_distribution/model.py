@@ -1,7 +1,7 @@
 """XGBDistribution model
 """
 import os
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union, no_type_check
 
 import numpy as np
 from sklearn.base import RegressorMixin
@@ -34,7 +34,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self,
         distribution: str = None,
         natural_gradient: bool = True,
-        objective=None,
+        objective: str = None,
         **kwargs: Any,
     ) -> None:
         self.distribution = distribution or "normal"
@@ -131,7 +131,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         base_margin = self._get_base_margin(len(y))
         if eval_set is not None:
-            base_margin_eval_set = [
+            base_margin_eval_set: Optional[List[np.ndarray]] = [
                 self._get_base_margin(len(evals[1])) for evals in eval_set
             ]
         else:
@@ -156,7 +156,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             label_transform=lambda x: x,
         )
 
-        evals_result = {}
+        evals_result: TrainingCallback.EvalsLog = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
 
         # Suppress warnings from unexpected distribution & natural_gradient params
@@ -180,6 +180,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return self
 
+    @no_type_check
     def predict(
         self,
         X: array_like,
@@ -239,7 +240,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._distribution = get_distribution(self.distribution)
 
     def _objective_func(self) -> Callable:
-        def obj(params: np.ndarray, data: DMatrix):
+        def obj(params: np.ndarray, data: DMatrix) -> Tuple[np.ndarray, np.ndarray]:
             y = data.get_label()
             grad, hess = self._distribution.gradient_and_hessian(
                 y=y, params=params, natural_gradient=self.natural_gradient
@@ -249,7 +250,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return obj
 
     def _evaluation_func(self) -> Callable:
-        def feval(params: np.ndarray, data: DMatrix):
+        def feval(params: np.ndarray, data: DMatrix) -> Tuple[str, float]:
             y = data.get_label()
             return self._distribution.loss(y=y, params=params)
 
