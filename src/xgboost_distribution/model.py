@@ -250,7 +250,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
     ) -> Callable[[np.ndarray, DMatrix], Tuple[np.ndarray, np.ndarray]]:
         def obj(params: np.ndarray, data: DMatrix) -> Tuple[np.ndarray, np.ndarray]:
             y = data.get_label()
-
             grad, hess = self._distribution.gradient_and_hessian(
                 y=y, params=params, natural_gradient=self.natural_gradient
             )
