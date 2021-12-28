@@ -17,25 +17,25 @@ class BaseDistribution(ABC):
         globals()[self.Predictions.__name__] = self.Predictions
 
     def check_target(self, y):
-        pass
+        """Ensure that the target is compatible with the chosen distribution"""
 
     @property
     @abstractmethod
     def params(self):
-        pass
+        """The parameter names of the distribution"""
 
     @abstractmethod
     def starting_params(self, y):
-        pass
+        """The starting parameters of the distribution"""
 
     @abstractmethod
     def gradient_and_hessian(self, y, params, natural_gradient=True):
-        pass
+        """Compute the gradient and hessian of the distribution"""
 
     @abstractmethod
     def loss(self, y, params):
-        pass
+        """Evaluate the loss (typically negative log-likelihood)"""
 
     @abstractmethod
     def predict(self, params):
-        pass
+        """Predict the parameters of a given distribution"""
