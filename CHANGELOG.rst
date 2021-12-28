@@ -5,14 +5,22 @@ Changelog
 Development version
 ===================
 
-Version 0.2.X, 2021-xx-xx
+Version 0.2.X, 2022-xx-xx
+--------------------------
+
+- ...
+
+Current version
+===============
+
+Version 0.2.3, 2021-12-28
 --------------------------
 
 - Added type hints to XGBDistribution model class
-- Added error raising if sample weights are used (not yet implemented)
+- Hotfix to add error raising if sample weights are used (which is not yet implemented)
 
 
-Current version
+Older versions
 ===============
 
 Version 0.2.2, 2021-10-23
@@ -20,9 +28,6 @@ Version 0.2.2, 2021-10-23
 
 - Hot fix to enable compatibility with xgboost v1.5.0 (enable_categorical kwarg)
 
-
-Older versions
-===============
 
 Version 0.2.1, 2021-10-10
 --------------------------
@@ -32,6 +37,7 @@ Version 0.2.1, 2021-10-10
 - Added count data example with distribution heatmap, :issue:`45`
 - Updated docs to include estimators parameter, :issue:`43`
 - Implemented cleaner model saving, tests against binary and json formats
+
 
 Version 0.2.0, 2021-08-14
 --------------------------
