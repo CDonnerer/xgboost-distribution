@@ -91,6 +91,17 @@ def test_setting_objective_in_init_fails():
         XGBDistribution(objective="binary:logistic")
 
 
+def test_train_with_sample_weights_fails(small_X_y_data):
+    X, y = small_X_y_data
+
+    model = XGBDistribution()
+    with pytest.raises(NotImplementedError):
+        model.fit(X, y, sample_weight=np.ones_like(y))
+
+    with pytest.raises(NotImplementedError):
+        model.fit(X, y, eval_set=[(X, y)], sample_weight_eval_set=np.ones_like(y))
+
+
 # -------------------------------------------------------------------------------------
 #  Model internal tests
 # -------------------------------------------------------------------------------------

@@ -9,6 +9,7 @@ Version 0.2.X, 2021-xx-xx
 --------------------------
 
 - Added type hints to XGBDistribution model class
+- Added error raising if sample weights are used (not yet implemented)
 
 
 Current version
