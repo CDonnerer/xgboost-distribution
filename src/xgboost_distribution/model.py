@@ -1,13 +1,20 @@
 """XGBDistribution model
 """
-from typing import Callable
+import os
+from typing import Any, Callable, List, Optional, Tuple, Union, no_type_check
 
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
-from xgboost.core import DMatrix
-from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
+from xgboost.callback import TrainingCallback
+from xgboost.core import Booster, DMatrix, _deprecate_positional_args
+from xgboost.sklearn import (
+    XGBModel,
+    _wrap_evaluation_matrices,
+    array_like,
+    xgboost_model_doc,
+)
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
@@ -22,9 +29,14 @@ from xgboost_distribution.distributions import get_distribution, get_distributio
         Whether or not natural gradients should be used.""",
 )
 class XGBDistribution(XGBModel, RegressorMixin):
+    @_deprecate_positional_args
     def __init__(
-        self, distribution=None, natural_gradient=True, objective=None, **kwargs
-    ):
+        self,
+        distribution: str = None,
+        natural_gradient: bool = True,
+        objective: str = None,
+        **kwargs: Any,
+    ) -> None:
         self.distribution = distribution or "normal"
         self.natural_gradient = natural_gradient
 
@@ -35,20 +47,21 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         super().__init__(objective=None, **kwargs)
 
+    @_deprecate_positional_args
     def fit(
         self,
-        X,
-        y,
+        X: array_like,
+        y: array_like,
         *,
-        sample_weight=None,
-        eval_set=None,
-        early_stopping_rounds=None,
-        verbose=False,
-        xgb_model=None,
-        sample_weight_eval_set=None,
-        feature_weights=None,
-        callbacks=None,
-    ):
+        sample_weight: Optional[array_like] = None,
+        eval_set: Optional[List[Tuple[array_like, array_like]]] = None,
+        early_stopping_rounds: Optional[int] = None,
+        verbose: Optional[bool] = False,
+        xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
+        sample_weight_eval_set: Optional[List[array_like]] = None,
+        feature_weights: Optional[array_like] = None,
+        callbacks: Optional[List[TrainingCallback]] = None,
+    ) -> "XGBDistribution":
         """Fit gradient boosting distribution model.
 
         Note that calling ``fit()`` multiple times will cause the model object to be
@@ -77,7 +90,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             for early stopping.
 
             If early stopping occurs, the model will have three additional fields:
-            ``clf.best_score``, ``clf.best_iteration``.
+            ``model.best_score``, ``model.best_iteration``.
         verbose : bool
             If `verbose` and an evaluation set is used, writes the evaluation metric
             measured on the validation set to stderr.
@@ -118,7 +131,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         base_margin = self._get_base_margin(len(y))
         if eval_set is not None:
-            base_margin_eval_set = [
+            base_margin_eval_set: Optional[List[np.ndarray]] = [
                 self._get_base_margin(len(evals[1])) for evals in eval_set
             ]
         else:
@@ -149,7 +162,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             label_transform=lambda x: x,
         )
 
-        evals_result = {}
+        evals_result: TrainingCallback.EvalsLog = {}
         model, _, params = self._configure_fit(xgb_model, None, params)
 
         # Suppress warnings from unexpected distribution & natural_gradient params
@@ -173,13 +186,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return self
 
+    @no_type_check
     def predict(
         self,
-        X,
-        ntree_limit=None,
-        validate_features=False,
-        iteration_range=None,
-    ):
+        X: array_like,
+        ntree_limit: Optional[int] = None,
+        validate_features: bool = True,
+        iteration_range: Optional[Tuple[int, int]] = None,
+    ) -> Tuple[np.ndarray]:
         """Predict all params of distribution of each `X` example.
 
         Parameters
@@ -217,7 +231,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         )
         return self._distribution.predict(params)
 
-    def save_model(self, fname) -> None:
+    def save_model(self, fname: Union[str, os.PathLike]) -> None:
         # self._distribution class cannot be saved by `super().save_model`, as it
         # attempts to call `json.dumps({"_distribution": self._distribution})`
         # Hence we delete, and then reinstantiate
@@ -226,13 +240,15 @@ class XGBDistribution(XGBModel, RegressorMixin):
         super().save_model(fname)
         self._distribution = get_distribution(self.distribution)
 
-    def load_model(self, fname) -> None:
+    def load_model(self, fname: Union[str, bytearray, os.PathLike]) -> None:
         super().load_model(fname)
         # See above: Currently need to reinstantiate distribution post loading
         self._distribution = get_distribution(self.distribution)
 
-    def _objective_func(self) -> Callable:
-        def obj(params: np.ndarray, data: DMatrix):
+    def _objective_func(
+        self,
+    ) -> Callable[[np.ndarray, DMatrix], Tuple[np.ndarray, np.ndarray]]:
+        def obj(params: np.ndarray, data: DMatrix) -> Tuple[np.ndarray, np.ndarray]:
             y = data.get_label()
 
             grad, hess = self._distribution.gradient_and_hessian(
@@ -242,14 +258,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         return obj
 
-    def _evaluation_func(self) -> Callable:
-        def feval(params: np.ndarray, data: DMatrix):
+    def _evaluation_func(self) -> Callable[[np.ndarray, DMatrix], Tuple[str, float]]:
+        def feval(params: np.ndarray, data: DMatrix) -> Tuple[str, float]:
             y = data.get_label()
             return self._distribution.loss(y=y, params=params)
 
         return feval
 
-    def _get_base_margin(self, n_samples):
+    def _get_base_margin(self, n_samples: int) -> np.ndarray:
         return (
             np.ones(shape=(n_samples, 1)) * np.array(self._starting_params)
         ).flatten()
