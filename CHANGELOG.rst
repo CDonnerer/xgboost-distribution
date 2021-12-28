@@ -8,7 +8,7 @@ Development version
 Version 0.2.X, 2022-xx-xx
 --------------------------
 
--
+- ...
 
 Current version
 ===============
