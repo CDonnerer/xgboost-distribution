@@ -140,7 +140,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
         for param in [sample_weight, sample_weight_eval_set]:
             if param is not None:
                 raise NotImplementedError(
-                    "Sample weights are currently not supported by XGBDistribution"
+                    "Sample weights are currently not supported by XGBDistribution!"
                 )
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
