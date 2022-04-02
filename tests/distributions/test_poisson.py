@@ -55,5 +55,5 @@ def test_loss(poisson):
         y=np.array([1, ]),
         params=np.array([[np.log(1)], ]),
     )
-    assert loss_name == "PoissonError"
+    assert loss_name == "Poisson-NLL"
     assert loss_value == 1.0

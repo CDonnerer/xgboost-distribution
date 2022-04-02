@@ -40,5 +40,5 @@ def test_loss(laplace):
         y=np.array([1, ]),
         params=np.array([[1, np.log(1)], ]),
     )
-    assert loss_name == "LaplaceError"
+    assert loss_name == "Laplace-NLL"
     np.testing.assert_approx_equal(loss_value, -np.log(0.5))
