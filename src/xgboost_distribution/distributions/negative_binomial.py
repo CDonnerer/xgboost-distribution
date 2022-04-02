@@ -102,7 +102,7 @@ class NegativeBinomial(BaseDistribution):
 
     def loss(self, y, params):
         n, p = self.predict(params)
-        return "NegativeBinomialError", -nbinom.logpmf(y, n=n, p=p).mean()
+        return "NegativeBinomial-NLL", -nbinom.logpmf(y, n=n, p=p).mean()
 
     def predict(self, params):
         log_n, raw_p = params[:, 0], params[:, 1]

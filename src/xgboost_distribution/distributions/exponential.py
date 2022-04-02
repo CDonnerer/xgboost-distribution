@@ -55,7 +55,7 @@ class Exponential(BaseDistribution):
 
     def loss(self, y, params):
         scale = self.predict(params)
-        return "ExponentialError", -expon.logpdf(y, scale=scale).mean()
+        return "Exponential-NLL", -expon.logpdf(y, scale=scale).mean()
 
     def predict(self, params):
         log_scale = params

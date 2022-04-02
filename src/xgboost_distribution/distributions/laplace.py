@@ -82,7 +82,7 @@ class Laplace(BaseDistribution):
 
     def loss(self, y, params):
         loc, scale = self.predict(params)
-        return "LaplaceError", -laplace.logpdf(y, loc=loc, scale=scale).mean()
+        return "Laplace-NLL", -laplace.logpdf(y, loc=loc, scale=scale).mean()
 
     def predict(self, params):
         loc, log_scale = self._split_params(params)
