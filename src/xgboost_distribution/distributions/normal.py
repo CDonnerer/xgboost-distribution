@@ -81,7 +81,7 @@ class Normal(BaseDistribution):
 
     def loss(self, y, params):
         loc, scale = self.predict(params)
-        return "NormalError", -norm.logpdf(y, loc=loc, scale=scale).mean()
+        return "Normal-LogLikelihood", -norm.logpdf(y, loc=loc, scale=scale).mean()
 
     def predict(self, params):
         loc, log_scale = self._split_params(params)
