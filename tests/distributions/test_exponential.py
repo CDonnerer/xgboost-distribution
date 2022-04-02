@@ -55,5 +55,5 @@ def test_loss(exponential):
         y=np.array([1, ]),
         params=np.array([[np.log(1)], ]),
     )
-    assert loss_name == "ExponentialError"
+    assert loss_name == "Exponential-NLL"
     assert loss_value == 1.0
