@@ -66,51 +66,37 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         Parameters
         ----------
-        X : ArrayLike
+        X :
             Feature matrix
-        y : ArrayLike
+        y :
             Labels
-        sample_weight : ArrayLike
+        sample_weight :
             instance weights
-        eval_set : list
+        eval_set :
             A list of (X, y) tuple pairs to use as validation sets, for which
             metrics will be computed.
             Validation metrics will help us track the performance of the model.
         early_stopping_rounds : int
-            Activates early stopping. Validation metric needs to improve at least once
-            in every **early_stopping_rounds** round(s) to continue training.
-            Requires at least one item in **eval_set**.
-
-            The method returns the model from the last iteration (not the best one).
-            If there's more than one item in **eval_set**, the last entry will be used
-            for early stopping.
-
-            If early stopping occurs, the model will have three additional fields:
-            ``model.best_score``, ``model.best_iteration``.
-        verbose : bool
+            .. deprecated:: 1.6.0
+                Use `early_stopping_rounds` in :py:meth:`__init__` or
+                :py:meth:`set_params` instead.
+        verbose :
             If `verbose` and an evaluation set is used, writes the evaluation metric
             measured on the validation set to stderr.
-        xgb_model : `xgboost.core.Booster`, `xgboost.sklearn.XGBModel`
+        xgb_model :
             file name of stored XGBoost model or 'Booster' instance XGBoost model to be
             loaded before training (allows training continuation).
-        sample_weight_eval_set : ArrayLike
+        sample_weight_eval_set :
             A list of the form [L_1, L_2, ..., L_n], where each L_i is an array like
             object storing instance weights for the i-th validation set.
-        feature_weights : ArrayLike
+        feature_weights :
             Weight for each feature, defines the probability of each feature being
             selected when colsample is being used.  All values must be greater than 0,
-            otherwise a `ValueError` is thrown.  Only available for `hist`, `gpu_hist`
-            and `exact` tree methods.
-        callbacks : list
-            List of callback functions that are applied at end of each iteration.
-            It is possible to use predefined callbacks by using :ref:`callback_api`.
-            Example:
+            otherwise a `ValueError` is thrown.
 
-            .. code-block:: python
-
-                callbacks = [xgb.callback.EarlyStopping(rounds=early_stopping_rounds,
-                                                        save_best=True)]
-
+        callbacks :
+            .. deprecated:: 1.6.0
+                Use `callbacks` in :py:meth:`__init__` or :py:meth:`set_params` instead.
         """
         self._distribution = get_distribution(self.distribution)
         self._distribution.check_target(y)

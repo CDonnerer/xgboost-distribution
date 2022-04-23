@@ -21,7 +21,6 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
         distribution="normal", max_depth=3, n_estimators=500, early_stopping_rounds=10
     )
     model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
-
     evals_result = model.evals_result()
 
     assert model.best_iteration == 6
