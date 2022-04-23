@@ -110,8 +110,8 @@ def test_train_with_sample_weights_fails(small_X_y_data):
 @pytest.mark.parametrize(
     "distribution, expected_margin",
     [
-        ("normal", np.array([0.5, np.log(0.5), 0.5, np.log(0.5)])),
-        ("poisson", np.array([np.log(0.5), np.log(0.5)])),
+        ("normal", np.array([[0.5, np.log(0.5)], [0.5, np.log(0.5)]])),
+        ("poisson", np.array([[np.log(0.5)], [np.log(0.5)]])),
     ],
 )
 def test_get_base_margin(distribution, expected_margin):
