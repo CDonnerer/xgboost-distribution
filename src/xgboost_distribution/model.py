@@ -7,14 +7,10 @@ import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
+from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
-from xgboost.sklearn import (
-    XGBModel,
-    _wrap_evaluation_matrices,
-    array_like,
-    xgboost_model_doc,
-)
+from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
@@ -50,16 +46,16 @@ class XGBDistribution(XGBModel, RegressorMixin):
     @_deprecate_positional_args
     def fit(
         self,
-        X: array_like,
-        y: array_like,
+        X: ArrayLike,
+        y: ArrayLike,
         *,
-        sample_weight: Optional[array_like] = None,
-        eval_set: Optional[List[Tuple[array_like, array_like]]] = None,
+        sample_weight: Optional[ArrayLike] = None,
+        eval_set: Optional[List[Tuple[ArrayLike, ArrayLike]]] = None,
         early_stopping_rounds: Optional[int] = None,
         verbose: Optional[bool] = False,
         xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
-        sample_weight_eval_set: Optional[List[array_like]] = None,
-        feature_weights: Optional[array_like] = None,
+        sample_weight_eval_set: Optional[List[ArrayLike]] = None,
+        feature_weights: Optional[ArrayLike] = None,
         callbacks: Optional[List[TrainingCallback]] = None,
     ) -> "XGBDistribution":
         """Fit gradient boosting distribution model.
@@ -70,11 +66,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         Parameters
         ----------
-        X : array_like
+        X : ArrayLike
             Feature matrix
-        y : array_like
+        y : ArrayLike
             Labels
-        sample_weight : array_like
+        sample_weight : ArrayLike
             instance weights
         eval_set : list
             A list of (X, y) tuple pairs to use as validation sets, for which
@@ -97,10 +93,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
         xgb_model : `xgboost.core.Booster`, `xgboost.sklearn.XGBModel`
             file name of stored XGBoost model or 'Booster' instance XGBoost model to be
             loaded before training (allows training continuation).
-        sample_weight_eval_set : array_like
+        sample_weight_eval_set : ArrayLike
             A list of the form [L_1, L_2, ..., L_n], where each L_i is an array like
             object storing instance weights for the i-th validation set.
-        feature_weights : array_like
+        feature_weights : ArrayLike
             Weight for each feature, defines the probability of each feature being
             selected when colsample is being used.  All values must be greater than 0,
             otherwise a `ValueError` is thrown.  Only available for `hist`, `gpu_hist`
@@ -159,7 +155,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
             eval_qid=None,
             create_dmatrix=lambda **kwargs: DMatrix(nthread=self.n_jobs, **kwargs),
             enable_categorical=self.enable_categorical,
-            label_transform=lambda x: x,
         )
 
         evals_result: TrainingCallback.EvalsLog = {}
@@ -189,7 +184,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     @no_type_check
     def predict(
         self,
-        X: array_like,
+        X: ArrayLike,
         ntree_limit: Optional[int] = None,
         validate_features: bool = True,
         iteration_range: Optional[Tuple[int, int]] = None,
@@ -198,7 +193,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         Parameters
         ----------
-        X : array_like
+        X : ArrayLike
             Feature matrix.
         ntree_limit : int
             Deprecated, use `iteration_range` instead.
