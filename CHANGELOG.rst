@@ -15,7 +15,7 @@ Current version
 
 Version 0.2.4, 2022-04-23
 --------------------------
-- Added more precise loss description, i.e. negative log likelikhood error
+- Added more precise loss description, negative log likelihood vs error
 - Various updates to conform with xgboost==1.6.0 release
 
 
