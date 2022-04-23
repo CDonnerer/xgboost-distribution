@@ -177,7 +177,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 early_stopping_rounds=early_stopping_rounds,
                 evals_result=evals_result,
                 obj=self._objective_func(),
-                feval=self._evaluation_func(),
+                custom_metric=self._evaluation_func(),
                 verbose_eval=verbose,
                 xgb_model=model,
                 callbacks=callbacks,
