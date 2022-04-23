@@ -7,14 +7,10 @@ import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost import config_context
+from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
-from xgboost.sklearn import (
-    XGBModel,
-    _wrap_evaluation_matrices,
-    array_like,
-    xgboost_model_doc,
-)
+from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
@@ -50,16 +46,16 @@ class XGBDistribution(XGBModel, RegressorMixin):
     @_deprecate_positional_args
     def fit(
         self,
-        X: array_like,
-        y: array_like,
+        X: ArrayLike,
+        y: ArrayLike,
         *,
-        sample_weight: Optional[array_like] = None,
-        eval_set: Optional[List[Tuple[array_like, array_like]]] = None,
+        sample_weight: Optional[ArrayLike] = None,
+        eval_set: Optional[List[Tuple[ArrayLike, ArrayLike]]] = None,
         early_stopping_rounds: Optional[int] = None,
         verbose: Optional[bool] = False,
         xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
-        sample_weight_eval_set: Optional[List[array_like]] = None,
-        feature_weights: Optional[array_like] = None,
+        sample_weight_eval_set: Optional[List[ArrayLike]] = None,
+        feature_weights: Optional[ArrayLike] = None,
         callbacks: Optional[List[TrainingCallback]] = None,
     ) -> "XGBDistribution":
         """Fit gradient boosting distribution model.
@@ -70,51 +66,37 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         Parameters
         ----------
-        X : array_like
+        X :
             Feature matrix
-        y : array_like
+        y :
             Labels
-        sample_weight : array_like
+        sample_weight :
             instance weights
-        eval_set : list
+        eval_set :
             A list of (X, y) tuple pairs to use as validation sets, for which
             metrics will be computed.
             Validation metrics will help us track the performance of the model.
         early_stopping_rounds : int
-            Activates early stopping. Validation metric needs to improve at least once
-            in every **early_stopping_rounds** round(s) to continue training.
-            Requires at least one item in **eval_set**.
-
-            The method returns the model from the last iteration (not the best one).
-            If there's more than one item in **eval_set**, the last entry will be used
-            for early stopping.
-
-            If early stopping occurs, the model will have three additional fields:
-            ``model.best_score``, ``model.best_iteration``.
-        verbose : bool
+            .. deprecated:: 1.6.0
+                Use `early_stopping_rounds` in :py:meth:`__init__` or
+                :py:meth:`set_params` instead.
+        verbose :
             If `verbose` and an evaluation set is used, writes the evaluation metric
             measured on the validation set to stderr.
-        xgb_model : `xgboost.core.Booster`, `xgboost.sklearn.XGBModel`
+        xgb_model :
             file name of stored XGBoost model or 'Booster' instance XGBoost model to be
             loaded before training (allows training continuation).
-        sample_weight_eval_set : array_like
+        sample_weight_eval_set :
             A list of the form [L_1, L_2, ..., L_n], where each L_i is an array like
             object storing instance weights for the i-th validation set.
-        feature_weights : array_like
+        feature_weights :
             Weight for each feature, defines the probability of each feature being
             selected when colsample is being used.  All values must be greater than 0,
-            otherwise a `ValueError` is thrown.  Only available for `hist`, `gpu_hist`
-            and `exact` tree methods.
-        callbacks : list
-            List of callback functions that are applied at end of each iteration.
-            It is possible to use predefined callbacks by using :ref:`callback_api`.
-            Example:
+            otherwise a `ValueError` is thrown.
 
-            .. code-block:: python
-
-                callbacks = [xgb.callback.EarlyStopping(rounds=early_stopping_rounds,
-                                                        save_best=True)]
-
+        callbacks :
+            .. deprecated:: 1.6.0
+                Use `callbacks` in :py:meth:`__init__` or :py:meth:`set_params` instead.
         """
         self._distribution = get_distribution(self.distribution)
         self._distribution.check_target(y)
@@ -159,11 +141,17 @@ class XGBDistribution(XGBModel, RegressorMixin):
             eval_qid=None,
             create_dmatrix=lambda **kwargs: DMatrix(nthread=self.n_jobs, **kwargs),
             enable_categorical=self.enable_categorical,
-            label_transform=lambda x: x,
         )
 
         evals_result: TrainingCallback.EvalsLog = {}
-        model, _, params = self._configure_fit(xgb_model, None, params)
+
+        model, _, params, early_stopping_rounds, callbacks = self._configure_fit(
+            booster=xgb_model,
+            eval_metric=None,
+            params=params,
+            early_stopping_rounds=early_stopping_rounds,
+            callbacks=callbacks,
+        )
 
         # Suppress warnings from unexpected distribution & natural_gradient params
         with config_context(verbosity=0):
@@ -175,7 +163,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 early_stopping_rounds=early_stopping_rounds,
                 evals_result=evals_result,
                 obj=self._objective_func(),
-                feval=self._evaluation_func(),
+                custom_metric=self._evaluation_func(),
                 verbose_eval=verbose,
                 xgb_model=model,
                 callbacks=callbacks,
@@ -189,7 +177,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     @no_type_check
     def predict(
         self,
-        X: array_like,
+        X: ArrayLike,
         ntree_limit: Optional[int] = None,
         validate_features: bool = True,
         iteration_range: Optional[Tuple[int, int]] = None,
@@ -198,7 +186,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         Parameters
         ----------
-        X : array_like
+        X : ArrayLike
             Feature matrix.
         ntree_limit : int
             Deprecated, use `iteration_range` instead.
@@ -265,6 +253,4 @@ class XGBDistribution(XGBModel, RegressorMixin):
         return feval
 
     def _get_base_margin(self, n_samples: int) -> np.ndarray:
-        return (
-            np.ones(shape=(n_samples, 1)) * np.array(self._starting_params)
-        ).flatten()
+        return np.ones(shape=(n_samples, 1)) * np.array(self._starting_params)
