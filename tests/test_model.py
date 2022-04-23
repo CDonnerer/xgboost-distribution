@@ -17,8 +17,10 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
     """Integration test to ensure end-to-end functionality"""
 
     X_train, X_test, y_train, y_test = small_train_test_data
-    model = XGBDistribution(distribution="normal", max_depth=3, n_estimators=500)
-    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], early_stopping_rounds=10)
+    model = XGBDistribution(
+        distribution="normal", max_depth=3, n_estimators=500, early_stopping_rounds=10
+    )
+    model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
 
     evals_result = model.evals_result()
 
@@ -30,8 +32,10 @@ def test_XGBDistribution_early_stopping_predict(small_train_test_data):
     """Check that predict with early stopping uses correct ntrees"""
     X_train, X_test, y_train, y_test = small_train_test_data
 
-    model = XGBDistribution(distribution="normal", max_depth=3, n_estimators=500)
-    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], early_stopping_rounds=10)
+    model = XGBDistribution(
+        distribution="normal", max_depth=3, n_estimators=500, early_stopping_rounds=10
+    )
+    model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
 
     mean, var = model.predict(X_test)
     mean_iter, var_iter = model.predict(
