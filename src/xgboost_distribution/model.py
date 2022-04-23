@@ -158,7 +158,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
         )
 
         evals_result: TrainingCallback.EvalsLog = {}
-        model, _, params = self._configure_fit(xgb_model, None, params)
+
+        model, _, params, early_stopping_rounds, callbacks = self._configure_fit(
+            booster=xgb_model,
+            eval_metric=None,
+            params=params,
+            early_stopping_rounds=early_stopping_rounds,
+            callbacks=callbacks,
+        )
 
         # Suppress warnings from unexpected distribution & natural_gradient params
         with config_context(verbosity=0):
