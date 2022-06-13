@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import lognorm
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.utils import check_is_gt_zero
+from xgboost_distribution.distributions.utils import check_all_gt_zero
 
 
 class LogNormal(BaseDistribution):
@@ -41,7 +41,7 @@ class LogNormal(BaseDistribution):
         return ("scale", "s")
 
     def check_target(self, y):
-        check_is_gt_zero(y)
+        check_all_gt_zero(y)
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""

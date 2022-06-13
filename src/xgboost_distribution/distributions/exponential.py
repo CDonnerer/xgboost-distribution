@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import expon
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.utils import check_is_ge_zero
+from xgboost_distribution.distributions.utils import check_all_ge_zero
 
 
 class Exponential(BaseDistribution):
@@ -33,7 +33,7 @@ class Exponential(BaseDistribution):
         return ("scale",)
 
     def check_target(self, y):
-        check_is_ge_zero(y)
+        check_all_ge_zero(y)
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
