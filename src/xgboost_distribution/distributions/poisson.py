@@ -4,7 +4,10 @@ import numpy as np
 from scipy.stats import poisson
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.utils import check_is_ge_zero, check_is_integer
+from xgboost_distribution.distributions.utils import (
+    check_all_ge_zero,
+    check_all_integer,
+)
 
 
 class Poisson(BaseDistribution):
@@ -32,8 +35,8 @@ class Poisson(BaseDistribution):
         return ("mu",)
 
     def check_target(self, y):
-        check_is_integer(y)
-        check_is_ge_zero(y)
+        check_all_integer(y)
+        check_all_ge_zero(y)
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""

@@ -5,7 +5,10 @@ from scipy.special import digamma, expit
 from scipy.stats import nbinom
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.utils import check_is_ge_zero, check_is_integer
+from xgboost_distribution.distributions.utils import (
+    check_all_ge_zero,
+    check_all_integer,
+)
 
 
 class NegativeBinomial(BaseDistribution):
@@ -68,8 +71,8 @@ class NegativeBinomial(BaseDistribution):
         return ("n", "p")
 
     def check_target(self, y):
-        check_is_integer(y)
-        check_is_ge_zero(y)
+        check_all_integer(y)
+        check_all_ge_zero(y)
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
