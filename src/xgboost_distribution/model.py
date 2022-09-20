@@ -219,8 +219,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
         )
         return self._distribution.predict(params)
 
-    def virtual_ensemble_predict(self):
+    def virtual_ensemble_predict(self, X, virtual_model_count: int = 10):
         """Predict using virtual ensembles."""
+
+        params = self.predict(X, iteration_range=(0, self.best_iteration + 1))
+        return params
 
     def save_model(self, fname: Union[str, os.PathLike]) -> None:
         # self._distribution class cannot be saved by `super().save_model`, as it
