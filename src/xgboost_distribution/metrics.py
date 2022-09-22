@@ -1,9 +1,24 @@
 """Metrics for evaluating xgboost-distribution scores
 """
+from typing import Callable, Tuple
+
+import numpy as np
 import scipy
+from xgboost._typing import ArrayLike
 
 
-def get_ll_score_func(distribution: str):
+def get_ll_score_func(distribution: str) -> Callable[ArrayLike, Tuple[np.ndarray]]:
+    """Get log-likelihood scoring function for a given distribution
+
+    Parameters
+    ----------
+    distribution : str
+
+    Returns
+    -------
+    Callable
+        Scoring function
+    """
     dists = {
         "exponential": scipy.stats.expon.logpdf,
         "laplace": scipy.stats.laplace.logpdf,
