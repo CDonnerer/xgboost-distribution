@@ -21,7 +21,7 @@ def get_ll_score_func(
     Callable
         Scoring function
     """
-    dists = {
+    dist_ll = {
         "exponential": scipy.stats.expon.logpdf,
         "laplace": scipy.stats.laplace.logpdf,
         "log-normal": scipy.stats.lognorm.logpdf,
@@ -31,6 +31,33 @@ def get_ll_score_func(
     }
 
     def score_func(y, y_pred):
-        return dists[distribution](y, *y_pred).mean()
+        return dist_ll[distribution](y, *y_pred).mean()
 
     return score_func
+
+
+def wrap_point_estimate_score_func(
+    score_func: Callable, distribution: str
+) -> Callable[[ArrayLike, Tuple[np.ndarray]], float]:
+    """Wrap a point estimate scoring function for scoring with xgboost-distribution
+
+    Parameters
+    ----------
+    score_func : Callable
+    distribution : str
+
+    Returns
+    -------
+    Callable[[ArrayLike, Tuple[np.ndarray]], float]
+        Scoring function
+    """
+    dist_point_estimator = {
+        "normal": lambda x: x.loc,
+        # TODO: What about the others?
+    }
+
+    def new_score_func(y, y_pred, **kwargs):
+        y_pred = dist_point_estimator[distribution](y_pred)
+        return score_func(y, y_pred, **kwargs)
+
+    return new_score_func
