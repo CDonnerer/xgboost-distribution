@@ -8,7 +8,8 @@ Development version
 Version 0.2.X, 2022-xx-xx
 --------------------------
 
-- ...
+- Added example script for hyperparameter tuning
+
 
 Current version
 ===============
@@ -19,15 +20,16 @@ Version 0.2.4, 2022-04-23
 - Various updates to conform with xgboost==1.6.0 release
 
 
+Older versions
+===============
+
+
 Version 0.2.3, 2021-12-28
 --------------------------
 
 - Added type hints to XGBDistribution model class
 - Hotfix to add error raising if sample weights are used (which is not yet implemented)
 
-
-Older versions
-===============
 
 Version 0.2.2, 2021-10-23
 --------------------------
