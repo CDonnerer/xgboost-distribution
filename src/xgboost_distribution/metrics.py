@@ -7,7 +7,7 @@ import scipy
 from xgboost._typing import ArrayLike
 
 
-def get_ll_score_func(distribution: str) -> Callable[ArrayLike, Tuple[np.ndarray]]:
+def get_ll_score_func(distribution: str) -> Callable[[ArrayLike, Tuple[np.ndarray]]]:
     """Get log-likelihood scoring function for a given distribution
 
     Parameters
