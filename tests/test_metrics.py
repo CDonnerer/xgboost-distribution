@@ -1,6 +1,5 @@
 """Test suite for metrics
 """
-
 from xgboost_distribution.distributions import AVAILABLE_DISTRIBUTIONS
 from xgboost_distribution.metrics import get_ll_score_func
 
