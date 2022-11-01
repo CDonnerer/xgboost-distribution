@@ -19,7 +19,7 @@ Version 0.2.5, 2022-11-01
 --------------------------
 
 - Added example script for hyperparameter tuning
-- Python requires >= 3.8 & xgboost >= 1.7.0
+- Python requires >= 3.8 & xgboost >= 1.7.0 compatibility
 
 
 Version 0.2.4, 2022-04-23
