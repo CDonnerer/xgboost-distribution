@@ -139,8 +139,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
             base_margin_eval_set=base_margin_eval_set,
             eval_group=None,
             eval_qid=None,
-            create_dmatrix=lambda **kwargs: DMatrix(nthread=self.n_jobs, **kwargs),
+            create_dmatrix=self._create_dmatrix,
             enable_categorical=self.enable_categorical,
+            feature_types=self.feature_types,
         )
 
         evals_result: TrainingCallback.EvalsLog = {}
