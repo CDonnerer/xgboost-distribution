@@ -22,14 +22,14 @@ Version 0.2.5, 2022-11-01
 - Python requires >= 3.8 & xgboost >= 1.7.0 compatibility
 
 
+Older versions
+===============
+
+
 Version 0.2.4, 2022-04-23
 --------------------------
 - Added more precise loss description, negative log likelihood vs error
 - Various updates to conform with xgboost==1.6.0 release
-
-
-Older versions
-===============
 
 
 Version 0.2.3, 2021-12-28
