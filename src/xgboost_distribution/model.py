@@ -242,6 +242,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             grad, hess = self._distribution.gradient_and_hessian(
                 y=y, params=params, natural_gradient=self.natural_gradient
             )
+            # sample weights should apply to grad and hess here
             return grad.flatten(), hess.flatten()
 
         return obj
@@ -249,6 +250,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def _evaluation_func(self) -> Callable[[np.ndarray, DMatrix], Tuple[str, float]]:
         def feval(params: np.ndarray, data: DMatrix) -> Tuple[str, float]:
             y = data.get_label()
+            # sample weights should give us a weighted mean here
             return self._distribution.loss(y=y, params=params)
 
         return feval
