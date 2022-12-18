@@ -119,11 +119,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
         else:
             base_margin_eval_set = None
 
-        for param in [sample_weight, sample_weight_eval_set]:
-            if param is not None:
-                raise NotImplementedError(
-                    "Sample weights are currently not supported by XGBDistribution!"
-                )
+        # for param in [sample_weight, sample_weight_eval_set]:
+        #     if param is not None:
+        #         raise NotImplementedError(
+        #             "Sample weights are currently not supported by XGBDistribution!"
+        #         )
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
@@ -242,7 +242,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
             grad, hess = self._distribution.gradient_and_hessian(
                 y=y, params=params, natural_gradient=self.natural_gradient
             )
-            # sample weights should apply to grad and hess here
+
+            weights = data.get_weight()
+            if weights.size != 0:
+                weights = weights.reshape(-1, 1)
+                # TODO: what if some weights go to zero?
+                grad *= weights
+                hess *= weights
+
             return grad.flatten(), hess.flatten()
 
         return obj
@@ -250,8 +257,19 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def _evaluation_func(self) -> Callable[[np.ndarray, DMatrix], Tuple[str, float]]:
         def feval(params: np.ndarray, data: DMatrix) -> Tuple[str, float]:
             y = data.get_label()
-            # sample weights should give us a weighted mean here
-            return self._distribution.loss(y=y, params=params)
+            weights = data.get_weight()
+            if weights.size == 0:
+                weights = np.ones_like(y)
+
+            # TODO: abstraction seems a bit wrong here, loss is no longer generic
+            # Options are to (1) make the loss specific (nll) for the distribution
+            # or (2) pass the weights down (or something else)
+            # Given that currently you can only get nll leaning towards (1)
+            nll = self._distribution.loss(y=y, params=params)
+            loss = np.average(nll, weights=weights)
+            loss_name = f"{self.distribution}-NLL"
+
+            return loss_name, loss
 
         return feval
 

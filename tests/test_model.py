@@ -67,6 +67,48 @@ def test_distribution_set_param(small_X_y_data):
     model.fit(X, y)
 
 
+def test_sample_weights(small_X_y_data):
+    X, y = small_X_y_data
+
+    random_weights = np.random.choice([1, 2], len(X))
+    model = XGBDistribution(distribution="normal", n_estimators=1)
+    preds_without_weights = model.fit(X, y).predict(X)
+    preds_with_weights = model.fit(X, y, sample_weight=random_weights).predict(X)
+
+    with pytest.raises(AssertionError):
+        np.testing.assert_array_equal(preds_without_weights.loc, preds_with_weights.loc)
+        np.testing.assert_array_equal(
+            preds_without_weights.scale, preds_with_weights.scale
+        )
+
+
+def test_sample_weights_eval_set(small_train_test_data):
+    """Check that predict with early stopping uses correct ntrees"""
+    X_train, X_test, y_train, y_test = small_train_test_data
+
+    weights_train = np.random.choice([1, 2], len(X_train))
+    weights_test = np.random.choice([1, 2], len(X_test))
+
+    model = XGBDistribution(distribution="normal", n_estimators=2)
+    model.fit(
+        X_train, y_train, sample_weight=weights_train, eval_set=[(X_test, y_test)]
+    )
+    evals_result_without_weights = model.evals_result()
+    nll_without_weights = evals_result_without_weights["validation_0"]["normal-NLL"]
+
+    model.fit(
+        X_train,
+        y_train,
+        sample_weight=weights_train,
+        eval_set=[(X_test, y_test)],
+        sample_weight_eval_set=[weights_test],
+    )
+    evals_result_with_weights = model.evals_result()
+    nll_with_weights = evals_result_with_weights["validation_0"]["normal-NLL"]
+
+    assert all((nll_with_weights[i] != nll_without_weights[i] for i in [0, 1]))
+
+
 # -------------------------------------------------------------------------------------
 # Failure modes
 # -------------------------------------------------------------------------------------
@@ -106,7 +148,7 @@ def test_train_with_sample_weights_fails(small_X_y_data):
 
 
 # -------------------------------------------------------------------------------------
-#  Model internal tests
+#  Internal tests
 # -------------------------------------------------------------------------------------
 
 
@@ -139,7 +181,7 @@ def test_objective_and_evaluation_funcs_callable(distribution):
 
 
 # -------------------------------------------------------------------------------------
-#  Model IO tests
+#  IO tests
 # -------------------------------------------------------------------------------------
 
 
