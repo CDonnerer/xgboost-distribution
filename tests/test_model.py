@@ -66,7 +66,7 @@ def test_distribution_set_param(small_X_y_data):
     model.fit(X, y)
 
 
-def test_fit_with_sample_weights_fails(small_X_y_data):
+def test_fit_with_sample_weights(small_X_y_data):
     X, y = small_X_y_data
 
     random_weights = np.random.choice([1, 2], len(X))
