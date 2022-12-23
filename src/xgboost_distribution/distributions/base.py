@@ -13,7 +13,6 @@ class BaseDistribution(ABC):
 
     def __init__(self):
         self.Predictions = namedtuple("Predictions", (p for p in self.params))
-        # TODO: the below looks a bit dodgy, no?
         # attach to globals to make pickling of namedtuple work
         globals()[self.Predictions.__name__] = self.Predictions
 
