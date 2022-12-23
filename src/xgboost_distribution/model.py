@@ -28,6 +28,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     @_deprecate_positional_args
     def __init__(
         self,
+        *,
         distribution: str = None,
         natural_gradient: bool = True,
         objective: str = None,
@@ -118,12 +119,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
             ]
         else:
             base_margin_eval_set = None
-
-        # for param in [sample_weight, sample_weight_eval_set]:
-        #     if param is not None:
-        #         raise NotImplementedError(
-        #             "Sample weights are currently not supported by XGBDistribution!"
-        #         )
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,

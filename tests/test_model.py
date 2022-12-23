@@ -1,6 +1,5 @@
 """Test suite for XGBDistribution model
 """
-
 import os
 import pickle
 
