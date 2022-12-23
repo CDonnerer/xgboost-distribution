@@ -13,6 +13,7 @@ class BaseDistribution(ABC):
 
     def __init__(self):
         self.Predictions = namedtuple("Predictions", (p for p in self.params))
+        # TODO: the below looks a bit dodgy, no?
         # attach to globals to make pickling of namedtuple work
         globals()[self.Predictions.__name__] = self.Predictions
 
@@ -34,7 +35,7 @@ class BaseDistribution(ABC):
 
     @abstractmethod
     def loss(self, y, params):
-        """Evaluate the loss (typically negative log-likelihood)"""
+        """Evaluate the per sample loss (typically negative log-likelihood)"""
 
     @abstractmethod
     def predict(self, params):

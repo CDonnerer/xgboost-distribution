@@ -94,7 +94,9 @@ def test_sample_weights_eval_set(small_train_test_data):
         X_train, y_train, sample_weight=weights_train, eval_set=[(X_test, y_test)]
     )
     evals_result_without_weights = model.evals_result()
-    nll_without_weights = evals_result_without_weights["validation_0"]["normal-NLL"]
+    nll_without_weights = evals_result_without_weights["validation_0"][
+        "NormalDistribution-NLL"
+    ]
 
     model.fit(
         X_train,
@@ -104,7 +106,9 @@ def test_sample_weights_eval_set(small_train_test_data):
         sample_weight_eval_set=[weights_test],
     )
     evals_result_with_weights = model.evals_result()
-    nll_with_weights = evals_result_with_weights["validation_0"]["normal-NLL"]
+    nll_with_weights = evals_result_with_weights["validation_0"][
+        "NormalDistribution-NLL"
+    ]
 
     assert all((nll_with_weights[i] != nll_without_weights[i] for i in [0, 1]))
 

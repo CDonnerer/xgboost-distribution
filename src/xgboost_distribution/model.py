@@ -261,15 +261,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
             if weights.size == 0:
                 weights = np.ones_like(y)
 
-            # TODO: abstraction seems a bit wrong here, loss is no longer generic
-            # Options are to (1) make the loss specific (nll) for the distribution
-            # or (2) pass the weights down (or something else)
-            # Given that currently you can only get nll leaning towards (1)
-            nll = self._distribution.loss(y=y, params=params)
-            loss = np.average(nll, weights=weights)
-            loss_name = f"{self.distribution}-NLL"
-
-            return loss_name, loss
+            loss_name, loss = self._distribution.loss(y=y, params=params)
+            return loss_name, np.average(loss, weights=weights)
 
         return feval
 

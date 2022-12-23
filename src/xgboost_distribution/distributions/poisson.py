@@ -60,7 +60,7 @@ class Poisson(BaseDistribution):
 
     def loss(self, y, params):
         mu = self.predict(params)
-        return "Poisson-NLL", -poisson.logpmf(y, mu=mu).mean()
+        return "Poisson-NLL", -poisson.logpmf(y, mu=mu)
 
     def predict(self, params):
         log_mu = params
