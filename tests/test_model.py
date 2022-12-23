@@ -67,11 +67,11 @@ def test_distribution_set_param(small_X_y_data):
     model.fit(X, y)
 
 
-def test_sample_weights(small_X_y_data):
+def test_fit_with_sample_weights_fails(small_X_y_data):
     X, y = small_X_y_data
 
     random_weights = np.random.choice([1, 2], len(X))
-    model = XGBDistribution(distribution="normal", n_estimators=1)
+    model = XGBDistribution(distribution="normal", n_estimators=2)
     preds_without_weights = model.fit(X, y).predict(X)
     preds_with_weights = model.fit(X, y, sample_weight=random_weights).predict(X)
 
@@ -138,17 +138,6 @@ def test_predict_before_fit_fails(small_X_y_data):
 def test_setting_objective_in_init_fails():
     with pytest.raises(ValueError):
         XGBDistribution(objective="binary:logistic")
-
-
-def test_train_with_sample_weights_fails(small_X_y_data):
-    X, y = small_X_y_data
-
-    model = XGBDistribution()
-    with pytest.raises(NotImplementedError):
-        model.fit(X, y, sample_weight=np.ones_like(y))
-
-    with pytest.raises(NotImplementedError):
-        model.fit(X, y, eval_set=[(X, y)], sample_weight_eval_set=np.ones_like(y))
 
 
 # -------------------------------------------------------------------------------------
