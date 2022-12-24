@@ -8,7 +8,7 @@ Development version
 Version 0.2.X, 2022-xx-xx
 --------------------------
 
-- ...
+- Added support for sample weights, :issue:`45`
 
 
 Current version
@@ -28,6 +28,7 @@ Older versions
 
 Version 0.2.4, 2022-04-23
 --------------------------
+
 - Added more precise loss description, negative log likelihood vs error
 - Various updates to conform with xgboost==1.6.0 release
 
