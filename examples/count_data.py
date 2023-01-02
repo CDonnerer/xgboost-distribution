@@ -21,10 +21,10 @@ def predict_distribution(model, X, y):
     """Predict a distribution for a given X, and evaluate over y"""
 
     distribution_func = {
-        "normal": getattr(stats, "norm").pdf,
-        "laplace": getattr(stats, "laplace").pdf,
-        "poisson": getattr(stats, "poisson").pmf,
-        "negative-binomial": getattr(stats, "nbinom").pmf,
+        "normal": stats.norm.pdf,
+        "laplace": stats.laplace.pdf,
+        "poisson": stats.poisson.pmf,
+        "negative-binomial": stats.nbinom.pmf,
     }
     preds = model.predict(X[..., np.newaxis])
 
