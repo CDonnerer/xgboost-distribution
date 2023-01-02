@@ -103,7 +103,7 @@ def test_fit_with_sample_weights(small_X_y_data, distribution):
 
 
 def test_sample_weights_eval_set(small_train_test_data):
-    """Check that predict with early stopping uses correct ntrees"""
+    """Check weights for eval sets change NLL in training"""
     X_train, X_test, y_train, y_test = small_train_test_data
 
     weights_train = np.random.choice([1, 2], len(X_train))
@@ -130,7 +130,7 @@ def test_sample_weights_eval_set(small_train_test_data):
         "NormalDistribution-NLL"
     ]
 
-    assert all((nll_with_weights[i] != nll_without_weights[i] for i in [0, 1]))
+    assert all((nll_with_weights[i] != nll_without_weights[i] for i in range(2)))
 
 
 # -------------------------------------------------------------------------------------
