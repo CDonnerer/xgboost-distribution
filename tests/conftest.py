@@ -41,6 +41,7 @@ def small_X_y_count_data():
     """Small set of X, y data, with y being counts (positive int)"""
 
     def generate_count_data(n_samples=100):
+        np.random.seed(11)  # 'tuned' to be simple to test against
         X = np.random.uniform(-2, 0, n_samples)
         n = 66 * np.abs(np.cos(X))
         p = 0.5 * np.abs(np.cos(X / 3))

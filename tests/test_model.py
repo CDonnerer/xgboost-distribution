@@ -29,7 +29,7 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
 def test_XGBDistribution_early_stopping_fit_single_param_distribution(
     small_train_test_count_data,
 ):
-    """Integration test for single param dist"""
+    """Integration test for single param dist (which operate on squeezed arrays)"""
 
     X_train, X_test, y_train, y_test = small_train_test_count_data
 
@@ -42,7 +42,7 @@ def test_XGBDistribution_early_stopping_fit_single_param_distribution(
     model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
     evals_result = model.evals_result()
 
-    # assert model.best_iteration == 6
+    assert model.best_iteration == 10
     assert isinstance(evals_result, dict)
 
 
