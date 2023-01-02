@@ -53,7 +53,7 @@ def test_loss(poisson):
     loss_name, loss_value = poisson.loss(
         # fmt: off
         y=np.array([1, ]),
-        params=np.array([[np.log(1)], ]),
+        params=np.array([np.log(1), ]),
     )
     assert loss_name == "Poisson-NLL"
     assert loss_value == 1.0

@@ -26,6 +26,26 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
     assert isinstance(evals_result, dict)
 
 
+def test_XGBDistribution_early_stopping_fit_single_param_distribution(
+    small_train_test_count_data,
+):
+    """Integration test for single param dist"""
+
+    X_train, X_test, y_train, y_test = small_train_test_count_data
+
+    model = XGBDistribution(
+        distribution="exponential",
+        max_depth=3,
+        n_estimators=500,
+        early_stopping_rounds=10,
+    )
+    model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
+    evals_result = model.evals_result()
+
+    # assert model.best_iteration == 6
+    assert isinstance(evals_result, dict)
+
+
 def test_XGBDistribution_early_stopping_predict(small_train_test_data):
     """Check that predict with early stopping uses correct ntrees"""
     X_train, X_test, y_train, y_test = small_train_test_data
@@ -66,11 +86,12 @@ def test_distribution_set_param(small_X_y_data):
     model.fit(X, y)
 
 
-def test_fit_with_sample_weights(small_X_y_data):
+@pytest.mark.parametrize("distribution", ["normal"])
+def test_fit_with_sample_weights(small_X_y_data, distribution):
     X, y = small_X_y_data
 
     random_weights = np.random.choice([1, 2], len(X))
-    model = XGBDistribution(distribution="normal", n_estimators=2)
+    model = XGBDistribution(distribution=distribution, n_estimators=2)
     preds_without_weights = model.fit(X, y).predict(X)
     preds_with_weights = model.fit(X, y, sample_weight=random_weights).predict(X)
 

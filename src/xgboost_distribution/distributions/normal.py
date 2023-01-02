@@ -85,7 +85,8 @@ class Normal(BaseDistribution):
 
     def predict(self, params):
         loc, log_scale = self._split_params(params)
-        # log_scale = np.clip(log_scale, -100, 100)  # TODO: is this needed?
+        # TODO: do we need clipping for safety?
+        # log_scale = np.clip(log_scale, -100, 100)
         scale = np.exp(log_scale)
 
         return self.Predictions(loc=loc, scale=scale)
