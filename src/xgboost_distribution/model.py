@@ -241,7 +241,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
             weights = data.get_weight()
             if weights.size != 0:
                 weights = weights.reshape(-1, 1)
-                # TODO: what if some weights go to zero?
                 grad *= weights
                 hess *= weights
 
@@ -254,7 +253,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
             y = data.get_label()
             weights = data.get_weight()
             if weights.size == 0:
-                weights = np.ones_like(y)
+                weights = None
 
             loss_name, loss = self._distribution.loss(y=y, params=params)
             return loss_name, np.average(loss, weights=weights)
