@@ -56,11 +56,4 @@ def test_loss(exponential):
         params=np.array([np.log(1), ]),
     )
     assert loss_name == "Exponential-NLL"
-    np.testing.assert_array_equal(
-        loss_values,
-        np.array(
-            [
-                1.0,
-            ]
-        ),
-    )
+    np.testing.assert_array_equal(loss_values, np.array([1.0]))

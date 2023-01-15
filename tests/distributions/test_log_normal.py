@@ -56,11 +56,4 @@ def test_loss(lognormal):
         params=np.array([[1, 0], ]),
     )
     assert loss_name == "LogNormal-NLL"
-    np.testing.assert_array_equal(
-        loss_values,
-        np.array(
-            [
-                np.inf,
-            ]
-        ),
-    )
+    np.testing.assert_array_equal(loss_values, np.array([np.inf]))
