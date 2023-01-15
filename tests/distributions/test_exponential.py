@@ -50,10 +50,17 @@ def test_gradient_calculation(exponential, y, params, natural_gradient, expected
 
 
 def test_loss(exponential):
-    loss_name, loss_value = exponential.loss(
+    loss_name, loss_values = exponential.loss(
         # fmt: off
         y=np.array([1, ]),
-        params=np.array([[np.log(1)], ]),
+        params=np.array([np.log(1), ]),
     )
     assert loss_name == "Exponential-NLL"
-    assert loss_value == 1.0
+    np.testing.assert_array_equal(
+        loss_values,
+        np.array(
+            [
+                1.0,
+            ]
+        ),
+    )

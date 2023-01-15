@@ -26,7 +26,7 @@ def negative_binomial():
 def test_gradient_calculation(
     negative_binomial, y, params, natural_gradient, expected_grad
 ):
-    grad, hess = negative_binomial.gradient_and_hessian(
+    grad, _ = negative_binomial.gradient_and_hessian(
         y, params, natural_gradient=natural_gradient
     )
     np.testing.assert_array_equal(grad, expected_grad)

@@ -35,10 +35,17 @@ def test_gradient_calculation(laplace, y, params, natural_gradient, expected_gra
 
 
 def test_loss(laplace):
-    loss_name, loss_value = laplace.loss(
+    loss_name, loss_values = laplace.loss(
         # fmt: off
         y=np.array([1, ]),
         params=np.array([[1, np.log(1)], ]),
     )
     assert loss_name == "Laplace-NLL"
-    np.testing.assert_approx_equal(loss_value, -np.log(0.5))
+    np.testing.assert_approx_equal(
+        loss_values,
+        np.array(
+            [
+                -np.log(0.5),
+            ]
+        ),
+    )

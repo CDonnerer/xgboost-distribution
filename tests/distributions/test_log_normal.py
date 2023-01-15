@@ -50,10 +50,17 @@ def test_gradient_calculation(lognormal, y, params, natural_gradient, expected_g
 
 
 def test_loss(lognormal):
-    loss_name, loss_value = lognormal.loss(
+    loss_name, loss_values = lognormal.loss(
         # fmt: off
         y=np.array([0, ]),
         params=np.array([[1, 0], ]),
     )
     assert loss_name == "LogNormal-NLL"
-    assert loss_value == np.inf
+    np.testing.assert_array_equal(
+        loss_values,
+        np.array(
+            [
+                np.inf,
+            ]
+        ),
+    )
