@@ -59,11 +59,11 @@ class Poisson(BaseDistribution):
         return grad, hess
 
     def loss(self, y, params):
-        mu = self.predict(params)
-        return "Poisson-NLL", -poisson.logpmf(y, mu=mu).mean()
+        (mu,) = self.predict(params)
+        return "Poisson-NLL", -poisson.logpmf(y, mu=mu)
 
     def predict(self, params):
-        log_mu = params
+        log_mu = params  # params are shape (n,)
         mu = np.exp(log_mu)
         return self.Predictions(mu=mu)
 

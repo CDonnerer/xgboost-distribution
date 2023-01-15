@@ -1,6 +1,5 @@
 """Test suite for XGBDistribution model
 """
-
 import os
 import pickle
 
@@ -24,6 +23,26 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
     evals_result = model.evals_result()
 
     assert model.best_iteration == 6
+    assert isinstance(evals_result, dict)
+
+
+def test_XGBDistribution_early_stopping_fit_single_param_distribution(
+    small_train_test_count_data,
+):
+    """Integration test for single param dist (which operate on squeezed arrays)"""
+
+    X_train, X_test, y_train, y_test = small_train_test_count_data
+
+    model = XGBDistribution(
+        distribution="exponential",
+        max_depth=3,
+        n_estimators=500,
+        early_stopping_rounds=10,
+    )
+    model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
+    evals_result = model.evals_result()
+
+    assert model.best_iteration == 10
     assert isinstance(evals_result, dict)
 
 
@@ -67,6 +86,53 @@ def test_distribution_set_param(small_X_y_data):
     model.fit(X, y)
 
 
+@pytest.mark.parametrize("distribution", ["normal"])
+def test_fit_with_sample_weights(small_X_y_data, distribution):
+    X, y = small_X_y_data
+
+    random_weights = np.random.choice([1, 2], len(X))
+    model = XGBDistribution(distribution=distribution, n_estimators=2)
+    preds_without_weights = model.fit(X, y).predict(X)
+    preds_with_weights = model.fit(X, y, sample_weight=random_weights).predict(X)
+
+    with pytest.raises(AssertionError):
+        np.testing.assert_array_equal(preds_without_weights.loc, preds_with_weights.loc)
+        np.testing.assert_array_equal(
+            preds_without_weights.scale, preds_with_weights.scale
+        )
+
+
+def test_sample_weights_eval_set(small_train_test_data):
+    """Check weights for eval sets change NLL during training"""
+    X_train, X_test, y_train, y_test = small_train_test_data
+
+    weights_train = np.random.choice([1, 2], len(X_train))
+    weights_test = np.random.choice([1, 2], len(X_test))
+
+    model = XGBDistribution(distribution="normal", n_estimators=2)
+    model.fit(
+        X_train, y_train, sample_weight=weights_train, eval_set=[(X_test, y_test)]
+    )
+    evals_result_without_weights = model.evals_result()
+    nll_without_weights = evals_result_without_weights["validation_0"][
+        "NormalDistribution-NLL"
+    ]
+
+    model.fit(
+        X_train,
+        y_train,
+        sample_weight=weights_train,
+        eval_set=[(X_test, y_test)],
+        sample_weight_eval_set=[weights_test],
+    )
+    evals_result_with_weights = model.evals_result()
+    nll_with_weights = evals_result_with_weights["validation_0"][
+        "NormalDistribution-NLL"
+    ]
+
+    assert all((nll_with_weights[i] != nll_without_weights[i] for i in range(2)))
+
+
 # -------------------------------------------------------------------------------------
 # Failure modes
 # -------------------------------------------------------------------------------------
@@ -94,19 +160,8 @@ def test_setting_objective_in_init_fails():
         XGBDistribution(objective="binary:logistic")
 
 
-def test_train_with_sample_weights_fails(small_X_y_data):
-    X, y = small_X_y_data
-
-    model = XGBDistribution()
-    with pytest.raises(NotImplementedError):
-        model.fit(X, y, sample_weight=np.ones_like(y))
-
-    with pytest.raises(NotImplementedError):
-        model.fit(X, y, eval_set=[(X, y)], sample_weight_eval_set=np.ones_like(y))
-
-
 # -------------------------------------------------------------------------------------
-#  Model internal tests
+#  Internal tests
 # -------------------------------------------------------------------------------------
 
 
@@ -139,7 +194,7 @@ def test_objective_and_evaluation_funcs_callable(distribution):
 
 
 # -------------------------------------------------------------------------------------
-#  Model IO tests
+#  IO tests
 # -------------------------------------------------------------------------------------
 
 

@@ -54,11 +54,11 @@ class Exponential(BaseDistribution):
         return grad, hess
 
     def loss(self, y, params):
-        scale = self.predict(params)
-        return "Exponential-NLL", -expon.logpdf(y, scale=scale).mean()
+        (scale,) = self.predict(params)
+        return "Exponential-NLL", -expon.logpdf(y, scale=scale)
 
     def predict(self, params):
-        log_scale = params
+        log_scale = params  # params are shape (n,)
         scale = np.exp(log_scale)
         return self.Predictions(scale=scale)
 

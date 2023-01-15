@@ -67,7 +67,7 @@ class Laplace(BaseDistribution):
 
         if natural_gradient:
             fisher_matrix = np.zeros(shape=(len(y), 2, 2))
-            fisher_matrix[:, 0, 0] = 1 / scale ** 2
+            fisher_matrix[:, 0, 0] = 1 / scale**2
             fisher_matrix[:, 1, 1] = 1
 
             grad = np.linalg.solve(fisher_matrix, grad)
@@ -82,7 +82,7 @@ class Laplace(BaseDistribution):
 
     def loss(self, y, params):
         loc, scale = self.predict(params)
-        return "Laplace-NLL", -laplace.logpdf(y, loc=loc, scale=scale).mean()
+        return "Laplace-NLL", -laplace.logpdf(y, loc=loc, scale=scale)
 
     def predict(self, params):
         loc, log_scale = self._split_params(params)

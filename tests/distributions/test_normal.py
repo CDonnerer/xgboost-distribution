@@ -28,7 +28,5 @@ def normal():
     ],
 )
 def test_gradient_calculation(normal, y, params, natural_gradient, expected_grad):
-    grad, hess = normal.gradient_and_hessian(
-        y, params, natural_gradient=natural_gradient
-    )
+    grad, _ = normal.gradient_and_hessian(y, params, natural_gradient=natural_gradient)
     np.testing.assert_array_equal(grad, expected_grad)

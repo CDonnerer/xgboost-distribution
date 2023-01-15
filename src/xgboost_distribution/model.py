@@ -28,6 +28,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
     @_deprecate_positional_args
     def __init__(
         self,
+        *,
         distribution: str = None,
         natural_gradient: bool = True,
         objective: str = None,
@@ -118,12 +119,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
             ]
         else:
             base_margin_eval_set = None
-
-        for param in [sample_weight, sample_weight_eval_set]:
-            if param is not None:
-                raise NotImplementedError(
-                    "Sample weights are currently not supported by XGBDistribution!"
-                )
 
         train_dmatrix, evals = _wrap_evaluation_matrices(
             missing=self.missing,
@@ -242,6 +237,13 @@ class XGBDistribution(XGBModel, RegressorMixin):
             grad, hess = self._distribution.gradient_and_hessian(
                 y=y, params=params, natural_gradient=self.natural_gradient
             )
+
+            weights = data.get_weight()
+            if weights.size != 0:
+                weights = weights.reshape(-1, 1)
+                grad *= weights
+                hess *= weights
+
             return grad.flatten(), hess.flatten()
 
         return obj
@@ -249,7 +251,12 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def _evaluation_func(self) -> Callable[[np.ndarray, DMatrix], Tuple[str, float]]:
         def feval(params: np.ndarray, data: DMatrix) -> Tuple[str, float]:
             y = data.get_label()
-            return self._distribution.loss(y=y, params=params)
+            weights = data.get_weight()
+            if weights.size == 0:
+                weights = None
+
+            loss_name, loss = self._distribution.loss(y=y, params=params)
+            return loss_name, np.average(loss, weights=weights)
 
         return feval
 

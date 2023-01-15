@@ -72,7 +72,7 @@ class LogNormal(BaseDistribution):
 
     def loss(self, y, params):
         scale, s = self.predict(params)
-        return "LogNormal-NLL", -lognorm.logpdf(y, s=s, scale=scale).mean()
+        return "LogNormal-NLL", -lognorm.logpdf(y, s=s, scale=scale)
 
     def predict(self, params):
         log_scale, log_s = self._split_params(params)

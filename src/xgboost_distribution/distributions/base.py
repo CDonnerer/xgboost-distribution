@@ -34,7 +34,7 @@ class BaseDistribution(ABC):
 
     @abstractmethod
     def loss(self, y, params):
-        """Evaluate the loss (typically negative log-likelihood)"""
+        """Evaluate the per sample loss (typically negative log-likelihood)"""
 
     @abstractmethod
     def predict(self, params):

@@ -4,6 +4,9 @@
 .. image:: https://coveralls.io/repos/github/CDonnerer/xgboost-distribution/badge.svg?branch=main
   :target: https://coveralls.io/github/CDonnerer/xgboost-distribution?branch=main
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+  :target: https://github.com/psf/black
+
 .. image:: https://readthedocs.org/projects/xgboost-distribution/badge/?version=latest
   :target: https://xgboost-distribution.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status

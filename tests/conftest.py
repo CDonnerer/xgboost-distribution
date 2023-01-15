@@ -34,3 +34,30 @@ def small_train_test_data(request, small_X_y_data):
         X, y = pd.DataFrame(X), pd.Series(y)
 
     return train_test_split(X, y, test_size=0.2, random_state=1)
+
+
+@pytest.fixture
+def small_X_y_count_data():
+    """Small set of X, y data, with y being counts (positive int)"""
+
+    def generate_count_data(n_samples=100):
+        np.random.seed(11)  # 'tuned' to be simple to test against
+        X = np.random.uniform(-2, 0, n_samples)
+        n = 66 * np.abs(np.cos(X))
+        p = 0.5 * np.abs(np.cos(X / 3))
+
+        y = np.random.negative_binomial(n=n, p=p, size=n_samples)
+        return X[..., np.newaxis], y
+
+    return generate_count_data(n_samples=100)
+
+
+@pytest.fixture(params=["numpy", "pandas"])
+def small_train_test_count_data(request, small_X_y_count_data):
+    """Small set of train-test split X, y data (positive int)"""
+    X, y = small_X_y_count_data
+
+    if request.param == "pandas":
+        X, y = pd.DataFrame(X), pd.Series(y)
+
+    return train_test_split(X, y, test_size=0.2, random_state=1)
