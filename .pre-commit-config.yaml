@@ -6,12 +6,10 @@ repos:
   hooks:
   - id: trailing-whitespace
   - id: check-added-large-files
-  - id: check-ast
   - id: check-json
   - id: check-merge-conflict
   - id: debug-statements
   - id: end-of-file-fixer
-  - id: requirements-txt-fixer
   - id: mixed-line-ending
     args: ['--fix=auto']  # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
 
