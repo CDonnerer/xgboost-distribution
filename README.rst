@@ -40,6 +40,7 @@ Dependencies:
 
 .. code-block:: yaml
 
+    python_requires = >=3.8
     install_requires =
         scikit-learn
         xgboost>=1.7.0
