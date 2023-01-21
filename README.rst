@@ -36,6 +36,15 @@ Installation
     $ pip install xgboost-distribution
 
 
+Dependencies:
+
+.. code-block:: yaml
+
+    install_requires =
+        scikit-learn
+        xgboost>=1.7.0
+
+
 Usage
 ===========
 
