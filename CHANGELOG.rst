@@ -5,14 +5,20 @@ Changelog
 Development version
 ===================
 
-Version 0.2.6, 2023-xx-xx
+Version 0.2.7, 2023-xx-xx
 --------------------------
 
-- Added support for sample weights, :issue:`45`
+- ...
 
 
 Current version
 ===============
+
+
+Version 0.2.6, 2023-01-21
+--------------------------
+
+- Added support for sample weights, :issue:`45`
 
 
 Version 0.2.5, 2022-11-01
