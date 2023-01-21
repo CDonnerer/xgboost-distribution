@@ -38,7 +38,7 @@ Installation
 
 `Dependencies`_:
 
-.. code-block:: yaml
+.. code-block::
 
     python_requires = >=3.8
 
