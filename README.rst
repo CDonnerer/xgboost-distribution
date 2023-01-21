@@ -36,6 +36,17 @@ Installation
     $ pip install xgboost-distribution
 
 
+`Dependencies`_:
+
+.. code-block::
+
+    python_requires = >=3.8
+
+    install_requires =
+        scikit-learn
+        xgboost>=1.7.0
+
+
 Usage
 ===========
 
@@ -135,6 +146,7 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _ngboost: https://github.com/stanfordmlgroup/ngboost
 .. _faster:  https://xgboost-distribution.readthedocs.io/en/latest/experiments.html
 .. _xgboost scikit-learn api: https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn
+.. _dependencies: https://github.com/CDonnerer/xgboost-distribution/blob/feature/update-linting/setup.cfg#L37
 .. _monotonic constraints: https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html
 .. _scipy.stats.norm: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
 .. _LAPACK gesv: https://www.netlib.org/lapack/lug/node71.html

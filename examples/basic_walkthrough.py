@@ -44,7 +44,6 @@ def main():
         verbose=False,
     )
     preds = model.predict(X_test)
-
     plot_residuals(y_true=y_test, y_pred=preds.loc, y_err=preds.scale)
 
 

@@ -5,13 +5,23 @@ Changelog
 Development version
 ===================
 
-Version 0.2.6, 2023-xx-xx
+Version 0.2.7, 2023-xx-xx
+--------------------------
+
+- ...
+
+
+Current version
+===============
+
+
+Version 0.2.6, 2023-01-21
 --------------------------
 
 - Added support for sample weights, :issue:`45`
 
 
-Current version
+Older versions
 ===============
 
 
@@ -20,10 +30,6 @@ Version 0.2.5, 2022-11-01
 
 - Added example script for hyperparameter tuning
 - Python requires >= 3.8 & xgboost >= 1.7.0 compatibility
-
-
-Older versions
-===============
 
 
 Version 0.2.4, 2022-04-23
