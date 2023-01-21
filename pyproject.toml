@@ -16,7 +16,3 @@ exclude = [
     ".eggs",
     "docs/conf.py",
 ]
-ignore = [
-    "E203",
-    "W503"
-]
