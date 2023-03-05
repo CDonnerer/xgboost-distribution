@@ -1,9 +1,13 @@
 """Laplace distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.stats import cauchy, laplace
 
 from xgboost_distribution.distributions.base import BaseDistribution
+
+Predictions = namedtuple("Predictions", ("loc", "scale"))
 
 
 class Laplace(BaseDistribution):
@@ -87,7 +91,7 @@ class Laplace(BaseDistribution):
     def predict(self, params):
         loc, log_scale = self._split_params(params)
         scale = np.exp(log_scale)
-        return self.Predictions(loc=loc, scale=scale)
+        return Predictions(loc=loc, scale=scale)
 
     def starting_params(self, y):
         return np.mean(y), np.log(np.std(y))

@@ -1,5 +1,7 @@
 """Negative binomial distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.special import digamma, expit
 from scipy.stats import nbinom
@@ -9,6 +11,8 @@ from xgboost_distribution.distributions.utils import (
     check_all_ge_zero,
     check_all_integer,
 )
+
+Predictions = namedtuple("Predictions", ("n", "p"))
 
 
 class NegativeBinomial(BaseDistribution):
@@ -111,8 +115,8 @@ class NegativeBinomial(BaseDistribution):
         log_n, raw_p = params[:, 0], params[:, 1]
         n = np.exp(log_n)
         p = expit(raw_p)
-        return self.Predictions(n=n, p=p)
+        return Predictions(n=n, p=p)
 
     def starting_params(self, y):
         # TODO: starting params can matter a lot?
-        return (np.log(np.mean(y)), 0)  # expit(0) = 0.5
+        return Predictions(n=np.log(np.mean(y)), p=0)  # expit(0) = 0.5

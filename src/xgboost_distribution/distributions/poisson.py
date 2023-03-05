@@ -1,5 +1,7 @@
 """Poisson distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.stats import poisson
 
@@ -8,6 +10,8 @@ from xgboost_distribution.distributions.utils import (
     check_all_ge_zero,
     check_all_integer,
 )
+
+Predictions = namedtuple("Predictions", ("mu"))
 
 
 class Poisson(BaseDistribution):
@@ -65,7 +69,7 @@ class Poisson(BaseDistribution):
     def predict(self, params):
         log_mu = params  # params are shape (n,)
         mu = np.exp(log_mu)
-        return self.Predictions(mu=mu)
+        return Predictions(mu=mu)
 
     def starting_params(self, y):
         return (np.log(np.mean(y)),)

@@ -1,9 +1,13 @@
 """Normal distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.stats import norm
 
 from xgboost_distribution.distributions.base import BaseDistribution
+
+Predictions = namedtuple("Predictions", ("loc", "scale"))
 
 
 class Normal(BaseDistribution):
@@ -88,11 +92,10 @@ class Normal(BaseDistribution):
         # TODO: do we need clipping for safety?
         # log_scale = np.clip(log_scale, -100, 100)
         scale = np.exp(log_scale)
-
-        return self.Predictions(loc=loc, scale=scale)
+        return Predictions(loc=loc, scale=scale)
 
     def starting_params(self, y):
-        return np.mean(y), np.log(np.std(y))
+        return Predictions(loc=np.mean(y), scale=np.log(np.std(y)))
 
     def _split_params(self, params):
         """Return loc and log_scale from params"""

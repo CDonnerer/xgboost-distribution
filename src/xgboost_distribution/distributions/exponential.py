@@ -1,10 +1,14 @@
 """Exponential distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.stats import expon
 
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import check_all_ge_zero
+
+Predictions = namedtuple("Predictions", ("scale"))
 
 
 class Exponential(BaseDistribution):
@@ -60,7 +64,9 @@ class Exponential(BaseDistribution):
     def predict(self, params):
         log_scale = params  # params are shape (n,)
         scale = np.exp(log_scale)
-        return self.Predictions(scale=scale)
+        return Predictions(scale=scale)
 
     def starting_params(self, y):
-        return (np.log(np.mean(y)),)
+        return Predictions(
+            scale=np.log(np.mean(y)),
+        )
