@@ -67,6 +67,4 @@ class Exponential(BaseDistribution):
         return Predictions(scale=scale)
 
     def starting_params(self, y):
-        return Predictions(
-            scale=np.log(np.mean(y)),
-        )
+        return Predictions(scale=np.log(np.mean(y)))

@@ -94,7 +94,7 @@ class Laplace(BaseDistribution):
         return Predictions(loc=loc, scale=scale)
 
     def starting_params(self, y):
-        return np.mean(y), np.log(np.std(y))
+        return Predictions(loc=np.mean(y), scale=np.log(np.std(y)))
 
     def _split_params(self, params):
         """Return loc and log_scale from params"""
