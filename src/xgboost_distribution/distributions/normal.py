@@ -7,7 +7,7 @@ from scipy.stats import norm
 
 from xgboost_distribution.distributions.base import BaseDistribution
 
-Predictions = namedtuple("Predictions", ("loc", "scale"))
+Params = namedtuple("Params", ("loc", "scale"))
 
 
 class Normal(BaseDistribution):
@@ -56,7 +56,7 @@ class Normal(BaseDistribution):
 
     @property
     def params(self):
-        return ("loc", "scale")
+        return Params._fields
 
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
@@ -92,10 +92,10 @@ class Normal(BaseDistribution):
         # TODO: do we need clipping for safety?
         # log_scale = np.clip(log_scale, -100, 100)
         scale = np.exp(log_scale)
-        return Predictions(loc=loc, scale=scale)
+        return Params(loc=loc, scale=scale)
 
     def starting_params(self, y):
-        return Predictions(loc=np.mean(y), scale=np.log(np.std(y)))
+        return Params(loc=np.mean(y), scale=np.log(np.std(y)))
 
     def _split_params(self, params):
         """Return loc and log_scale from params"""
