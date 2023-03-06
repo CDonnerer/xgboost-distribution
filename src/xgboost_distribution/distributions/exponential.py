@@ -8,7 +8,7 @@ from scipy.stats import expon
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import check_all_ge_zero
 
-Predictions = namedtuple("Predictions", ("scale"))
+Params = namedtuple("Params", ("scale"))
 
 
 class Exponential(BaseDistribution):
@@ -34,7 +34,7 @@ class Exponential(BaseDistribution):
 
     @property
     def params(self):
-        return ("scale",)
+        return Params._fields
 
     def check_target(self, y):
         check_all_ge_zero(y)
@@ -64,7 +64,7 @@ class Exponential(BaseDistribution):
     def predict(self, params):
         log_scale = params  # params are shape (n,)
         scale = np.exp(log_scale)
-        return Predictions(scale=scale)
+        return Params(scale=scale)
 
     def starting_params(self, y):
-        return Predictions(scale=np.log(np.mean(y)))
+        return Params(scale=np.log(np.mean(y)))

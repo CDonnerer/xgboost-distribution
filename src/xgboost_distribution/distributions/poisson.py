@@ -11,7 +11,7 @@ from xgboost_distribution.distributions.utils import (
     check_all_integer,
 )
 
-Predictions = namedtuple("Predictions", ("mu"))
+Params = namedtuple("Params", ("mu"))
 
 
 class Poisson(BaseDistribution):
@@ -36,7 +36,7 @@ class Poisson(BaseDistribution):
 
     @property
     def params(self):
-        return ("mu",)
+        return Params._fields
 
     def check_target(self, y):
         check_all_integer(y)
@@ -69,7 +69,7 @@ class Poisson(BaseDistribution):
     def predict(self, params):
         log_mu = params  # params are shape (n,)
         mu = np.exp(log_mu)
-        return Predictions(mu=mu)
+        return Params(mu=mu)
 
     def starting_params(self, y):
-        return Predictions(mu=np.log(np.mean(y)))
+        return Params(mu=np.log(np.mean(y)))

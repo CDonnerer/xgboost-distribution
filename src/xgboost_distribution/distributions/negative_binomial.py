@@ -12,7 +12,7 @@ from xgboost_distribution.distributions.utils import (
     check_all_integer,
 )
 
-Predictions = namedtuple("Predictions", ("n", "p"))
+Params = namedtuple("Params", ("n", "p"))
 
 
 class NegativeBinomial(BaseDistribution):
@@ -72,7 +72,7 @@ class NegativeBinomial(BaseDistribution):
 
     @property
     def params(self):
-        return ("n", "p")
+        return Params._fields
 
     def check_target(self, y):
         check_all_integer(y)
@@ -115,8 +115,8 @@ class NegativeBinomial(BaseDistribution):
         log_n, raw_p = params[:, 0], params[:, 1]
         n = np.exp(log_n)
         p = expit(raw_p)
-        return Predictions(n=n, p=p)
+        return Params(n=n, p=p)
 
     def starting_params(self, y):
         # TODO: starting params can matter a lot?
-        return Predictions(n=np.log(np.mean(y)), p=0)  # expit(0) = 0.5
+        return Params(n=np.log(np.mean(y)), p=0)  # expit(0) = 0.5
