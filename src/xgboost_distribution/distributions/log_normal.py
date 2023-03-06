@@ -1,10 +1,14 @@
 """LogNormal distribution
 """
+from collections import namedtuple
+
 import numpy as np
 from scipy.stats import lognorm
 
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import check_all_gt_zero
+
+Params = namedtuple("Params", ("scale", "s"))
 
 
 class LogNormal(BaseDistribution):
@@ -38,7 +42,7 @@ class LogNormal(BaseDistribution):
 
     @property
     def params(self):
-        return ("scale", "s")
+        return Params._fields
 
     def check_target(self, y):
         check_all_gt_zero(y)
@@ -78,11 +82,11 @@ class LogNormal(BaseDistribution):
         log_scale, log_s = self._split_params(params)
         scale, s = np.exp(log_scale), np.exp(log_s)
 
-        return self.Predictions(scale=scale, s=s)
+        return Params(scale=scale, s=s)
 
     def starting_params(self, y):
         log_y = np.log(y)
-        return np.mean(log_y), np.log(np.std(log_y))
+        return Params(scale=np.mean(log_y), s=np.log(np.std(log_y)))
 
     def _split_params(self, params):
         """Return log_scale (loc) and log_s from params"""

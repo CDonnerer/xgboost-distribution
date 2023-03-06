@@ -5,6 +5,7 @@ import pickle
 
 import pytest
 
+import joblib
 import numpy as np
 from sklearn.exceptions import NotFittedError
 
@@ -243,3 +244,31 @@ def test_XGBDistribution_pickle_dump_and_load(small_X_y_data, tmpdir):
         saved_model = pickle.load(fd)
 
     assert_model_equivalence(model_a=model, model_b=saved_model, X=X)
+
+
+class XGBDistributionWrapper:
+    def __init__(self, params):
+        self.model1 = XGBDistribution(**params)
+        self.model2 = XGBDistribution(**params)
+
+    def fit(self, X, y):
+        self.model1.fit(X, y)
+        self.model2.fit(X, y)
+        return self
+
+
+def test_XGBDistribution_wrapper_joblib_dump_and_load(small_X_y_data, tmpdir):
+    X, y = small_X_y_data
+    model = XGBDistributionWrapper({"n_estimators": 2})
+    model.fit(X, y)
+
+    model_path = os.path.join(tmpdir, "model.pkl")
+
+    with open(model_path, "wb") as fd:
+        joblib.dump(model, fd)
+
+    with open(model_path, "rb") as fd:
+        saved_model = joblib.load(fd)
+
+    assert_model_equivalence(model_a=model.model1, model_b=saved_model.model1, X=X)
+    assert_model_equivalence(model_a=model.model2, model_b=saved_model.model2, X=X)
