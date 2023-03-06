@@ -248,8 +248,8 @@ def test_XGBDistribution_pickle_dump_and_load(small_X_y_data, tmpdir):
 
 class XGBDistributionWrapper:
     def __init__(self, params):
-        self.model2 = XGBDistribution(**params)
         self.model1 = XGBDistribution(**params)
+        self.model2 = XGBDistribution(**params)
 
     def fit(self, X, y):
         self.model1.fit(X, y)
