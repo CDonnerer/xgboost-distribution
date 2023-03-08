@@ -103,7 +103,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
         params = self.get_xgb_params()
 
-        # We remove unexpected (i.e. not xgb native) params before fitting
+        # we remove unexpected (i.e. not xgb native) params before fitting
         for param in ["distribution", "natural_gradient"]:
             params.pop(param)
 
