@@ -6,7 +6,6 @@ from typing import Any, Callable, List, Optional, Tuple, Union, no_type_check
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
-from xgboost import config_context
 from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
@@ -103,6 +102,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._distribution.check_target(y)
 
         params = self.get_xgb_params()
+
+        # we remove unexpected (i.e. not xgb native) params before fitting
+        for param in ["distribution", "natural_gradient"]:
+            params.pop(param)
+
         params["objective"] = None
         params["disable_default_eval_metric"] = True
         params["num_class"] = len(self._distribution.params)
@@ -149,21 +153,19 @@ class XGBDistribution(XGBModel, RegressorMixin):
             callbacks=callbacks,
         )
 
-        # Suppress warnings from unexpected distribution & natural_gradient params
-        with config_context(verbosity=0):
-            self._Booster = train(
-                params,
-                train_dmatrix,
-                num_boost_round=self.get_num_boosting_rounds(),
-                evals=evals,
-                early_stopping_rounds=early_stopping_rounds,
-                evals_result=evals_result,
-                obj=self._objective_func(),
-                custom_metric=self._evaluation_func(),
-                verbose_eval=verbose,
-                xgb_model=model,
-                callbacks=callbacks,
-            )
+        self._Booster = train(
+            params,
+            train_dmatrix,
+            num_boost_round=self.get_num_boosting_rounds(),
+            evals=evals,
+            early_stopping_rounds=early_stopping_rounds,
+            evals_result=evals_result,
+            obj=self._objective_func(),
+            custom_metric=self._evaluation_func(),
+            verbose_eval=verbose,
+            xgb_model=model,
+            callbacks=callbacks,
+        )
 
         self._set_evaluation_result(evals_result)
         self.objective = f"distribution:{self.distribution}"
