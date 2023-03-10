@@ -61,7 +61,7 @@ class Normal(BaseDistribution):
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
 
-        loc, log_scale = self._split_params(params)
+        loc, log_scale = self._safe_params(params)
         var = np.exp(2 * log_scale)
 
         grad = np.zeros(shape=(len(y), 2))
@@ -88,15 +88,15 @@ class Normal(BaseDistribution):
         return "NormalDistribution-NLL", -norm.logpdf(y, loc=loc, scale=scale)
 
     def predict(self, params):
-        loc, log_scale = self._split_params(params)
-        # TODO: do we need clipping for safety?
-        # log_scale = np.clip(log_scale, -100, 100)
+        loc, log_scale = self._safe_params(params)
         scale = np.exp(log_scale)
         return Params(loc=loc, scale=scale)
 
     def starting_params(self, y):
         return Params(loc=np.mean(y), scale=np.log(np.std(y)))
 
-    def _split_params(self, params):
+    def _safe_params(self, params):
         """Return loc and log_scale from params"""
-        return params[:, 0], params[:, 1]
+        loc = params[:, 0]
+        log_scale = np.clip(params[:, 1], a_min=-50, a_max=44)
+        return loc, log_scale
