@@ -7,6 +7,12 @@ from scipy.stats import norm
 
 from xgboost_distribution.distributions.base import BaseDistribution
 
+# Note: due to reparameterization, we need to ensure that the converted
+# variance, exp(2 * std), is within bounds of np.float32 arrays
+MIN_LOG_SCALE = np.log(np.finfo("float32").tiny) / 2
+MAX_LOG_SCALE = np.log(np.finfo("float32").max) / 2
+
+
 Params = namedtuple("Params", ("loc", "scale"))
 
 
@@ -98,5 +104,5 @@ class Normal(BaseDistribution):
     def _safe_params(self, params):
         """Return loc and log_scale from params"""
         loc = params[:, 0]
-        log_scale = np.clip(params[:, 1], a_min=-50, a_max=44)
+        log_scale = np.clip(params[:, 1], a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE)
         return loc, log_scale
