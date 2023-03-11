@@ -9,8 +9,8 @@ from xgboost_distribution.distributions.base import BaseDistribution
 
 # Note: due to reparameterization, we need to ensure that the converted
 # variance, exp(2 * std), is within bounds of np.float32 arrays
-MIN_LOG_SCALE = np.log(np.finfo("float32").tiny) / 2
-MAX_LOG_SCALE = np.log(np.finfo("float32").max) / 2
+MIN_LOG_SCALE = np.log(np.finfo("float32").tiny) / 2 + 1
+MAX_LOG_SCALE = np.log(np.finfo("float32").max) / 2 - 1
 
 
 Params = namedtuple("Params", ("loc", "scale"))
@@ -70,20 +70,20 @@ class Normal(BaseDistribution):
         loc, log_scale = self._safe_params(params)
         var = np.exp(2 * log_scale)
 
-        grad = np.zeros(shape=(len(y), 2))
+        grad = np.zeros(shape=(len(y), 2), dtype="float32")
         grad[:, 0] = (loc - y) / var
         grad[:, 1] = 1 - ((y - loc) ** 2) / var
 
         if natural_gradient:
-            fisher_matrix = np.zeros(shape=(len(y), 2, 2))
+            fisher_matrix = np.zeros(shape=(len(y), 2, 2), dtype="float32")
             fisher_matrix[:, 0, 0] = 1 / var
             fisher_matrix[:, 1, 1] = 2
 
             grad = np.linalg.solve(fisher_matrix, grad)
 
-            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
-            hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
+            hess = np.zeros(shape=(len(y), 2), dtype="float32")  # diagonal elems only
             hess[:, 0] = 1 / var
             hess[:, 1] = 2 * ((y - loc) ** 2) / var
 
@@ -104,5 +104,7 @@ class Normal(BaseDistribution):
     def _safe_params(self, params):
         """Return loc and log_scale from params"""
         loc = params[:, 0]
-        log_scale = np.clip(params[:, 1], a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE)
+        log_scale = params[:, 1] = np.clip(
+            params[:, 1], a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE
+        )
         return loc, log_scale

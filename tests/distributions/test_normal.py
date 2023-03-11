@@ -47,6 +47,7 @@ def test_gradient_calculation(normal, y, params, natural_gradient, expected_grad
 )
 def test_overflow_stability(normal, y, params):
     """Test stability against large/small values produced by xgboost"""
+
     grad, _ = normal.gradient_and_hessian(y, params)
     assert isinstance(grad, np.ndarray)
 
