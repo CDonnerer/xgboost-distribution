@@ -8,6 +8,8 @@ from scipy.stats import nbinom
 
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import (
+    MAX_EXPONENT,
+    MIN_EXPONENT,
     check_all_ge_zero,
     check_all_integer,
     safe_exp,
@@ -82,9 +84,9 @@ class NegativeBinomial(BaseDistribution):
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
 
-        log_n, raw_p = self._split_params(params)
+        log_n, logits = self._safe_params(params)
         n = safe_exp(log_n)
-        p = expit(raw_p)
+        p = expit(logits)
 
         grad = np.zeros(shape=(len(y), 2), dtype="float32")
 
@@ -111,17 +113,16 @@ class NegativeBinomial(BaseDistribution):
         return "NegativeBinomial-NLL", -nbinom.logpmf(y, n=n, p=p)
 
     def predict(self, params):
-        log_n, raw_p = self._split_params(params)
+        log_n, logits = self._safe_params(params)
         n = safe_exp(log_n)
-        p = expit(raw_p)
+        p = expit(logits)
         return Params(n=n, p=p)
 
     def starting_params(self, y):
         # TODO: starting params can matter a lot?
         return Params(n=np.log(np.mean(y)), p=0)  # expit(0) = 0.5
 
-    def _split_params(self, params):
-        """Return loc and log_scale from params"""
+    def _safe_params(self, params):
         log_n = params[:, 0]
-        raw_p = params[:, 1]
-        return log_n, raw_p
+        logits = np.clip(params[:, 1], a_min=MIN_EXPONENT, a_max=MAX_EXPONENT)
+        return log_n, logits
