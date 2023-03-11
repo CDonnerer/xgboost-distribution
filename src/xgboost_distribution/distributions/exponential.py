@@ -6,11 +6,7 @@ import numpy as np
 from scipy.stats import expon
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.utils import check_all_ge_zero
-
-MIN_LOG_SCALE = np.log(np.finfo("float32").tiny) + 1
-MAX_LOG_SCALE = np.log(np.finfo("float32").max) - 1
-
+from xgboost_distribution.distributions.utils import check_all_ge_zero, safe_exp
 
 Params = namedtuple("Params", ("scale"))
 
@@ -66,8 +62,7 @@ class Exponential(BaseDistribution):
         return "Exponential-NLL", -expon.logpdf(y, scale=scale)
 
     def predict(self, params):
-        log_scale = np.clip(params, a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE)
-        scale = np.exp(log_scale)
+        scale = safe_exp(params)
         return Params(scale=scale)
 
     def starting_params(self, y):

@@ -12,6 +12,9 @@ from xgboost_distribution.distributions.utils import (
     check_all_integer,
 )
 
+MIN_LOG_N = np.log(np.finfo("float32").tiny) + 1
+MAX_LOG_N = np.log(np.finfo("float32").max) - 1
+
 Params = namedtuple("Params", ("n", "p"))
 
 
@@ -81,7 +84,7 @@ class NegativeBinomial(BaseDistribution):
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
 
-        log_n, raw_p = params[:, 0], params[:, 1]
+        log_n, raw_p = self._safe_params(params)
         n = np.exp(log_n)
         p = expit(raw_p)
 
@@ -91,7 +94,6 @@ class NegativeBinomial(BaseDistribution):
         grad[:, 1] = p * (y - n * (1 - p) / p)
 
         if natural_gradient:
-
             fisher_matrix = np.zeros(shape=(len(y), 2, 2), dtype="float32")
             fisher_matrix[:, 0, 0] = (n * p) / (p + 1)
             fisher_matrix[:, 1, 1] = n * p
@@ -111,7 +113,7 @@ class NegativeBinomial(BaseDistribution):
         return "NegativeBinomial-NLL", -nbinom.logpmf(y, n=n, p=p)
 
     def predict(self, params):
-        log_n, raw_p = params[:, 0], params[:, 1]
+        log_n, raw_p = self._safe_params(params)
         n = np.exp(log_n)
         p = expit(raw_p)
         return Params(n=n, p=p)
@@ -119,3 +121,9 @@ class NegativeBinomial(BaseDistribution):
     def starting_params(self, y):
         # TODO: starting params can matter a lot?
         return Params(n=np.log(np.mean(y)), p=0)  # expit(0) = 0.5
+
+    def _safe_params(self, params):
+        """Return safe loc and log_scale from params"""
+        log_n = np.clip(params[:, 0], a_min=MIN_LOG_N, a_max=MAX_LOG_N)
+        raw_p = params[:, 1]
+        return log_n, raw_p
