@@ -8,7 +8,7 @@ Development version
 Version 0.2.7, 2023-xx-xx
 --------------------------
 
-- Fix for overflow issues with normal distribution, :issue:`64`
+- Fix overflow issues for normal distribution, :issue:`64`
 - Removed verbosity hack in model training
 - Better support for pickle/joblib, :issue:`82`
 
