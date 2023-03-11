@@ -102,7 +102,7 @@ class Normal(BaseDistribution):
         return Params(loc=np.mean(y), scale=np.log(np.std(y)))
 
     def _safe_params(self, params):
-        """Return loc and log_scale from params"""
+        """Return safe loc and log_scale from params"""
         loc = params[:, 0]
         log_scale = params[:, 1] = np.clip(
             params[:, 1], a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE
