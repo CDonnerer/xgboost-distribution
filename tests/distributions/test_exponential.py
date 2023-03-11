@@ -43,7 +43,7 @@ def test_target_validation_raises(exponential, invalid_target):
     ],
 )
 def test_gradient_calculation(exponential, y, params, natural_gradient, expected_grad):
-    grad, hess = exponential.gradient_and_hessian(
+    grad, _ = exponential.gradient_and_hessian(
         y, params, natural_gradient=natural_gradient
     )
     np.testing.assert_array_equal(grad, expected_grad)
@@ -57,3 +57,25 @@ def test_loss(exponential):
     )
     assert loss_name == "Exponential-NLL"
     np.testing.assert_array_equal(loss_values, np.array([1.0]))
+
+
+@pytest.mark.parametrize(
+    "y, params",
+    [
+        (
+            np.array([34.7, 20.1], dtype="float32"),
+            np.array([150, 20], dtype="float32"),
+        ),
+        (
+            np.array([34.7, 20.1], dtype="float32"),
+            np.array([-150, 20], dtype="float32"),
+        ),
+    ],
+)
+def test_overflow_stability(exponential, y, params):
+    """Test stability against large/small values produced by xgboost"""
+
+    # Scale should not have inf or zeros
+    scale = exponential.predict(params)
+    assert np.isfinite(scale).all()
+    assert np.all(scale)
