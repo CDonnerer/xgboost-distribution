@@ -80,7 +80,6 @@ class Normal(BaseDistribution):
             fisher_matrix[:, 1, 1] = 2
 
             grad = np.linalg.solve(fisher_matrix, grad)
-
             hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
             hess = np.zeros(shape=(len(y), 2), dtype="float32")  # diagonal elems only

@@ -65,19 +65,19 @@ class Laplace(BaseDistribution):
         loc, log_scale = self._split_params(params)
         scale = np.exp(log_scale)
 
-        grad = np.zeros(shape=(len(y), 2))
+        grad = np.zeros(shape=(len(y), 2), dtype="float32")
         grad[:, 0] = np.sign(loc - y) / scale
         grad[:, 1] = 1 - np.abs(loc - y) / scale
 
         if natural_gradient:
-            fisher_matrix = np.zeros(shape=(len(y), 2, 2))
+            fisher_matrix = np.zeros(shape=(len(y), 2, 2), dtype="float32")
             fisher_matrix[:, 0, 0] = 1 / scale**2
             fisher_matrix[:, 1, 1] = 1
 
             grad = np.linalg.solve(fisher_matrix, grad)
-            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
-            hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
+            hess = np.zeros(shape=(len(y), 2), dtype="float32")
             # Note: Delta functions won't work well, hence we approximate with cauchy
             hess[:, 0] = 2 * cauchy.pdf(y, loc, scale) / scale
             hess[:, 1] = 1 - grad[:, 1]

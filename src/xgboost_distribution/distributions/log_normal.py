@@ -55,20 +55,19 @@ class LogNormal(BaseDistribution):
         loc, log_s = self._split_params(params)  # note loc = log(scale)
         var = np.exp(2 * log_s)
 
-        grad = np.zeros(shape=(len(y), 2))
+        grad = np.zeros(shape=(len(y), 2), dtype="float32")
         grad[:, 0] = (loc - log_y) / var
         grad[:, 1] = 1 - ((loc - log_y) ** 2) / var
 
         if natural_gradient:
-            fisher_matrix = np.zeros(shape=(len(y), 2, 2))
+            fisher_matrix = np.zeros(shape=(len(y), 2, 2), dtype="float32")
             fisher_matrix[:, 0, 0] = 1 / var
             fisher_matrix[:, 1, 1] = 2
 
             grad = np.linalg.solve(fisher_matrix, grad)
-
-            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
-            hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
+            hess = np.zeros(shape=(len(y), 2), dtype="float32")
             hess[:, 0] = 1 / var
             hess[:, 1] = 2 * ((log_y - loc) ** 2) / var
 

@@ -47,16 +47,15 @@ class Poisson(BaseDistribution):
 
         (mu,) = self.predict(params)
 
-        grad = np.zeros(shape=(len(y), 1))
+        grad = np.zeros(shape=(len(y), 1), dtype="float32")
         grad[:, 0] = mu - y
 
         if natural_gradient:
-            fisher_matrix = np.zeros(shape=(len(y), 1, 1))
+            fisher_matrix = np.zeros(shape=(len(y), 1, 1), dtype="float32")
             fisher_matrix[:, 0, 0] = mu
 
             grad = np.linalg.solve(fisher_matrix, grad)
-
-            hess = np.ones(shape=(len(y), 1))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 1), dtype="float32")  # constant hessian
         else:
             hess = mu
 

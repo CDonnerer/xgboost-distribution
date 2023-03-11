@@ -44,14 +44,14 @@ class Exponential(BaseDistribution):
 
         (scale,) = self.predict(params)
 
-        grad = np.zeros(shape=(len(y), 1))
+        grad = np.zeros(shape=(len(y), 1), dtype="float32")
         grad[:, 0] = 1 - y / scale
 
         if natural_gradient:
-            fisher_matrix = np.ones(shape=(len(y), 1, 1))
+            fisher_matrix = np.ones(shape=(len(y), 1, 1), dtype="float32")
 
             grad = np.linalg.solve(fisher_matrix, grad)
-            hess = np.ones(shape=(len(y), 1))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 1), dtype="float32")  # constant hessian
         else:
             hess = -(grad - 1)
 
