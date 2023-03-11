@@ -11,6 +11,10 @@ from xgboost_distribution.distributions.utils import (
     check_all_integer,
 )
 
+MIN_LOG_MU = np.log(np.finfo("float32").tiny) + 1
+MAX_LOG_MU = np.log(np.finfo("float32").max) - 1
+
+
 Params = namedtuple("Params", ("mu"))
 
 
@@ -66,7 +70,7 @@ class Poisson(BaseDistribution):
         return "Poisson-NLL", -poisson.logpmf(y, mu=mu)
 
     def predict(self, params):
-        log_mu = params  # params are shape (n,)
+        log_mu = np.clip(params, a_min=MIN_LOG_MU, a_max=MAX_LOG_MU)
         mu = np.exp(log_mu)
         return Params(mu=mu)
 
