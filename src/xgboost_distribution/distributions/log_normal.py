@@ -6,8 +6,14 @@ import numpy as np
 from scipy.stats import lognorm
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.normal import MAX_LOG_SCALE, MIN_LOG_SCALE
-from xgboost_distribution.distributions.utils import check_all_gt_zero
+from xgboost_distribution.distributions.utils import (
+    MAX_EXPONENT,
+    MIN_EXPONENT,
+    check_all_gt_zero,
+)
+
+MIN_LOG_SCALE = MIN_EXPONENT / 2
+MAX_LOG_SCALE = MAX_EXPONENT / 2
 
 Params = namedtuple("Params", ("scale", "s"))
 
@@ -52,8 +58,7 @@ class LogNormal(BaseDistribution):
         """Gradient and diagonal hessian"""
 
         log_y = np.log(y)
-
-        loc, log_s = self._split_params(params)  # note loc = log(scale)
+        loc, log_s = self._safe_params(params)  # note loc = log(scale)
         var = np.exp(2 * log_s)
 
         grad = np.zeros(shape=(len(y), 2), dtype="float32")
@@ -79,9 +84,8 @@ class LogNormal(BaseDistribution):
         return "LogNormal-NLL", -lognorm.logpdf(y, s=s, scale=scale)
 
     def predict(self, params):
-        log_scale, log_s = self._split_params(params)
+        log_scale, log_s = self._safe_params(params)
         scale, s = np.exp(log_scale), np.exp(log_s)
-
         return Params(scale=scale, s=s)
 
     def starting_params(self, y):

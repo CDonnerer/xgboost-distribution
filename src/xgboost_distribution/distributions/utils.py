@@ -17,7 +17,8 @@ def safe_exp(x):
     computations. E.g the minimum returned value should be safe in a division
     with a numerator of size up to ~1e6.
     """
-    # TODO: Empirically refine these limits using different datasets
+    # TODO: Empirically refine these limits using different datasets.
+    # Can we clip more without losing accuracy?
     x_clipped = np.clip(x, a_min=MIN_EXPONENT, a_max=MAX_EXPONENT)
     return np.exp(x_clipped)
 
