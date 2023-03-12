@@ -41,7 +41,7 @@ def test_gradient_calculation(normal, y, params, natural_gradient, expected_grad
         ),
         (
             np.array([34.7, 20.1], dtype="float32"),
-            np.array([[31.2, -100], [11, 6.7]], dtype="float32"),
+            np.array([[1.2e3, -100], [11, 6.7]], dtype="float32"),
         ),
     ],
 )

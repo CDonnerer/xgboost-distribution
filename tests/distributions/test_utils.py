@@ -65,8 +65,8 @@ def test_check_is_gt_zero_raises(x):
 @pytest.mark.parametrize(
     "x",
     [
-        np.array([100], dtype="float32"),
-        np.array([-100], dtype="float32"),
+        np.array([100], dtype="float32"),  # will get clipped to max
+        np.array([-100], dtype="float32"),  # will get clipped to min
     ],
 )
 def test_safe_exp(x):
@@ -75,3 +75,10 @@ def test_safe_exp(x):
     # ensure no infs and zeros
     assert np.isfinite(x_exp).all()
     assert x_exp.all()
+
+    # check stabiilty in divison setting
+    large_div = np.float32(1e6) / x_exp
+    assert np.isfinite(large_div).all()
+
+    small_div = np.float32(1e-6) / x_exp
+    assert small_div.all()

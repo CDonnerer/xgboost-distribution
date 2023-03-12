@@ -6,11 +6,12 @@ import numpy as np
 from scipy.stats import norm
 
 from xgboost_distribution.distributions.base import BaseDistribution
+from xgboost_distribution.distributions.utils import MAX_EXPONENT, MIN_EXPONENT
 
 # Note: due to reparameterization, we need to ensure that the converted
 # variance, exp(2 * std), is within bounds of np.float32 arrays
-MIN_LOG_SCALE = np.log(np.finfo("float32").tiny) / 2 + 1
-MAX_LOG_SCALE = np.log(np.finfo("float32").max) / 2 - 1
+MIN_LOG_SCALE = MIN_EXPONENT / 2
+MAX_LOG_SCALE = MAX_EXPONENT / 2
 
 
 Params = namedtuple("Params", ("loc", "scale"))
