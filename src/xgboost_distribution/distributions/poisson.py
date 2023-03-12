@@ -9,6 +9,7 @@ from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import (
     check_all_ge_zero,
     check_all_integer,
+    safe_exp,
 )
 
 Params = namedtuple("Params", ("mu"))
@@ -47,16 +48,15 @@ class Poisson(BaseDistribution):
 
         (mu,) = self.predict(params)
 
-        grad = np.zeros(shape=(len(y), 1))
+        grad = np.zeros(shape=(len(y), 1), dtype="float32")
         grad[:, 0] = mu - y
 
         if natural_gradient:
-            fisher_matrix = np.zeros(shape=(len(y), 1, 1))
+            fisher_matrix = np.zeros(shape=(len(y), 1, 1), dtype="float32")
             fisher_matrix[:, 0, 0] = mu
 
             grad = np.linalg.solve(fisher_matrix, grad)
-
-            hess = np.ones(shape=(len(y), 1))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 1), dtype="float32")  # constant hessian
         else:
             hess = mu
 
@@ -67,8 +67,7 @@ class Poisson(BaseDistribution):
         return "Poisson-NLL", -poisson.logpmf(y, mu=mu)
 
     def predict(self, params):
-        log_mu = params  # params are shape (n,)
-        mu = np.exp(log_mu)
+        mu = safe_exp(params)
         return Params(mu=mu)
 
     def starting_params(self, y):

@@ -6,7 +6,14 @@ import numpy as np
 from scipy.stats import lognorm
 
 from xgboost_distribution.distributions.base import BaseDistribution
-from xgboost_distribution.distributions.utils import check_all_gt_zero
+from xgboost_distribution.distributions.utils import (
+    MAX_EXPONENT,
+    MIN_EXPONENT,
+    check_all_gt_zero,
+)
+
+MIN_LOG_SCALE = MIN_EXPONENT / 2
+MAX_LOG_SCALE = MAX_EXPONENT / 2
 
 Params = namedtuple("Params", ("scale", "s"))
 
@@ -51,24 +58,22 @@ class LogNormal(BaseDistribution):
         """Gradient and diagonal hessian"""
 
         log_y = np.log(y)
-
-        loc, log_s = self._split_params(params)  # note loc = log(scale)
+        loc, log_s = self._safe_params(params)  # note loc = log(scale)
         var = np.exp(2 * log_s)
 
-        grad = np.zeros(shape=(len(y), 2))
+        grad = np.zeros(shape=(len(y), 2), dtype="float32")
         grad[:, 0] = (loc - log_y) / var
         grad[:, 1] = 1 - ((loc - log_y) ** 2) / var
 
         if natural_gradient:
-            fisher_matrix = np.zeros(shape=(len(y), 2, 2))
+            fisher_matrix = np.zeros(shape=(len(y), 2, 2), dtype="float32")
             fisher_matrix[:, 0, 0] = 1 / var
             fisher_matrix[:, 1, 1] = 2
 
             grad = np.linalg.solve(fisher_matrix, grad)
-
-            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
+            hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
-            hess = np.zeros(shape=(len(y), 2))  # diagonal elements only
+            hess = np.zeros(shape=(len(y), 2), dtype="float32")
             hess[:, 0] = 1 / var
             hess[:, 1] = 2 * ((log_y - loc) ** 2) / var
 
@@ -79,15 +84,16 @@ class LogNormal(BaseDistribution):
         return "LogNormal-NLL", -lognorm.logpdf(y, s=s, scale=scale)
 
     def predict(self, params):
-        log_scale, log_s = self._split_params(params)
+        log_scale, log_s = self._safe_params(params)
         scale, s = np.exp(log_scale), np.exp(log_s)
-
         return Params(scale=scale, s=s)
 
     def starting_params(self, y):
         log_y = np.log(y)
         return Params(scale=np.mean(log_y), s=np.log(np.std(log_y)))
 
-    def _split_params(self, params):
-        """Return log_scale (loc) and log_s from params"""
-        return params[:, 0], params[:, 1]
+    def _safe_params(self, params):
+        """Return safe log_scale (loc) and log_s from params"""
+        loc = params[:, 0]
+        log_s = np.clip(params[:, 1], a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE)
+        return loc, log_s

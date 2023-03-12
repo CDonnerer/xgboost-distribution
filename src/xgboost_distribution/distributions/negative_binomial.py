@@ -8,8 +8,11 @@ from scipy.stats import nbinom
 
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import (
+    MAX_EXPONENT,
+    MIN_EXPONENT,
     check_all_ge_zero,
     check_all_integer,
+    safe_exp,
 )
 
 Params = namedtuple("Params", ("n", "p"))
@@ -81,24 +84,20 @@ class NegativeBinomial(BaseDistribution):
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
 
-        log_n, raw_p = params[:, 0], params[:, 1]
-        n = np.exp(log_n)
-        p = expit(raw_p)
+        n, p = self.predict(params)
 
-        grad = np.zeros(shape=(len(y), 2))
+        grad = np.zeros(shape=(len(y), 2), dtype="float32")
 
         grad[:, 0] = -n * (digamma(y + n) - digamma(n) + np.log(p))
         grad[:, 1] = p * (y - n * (1 - p) / p)
 
         if natural_gradient:
-
-            fisher_matrix = np.zeros(shape=(len(y), 2, 2))
+            fisher_matrix = np.zeros(shape=(len(y), 2, 2), dtype="float32")
             fisher_matrix[:, 0, 0] = (n * p) / (p + 1)
             fisher_matrix[:, 1, 1] = n * p
 
             grad = np.linalg.solve(fisher_matrix, grad)
-            hess = np.ones(shape=(len(y), 2))  # we set the hessian constant
-
+            hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
             raise NotImplementedError(
                 "Normal gradients are currently not supported by this "
@@ -112,9 +111,12 @@ class NegativeBinomial(BaseDistribution):
         return "NegativeBinomial-NLL", -nbinom.logpmf(y, n=n, p=p)
 
     def predict(self, params):
-        log_n, raw_p = params[:, 0], params[:, 1]
-        n = np.exp(log_n)
-        p = expit(raw_p)
+        log_n, logits = params[:, 0], params[:, 1]
+
+        n = safe_exp(log_n)
+        logits = np.clip(logits, a_min=MIN_EXPONENT, a_max=MAX_EXPONENT)
+
+        p = expit(logits)
         return Params(n=n, p=p)
 
     def starting_params(self, y):
