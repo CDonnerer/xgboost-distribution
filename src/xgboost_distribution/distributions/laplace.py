@@ -6,6 +6,7 @@ import numpy as np
 from scipy.stats import cauchy, laplace
 
 from xgboost_distribution.distributions.base import BaseDistribution
+from xgboost_distribution.distributions.utils import safe_exp
 
 Params = namedtuple("Params", ("loc", "scale"))
 
@@ -62,8 +63,7 @@ class Laplace(BaseDistribution):
     def gradient_and_hessian(self, y, params, natural_gradient=True):
         """Gradient and diagonal hessian"""
 
-        loc, log_scale = self._split_params(params)
-        scale = np.exp(log_scale)
+        loc, scale = self.predict(params)
 
         grad = np.zeros(shape=(len(y), 2), dtype="float32")
         grad[:, 0] = np.sign(loc - y) / scale
@@ -89,13 +89,9 @@ class Laplace(BaseDistribution):
         return "Laplace-NLL", -laplace.logpdf(y, loc=loc, scale=scale)
 
     def predict(self, params):
-        loc, log_scale = self._split_params(params)
-        scale = np.exp(log_scale)
+        loc, log_scale = params[:, 0], params[:, 1]
+        scale = safe_exp(log_scale)
         return Params(loc=loc, scale=scale)
 
     def starting_params(self, y):
         return Params(loc=np.mean(y), scale=np.log(np.std(y)))
-
-    def _split_params(self, params):
-        """Return loc and log_scale from params"""
-        return params[:, 0], params[:, 1]

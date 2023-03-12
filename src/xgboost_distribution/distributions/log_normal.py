@@ -6,6 +6,7 @@ import numpy as np
 from scipy.stats import lognorm
 
 from xgboost_distribution.distributions.base import BaseDistribution
+from xgboost_distribution.distributions.normal import MAX_LOG_SCALE, MIN_LOG_SCALE
 from xgboost_distribution.distributions.utils import check_all_gt_zero
 
 Params = namedtuple("Params", ("scale", "s"))
@@ -87,6 +88,8 @@ class LogNormal(BaseDistribution):
         log_y = np.log(y)
         return Params(scale=np.mean(log_y), s=np.log(np.std(log_y)))
 
-    def _split_params(self, params):
-        """Return log_scale (loc) and log_s from params"""
-        return params[:, 0], params[:, 1]
+    def _safe_params(self, params):
+        """Return safe log_scale (loc) and log_s from params"""
+        loc = params[:, 0]
+        log_s = np.clip(params[:, 1], a_min=MIN_LOG_SCALE, a_max=MAX_LOG_SCALE)
+        return loc, log_s
