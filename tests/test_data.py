@@ -22,9 +22,28 @@ def generate_data_with_target_outliers(n_samples=30_000, n_outliers=100):
     return x[..., np.newaxis], y
 
 
+def generate_data_with_target_consts(n_samples=30_000, n_not_constant=100):
+    y = np.concatenate(
+        (
+            np.random.normal(loc=10, scale=5, size=n_not_constant),
+            np.ones(shape=(n_samples - n_not_constant,)),
+        )
+    )
+    x = np.concatenate((np.random.uniform(low=0, high=10, size=n_samples),))
+    return x[..., np.newaxis], y
+
+
 def test_target_outlier_robust():
     X, y = generate_data_with_target_outliers()
     XGBDistribution(
         distribution="normal",
         n_estimators=2,
+    ).fit(X, y)
+
+
+def test_target_with_consts():
+    X, y = generate_data_with_target_consts()
+    XGBDistribution(
+        distribution="normal",
+        n_estimators=100,
     ).fit(X, y)
