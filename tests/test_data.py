@@ -1,4 +1,4 @@
-"""Test against datasets
+"""Test against data edge cases
 """
 import numpy as np
 
@@ -23,6 +23,11 @@ def generate_data_with_target_outliers(n_samples=30_000, n_outliers=100):
 
 
 def generate_data_with_target_consts(n_samples=30_000, n_not_constant=100):
+    """Generate data with constant/duplicates in target
+
+    Having constant in target can cause variance to diminish, potentially
+    causing overflow errors.
+    """
     y = np.concatenate(
         (
             np.random.normal(loc=10, scale=5, size=n_not_constant),
