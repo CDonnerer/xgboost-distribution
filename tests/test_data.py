@@ -2,9 +2,10 @@
 """
 import pytest
 
-import numpy as np
-
 from xgboost_distribution.model import XGBDistribution
+
+
+import numpy as np
 
 
 def generate_data_with_target_outliers(n_samples=30_000, n_outliers=100):
