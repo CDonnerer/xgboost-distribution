@@ -16,7 +16,7 @@ repos:
     args: ['--fix=auto']  # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.257
+  rev: v0.0.261
   hooks:
   - id: ruff
     args:
@@ -28,7 +28,7 @@ repos:
   - id: isort
 
 - repo: https://github.com/psf/black
-  rev: 23.1.0
+  rev: 23.3.0
   hooks:
   - id: black
     language_version: python3
