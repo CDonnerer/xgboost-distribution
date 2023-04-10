@@ -1,5 +1,7 @@
-"""Test against data edge cases
+"""Tests against data edge cases
 """
+import pytest
+
 import numpy as np
 
 from xgboost_distribution.model import XGBDistribution
@@ -9,8 +11,8 @@ def generate_data_with_target_outliers(n_samples=30_000, n_outliers=100):
     """Generate data with small number of outliers in target
 
     Bulk of target is drawn from single distribution, with a *small* set of
-    outliers which inflate the variance for these data points, potentially
-    causing overflow errors.
+    outliers. These inflate the variance for these data points, potentially
+    causing overflow errors, if parameters are unconstrained.
     """
     y = np.concatenate(
         (
@@ -20,6 +22,17 @@ def generate_data_with_target_outliers(n_samples=30_000, n_outliers=100):
     )
     x = np.random.gamma(shape=2, scale=2, size=n_samples)
     return x[..., np.newaxis], y
+
+
+def test_target_outlier_robust():
+    X, y = generate_data_with_target_outliers()
+    xgbd = XGBDistribution(
+        distribution="normal",
+        n_estimators=2,
+    ).fit(X, y)
+
+    # assert that we got here without issues
+    assert isinstance(xgbd, XGBDistribution)
 
 
 def generate_data_with_target_consts(n_samples=30_000, n_not_constant=100):
@@ -38,17 +51,13 @@ def generate_data_with_target_consts(n_samples=30_000, n_not_constant=100):
     return x[..., np.newaxis], y
 
 
-def test_target_outlier_robust():
-    X, y = generate_data_with_target_outliers()
-    XGBDistribution(
-        distribution="normal",
-        n_estimators=2,
-    ).fit(X, y)
-
-
+@pytest.mark.slow
 def test_target_with_consts():
     X, y = generate_data_with_target_consts()
-    XGBDistribution(
+    xgbd = XGBDistribution(
         distribution="normal",
         n_estimators=100,
     ).fit(X, y)
+
+    # assert that we got here without issues
+    assert isinstance(xgbd, XGBDistribution)
