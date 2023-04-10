@@ -1,6 +1,5 @@
 """Tests against data edge cases
 """
-
 import pytest
 
 import numpy as np
