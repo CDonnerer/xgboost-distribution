@@ -51,8 +51,8 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an additional keyword
-argument specifying the distribution, which is fit via `Maximum Likelihood Estimation`_
-(see the `documentation`_ for a full list of available distributions):
+argument specifying the distribution, which gets fit via `Maximum Likelihood Estimation`_
+(see the `documentation`_ for available distributions):
 
 .. code-block:: python
 
