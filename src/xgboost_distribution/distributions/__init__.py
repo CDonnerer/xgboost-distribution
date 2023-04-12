@@ -50,12 +50,11 @@ def get_distribution_doc():
                 - \"{name}\" - parameters: {subclass().params}\n"""
 
     param_doc += """
+        Please see `scipy.stats` for a full description of the parameters of
+        each distribution: https://docs.scipy.org/doc/scipy/reference/stats.html
 
         Note that distributions are fit using Maximum Likelihood Estimation, which
         internally corresponds to minimising the negative log likelihood (NLL).
-
-        Please see `scipy.stats` for a full description of the parameters of
-        each distribution: https://docs.scipy.org/doc/scipy/reference/stats.html
     """
 
     return param_doc
