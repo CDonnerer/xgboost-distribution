@@ -156,4 +156,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _numpy arrays: https://numpy.org/doc/stable/reference/generated/numpy.array.html
 .. _scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
 .. _namedtuple: https://docs.python.org/3/library/collections.html#collections.namedtuple
-.. _maximum likelihood estimation:https://en.wikipedia.org/wiki/Maximum_likelihood_estimation
+.. _maximum likelihood estimation: https://en.wikipedia.org/wiki/Maximum_likelihood_estimation
