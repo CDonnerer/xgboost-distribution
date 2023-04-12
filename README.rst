@@ -51,8 +51,8 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an additional keyword
-argument specifying the distribution (see the `documentation`_ for a full list of
-available distributions):
+argument specifying the distribution, which is fit via `Maximum Likelihood Estimation`_
+(see the `documentation`_ for a full list of available distributions):
 
 .. code-block:: python
 
@@ -156,3 +156,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _numpy arrays: https://numpy.org/doc/stable/reference/generated/numpy.array.html
 .. _scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
 .. _namedtuple: https://docs.python.org/3/library/collections.html#collections.namedtuple
+.. _Maximum_likelihood_estimation:https://en.wikipedia.org/wiki/Maximum_likelihood_estimation
