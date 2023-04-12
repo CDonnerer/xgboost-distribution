@@ -51,7 +51,7 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an additional keyword
-argument specifying the distribution, which gets fit via `Maximum Likelihood Estimation`_
+argument specifying the distribution, fit via `Maximum Likelihood Estimation`_
 (see the `documentation`_ for available distributions):
 
 .. code-block:: python
@@ -72,6 +72,7 @@ argument specifying the distribution, which gets fit via `Maximum Likelihood Est
           early_stopping_rounds=10
       )
       model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
+
 
 After fitting, we can predict the parameters of the distribution:
 
