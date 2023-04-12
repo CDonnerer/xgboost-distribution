@@ -73,8 +73,9 @@ argument specifying the distribution (which is fit via `Maximum Likelihood Estim
       model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
 
 
-See the `documentation`_ for all available distributions. After fitting, we can predict
-the parameters of the distribution:
+See the `documentation`_ for all available distributions.
+
+After fitting, we can predict the parameters of the distribution:
 
 .. code-block:: python
 
