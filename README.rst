@@ -51,8 +51,7 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an additional keyword
-argument specifying the distribution, which is fit via `Maximum Likelihood Estimation`_
-(i.e. objective is log-likelihood):
+argument specifying the distribution, which is fit via `Maximum Likelihood Estimation`_:
 
 
 .. code-block:: python
