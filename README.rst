@@ -51,8 +51,8 @@ Usage
 ===========
 
 ``XGBDistribution`` follows the `XGBoost scikit-learn API`_, with an additional keyword
-argument specifying the distribution (see the `documentation`_ for a full list of
-available distributions):
+argument specifying the distribution, which is fit via `Maximum Likelihood Estimation`_:
+
 
 .. code-block:: python
 
@@ -73,6 +73,9 @@ available distributions):
       )
       model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
 
+
+See the `documentation`_ for all available distributions.
+
 After fitting, we can predict the parameters of the distribution:
 
 .. code-block:: python
@@ -92,11 +95,11 @@ NGBoost performance comparison
 ``XGBDistribution`` follows the method shown in the `NGBoost`_ library, using natural
 gradients to estimate the parameters of the distribution.
 
-Below, we show a performance comparison of ``XGBDistribution`` with the `NGBoost`_
+Below, we show a performance comparison of ``XGBDistribution`` and the `NGBoost`_
 ``NGBRegressor``, using the Boston Housing dataset, estimating normal distributions.
-We note that while the performance of the two models is essentially identical (measured
-on negative log-likelihood of a normal distribution and the RMSE), ``XGBDistribution``
-is **30x faster** (timed on both fit and predict steps):
+While the performance of the two models is essentially identical (measured on negative
+log-likelihood of a normal distribution and the RMSE), ``XGBDistribution`` is
+**30x faster** (timed on both fit and predict steps):
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
@@ -104,8 +107,7 @@ is **30x faster** (timed on both fit and predict steps):
           :alt: XGBDistribution vs NGBoost
 
 
-Please see the `experiments page`_ in the documentation for detailed results across
-various datasets.
+Please see the `experiments page`_ for results across various datasets.
 
 
 Full XGBoost features
@@ -156,3 +158,4 @@ information on PyScaffold see https://pyscaffold.org/.
 .. _numpy arrays: https://numpy.org/doc/stable/reference/generated/numpy.array.html
 .. _scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
 .. _namedtuple: https://docs.python.org/3/library/collections.html#collections.namedtuple
+.. _maximum likelihood estimation: https://en.wikipedia.org/wiki/Maximum_likelihood_estimation
