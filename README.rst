@@ -98,7 +98,7 @@ gradients to estimate the parameters of the distribution.
 Below, we show a performance comparison of ``XGBDistribution`` and the `NGBoost`_
 ``NGBRegressor``, using the California Housing dataset, estimating normal distributions.
 While the performance of the two models is fairly similar (measured on negative
-log-likelihood of a normal distribution and the RMSE), ``XGBDistribution`` is
+log-likelihood of a normal distribution and the RMSE), ``XGBDistribution`` is around
 **15x faster** (timed on both fit and predict steps):
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
