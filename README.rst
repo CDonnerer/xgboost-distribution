@@ -56,13 +56,13 @@ argument specifying the distribution, which is fit via `Maximum Likelihood Estim
 
 .. code-block:: python
 
-      from sklearn.datasets import load_boston
+      from sklearn.datasets import fetch_california_housing
       from sklearn.model_selection import train_test_split
 
       from xgboost_distribution import XGBDistribution
 
 
-      data = load_boston()
+      data = fetch_california_housing()
       X, y = data.data, data.target
       X_train, X_test, y_train, y_test = train_test_split(X, y)
 
