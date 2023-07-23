@@ -56,13 +56,13 @@ argument specifying the distribution, which is fit via `Maximum Likelihood Estim
 
 .. code-block:: python
 
-      from sklearn.datasets import load_boston
+      from sklearn.datasets import fetch_california_housing
       from sklearn.model_selection import train_test_split
 
       from xgboost_distribution import XGBDistribution
 
 
-      data = load_boston()
+      data = fetch_california_housing()
       X, y = data.data, data.target
       X_train, X_test, y_train, y_test = train_test_split(X, y)
 
@@ -96,10 +96,10 @@ NGBoost performance comparison
 gradients to estimate the parameters of the distribution.
 
 Below, we show a performance comparison of ``XGBDistribution`` and the `NGBoost`_
-``NGBRegressor``, using the Boston Housing dataset, estimating normal distributions.
-While the performance of the two models is essentially identical (measured on negative
-log-likelihood of a normal distribution and the RMSE), ``XGBDistribution`` is
-**30x faster** (timed on both fit and predict steps):
+``NGBRegressor``, using the California Housing dataset, estimating normal distributions.
+While the performance of the two models is fairly similar (measured on negative
+log-likelihood of a normal distribution and the RMSE), ``XGBDistribution`` is around
+**15x faster** (timed on both fit and predict steps):
 
 .. image:: https://raw.githubusercontent.com/CDonnerer/xgboost-distribution/main/imgs/performance_comparison.png
           :align: center
