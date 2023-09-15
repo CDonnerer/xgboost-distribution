@@ -176,7 +176,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def predict(
         self,
         X: ArrayLike,
-        ntree_limit: Optional[int] = None,
         validate_features: bool = True,
         iteration_range: Optional[Tuple[int, int]] = None,
     ) -> Tuple[np.ndarray]:
@@ -186,8 +185,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         ----------
         X : ArrayLike
             Feature matrix.
-        ntree_limit : int
-            Deprecated, use `iteration_range` instead.
         validate_features : bool
             When this is True, validate that the Booster's and data's feature_names are
             identical.  Otherwise, it is assumed that the feature_names are the same.
@@ -210,7 +207,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         params = super().predict(
             X=X,
             output_margin=True,
-            ntree_limit=ntree_limit,
             validate_features=validate_features,
             base_margin=base_margin,
             iteration_range=iteration_range,
