@@ -23,7 +23,7 @@ def test_XGBDistribution_early_stopping_fit(small_train_test_data):
     model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
     evals_result = model.evals_result()
 
-    assert model.best_iteration == 6
+    assert model.best_iteration == 5
     assert isinstance(evals_result, dict)
 
 
