@@ -1,5 +1,7 @@
 """XGBDistribution model
 """
+import importlib
+import json
 import os
 from typing import Any, Callable, List, Optional, Tuple, Union, no_type_check
 
@@ -170,6 +172,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._set_evaluation_result(evals_result)
         self.objective = f"distribution:{self.distribution}"
 
+        # we set additional params needed for XGBDistribution on the Booster object,
+        # in order to make use of the Booster's serialisation methods
+        self._Booster.set_attr(distribution=self.distribution)
+        self._Booster.set_attr(starting_params=json.dumps(self._starting_params))
+
         return self
 
     @no_type_check
@@ -224,8 +231,16 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
     def load_model(self, fname: Union[str, bytearray, os.PathLike]) -> None:
         super().load_model(fname)
+
         # See above: Currently need to reinstantiate distribution post loading
+        self.distribution = self._Booster.attr("distribution")
         self._distribution = get_distribution(self.distribution)
+
+        distribution_module = importlib.import_module(self._distribution.__module__)
+        self._starting_params = distribution_module.Params(
+            *json.loads(self._Booster.attr("starting_params"))
+        )
+        del distribution_module
 
     def _objective_func(
         self,

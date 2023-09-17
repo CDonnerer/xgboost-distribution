@@ -218,7 +218,7 @@ def assert_model_equivalence(model_a, model_b, X):
 )
 def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdir):
     X, y = small_X_y_data
-    model = XGBDistribution(n_estimators=10)
+    model = XGBDistribution(n_estimators=10, distribution="laplace")
     model.fit(X, y)
 
     model_path = os.path.join(tmpdir, f"model.{model_format}")
