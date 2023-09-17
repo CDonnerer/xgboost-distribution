@@ -17,7 +17,7 @@ Current version
 Version 0.2.8, 2023-09-15
 --------------------------
 
-- Fix `predict` call with latest xgboost release (`ntree_limit` deprecated)
+- Fixes to make package work with xgboost 2.0
 
 
 Version 0.2.7, 2023-03-12
