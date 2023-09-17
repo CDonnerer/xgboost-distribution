@@ -14,6 +14,11 @@ Version 0.x.x, 2023-xx-xx
 Current version
 ===============
 
+Version 0.2.8, 2023-xx-xx
+--------------------------
+
+- Fixes to make package work with xgboost 2.0
+
 
 Version 0.2.7, 2023-03-12
 --------------------------

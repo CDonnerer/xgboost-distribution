@@ -1,5 +1,7 @@
 """XGBDistribution model
 """
+import importlib
+import json
 import os
 from typing import Any, Callable, List, Optional, Tuple, Union, no_type_check
 
@@ -170,13 +172,17 @@ class XGBDistribution(XGBModel, RegressorMixin):
         self._set_evaluation_result(evals_result)
         self.objective = f"distribution:{self.distribution}"
 
+        # we set additional params needed for XGBDistribution on the Booster object,
+        # in order to make use of the Booster's serialisation methods
+        self._Booster.set_attr(distribution=self.distribution)
+        self._Booster.set_attr(starting_params=json.dumps(self._starting_params))
+
         return self
 
     @no_type_check
     def predict(
         self,
         X: ArrayLike,
-        ntree_limit: Optional[int] = None,
         validate_features: bool = True,
         iteration_range: Optional[Tuple[int, int]] = None,
     ) -> Tuple[np.ndarray]:
@@ -186,8 +192,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         ----------
         X : ArrayLike
             Feature matrix.
-        ntree_limit : int
-            Deprecated, use `iteration_range` instead.
         validate_features : bool
             When this is True, validate that the Booster's and data's feature_names are
             identical.  Otherwise, it is assumed that the feature_names are the same.
@@ -210,7 +214,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
         params = super().predict(
             X=X,
             output_margin=True,
-            ntree_limit=ntree_limit,
             validate_features=validate_features,
             base_margin=base_margin,
             iteration_range=iteration_range,
@@ -228,8 +231,16 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
     def load_model(self, fname: Union[str, bytearray, os.PathLike]) -> None:
         super().load_model(fname)
+
         # See above: Currently need to reinstantiate distribution post loading
+        self.distribution = self._Booster.attr("distribution")
         self._distribution = get_distribution(self.distribution)
+
+        distribution_module = importlib.import_module(self._distribution.__module__)
+        self._starting_params = distribution_module.Params(
+            *json.loads(self._Booster.attr("starting_params"))
+        )
+        del distribution_module
 
     def _objective_func(
         self,
