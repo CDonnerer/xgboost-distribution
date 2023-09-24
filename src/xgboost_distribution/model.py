@@ -10,6 +10,7 @@ from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
+from xgboost.config import config_context
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
 from xgboost.training import train
@@ -69,7 +70,14 @@ class XGBDistribution(XGBModel, RegressorMixin):
         Parameters
         ----------
         X :
-            Feature matrix
+            Feature matrix. See :ref:`py-data` for a list of supported types.
+
+            When the ``tree_method`` is set to ``hist``, internally, the
+            :py:class:`QuantileDMatrix` will be used instead of the :py:class:`DMatrix`
+            for conserving memory. However, this has performance implications when the
+            device of input data is not matched with algorithm. For instance, if the
+            input is a numpy array on CPU but ``cuda`` is used for training, then the
+            data is first processed on CPU then transferred to GPU.
         y :
             Labels
         sample_weight :
@@ -78,13 +86,19 @@ class XGBDistribution(XGBModel, RegressorMixin):
             A list of (X, y) tuple pairs to use as validation sets, for which
             metrics will be computed.
             Validation metrics will help us track the performance of the model.
+
         early_stopping_rounds : int
+
             .. deprecated:: 1.6.0
-                Use `early_stopping_rounds` in :py:meth:`__init__` or
-                :py:meth:`set_params` instead.
+
+            Use `early_stopping_rounds` in :py:meth:`__init__` or :py:meth:`set_params`
+            instead.
         verbose :
-            If `verbose` and an evaluation set is used, writes the evaluation metric
-            measured on the validation set to stderr.
+            If `verbose` is True and an evaluation set is used, the evaluation metric
+            measured on the validation set is printed to stdout at each boosting stage.
+            If `verbose` is an integer, the evaluation metric is printed at each
+            `verbose` boosting stage. The last boosting stage / the boosting stage found
+            by using `early_stopping_rounds` is also printed.
         xgb_model :
             file name of stored XGBoost model or 'Booster' instance XGBoost model to be
             loaded before training (allows training continuation).
@@ -99,85 +113,87 @@ class XGBDistribution(XGBModel, RegressorMixin):
         callbacks :
             .. deprecated:: 1.6.0
                 Use `callbacks` in :py:meth:`__init__` or :py:meth:`set_params` instead.
+
         """
-        self._distribution = get_distribution(self.distribution)
-        self._distribution.check_target(y)
+        with config_context(verbosity=self.verbosity):
+            evals_result: TrainingCallback.EvalsLog = {}
 
-        params = self.get_xgb_params()
+            self._distribution = get_distribution(self.distribution)
+            self._distribution.check_target(y)
 
-        # we remove unexpected (i.e. not xgb native) params before fitting
-        for param in ["distribution", "natural_gradient"]:
-            params.pop(param)
+            params = self.get_xgb_params()
 
-        params["objective"] = None
-        params["disable_default_eval_metric"] = True
-        params["num_class"] = len(self._distribution.params)
+            # we remove unexpected (i.e. not xgb native) params before fitting
+            for param in ["distribution", "natural_gradient"]:
+                params.pop(param)
 
-        # we set `base_score` to zero and instead use base_margin in dmatrices
-        # -> this allows different starting values for each distribution parameter
-        params["base_score"] = 0.0
-        self._starting_params = self._distribution.starting_params(y)
+            params["objective"] = None
+            params["disable_default_eval_metric"] = True
+            params["num_class"] = len(self._distribution.params)
 
-        base_margin = self._get_base_margin(len(y))
-        if eval_set is not None:
-            base_margin_eval_set: Optional[List[np.ndarray]] = [
-                self._get_base_margin(len(evals[1])) for evals in eval_set
-            ]
-        else:
-            base_margin_eval_set = None
+            # we set `base_score` to zero and instead use base_margin in dmatrices
+            # -> this allows different starting values for each distribution parameter
+            params["base_score"] = 0.0
+            self._starting_params = self._distribution.starting_params(y)
 
-        train_dmatrix, evals = _wrap_evaluation_matrices(
-            missing=self.missing,
-            X=X,
-            y=y,
-            group=None,
-            qid=None,
-            sample_weight=sample_weight,
-            base_margin=base_margin,
-            feature_weights=feature_weights,
-            eval_set=eval_set,
-            sample_weight_eval_set=sample_weight_eval_set,
-            base_margin_eval_set=base_margin_eval_set,
-            eval_group=None,
-            eval_qid=None,
-            create_dmatrix=self._create_dmatrix,
-            enable_categorical=self.enable_categorical,
-            feature_types=self.feature_types,
-        )
+            base_margin = self._get_base_margin(len(y))
+            if eval_set is not None:
+                base_margin_eval_set: Optional[List[np.ndarray]] = [
+                    self._get_base_margin(len(evals[1])) for evals in eval_set
+                ]
+            else:
+                base_margin_eval_set = None
 
-        evals_result: TrainingCallback.EvalsLog = {}
+            model, _, params, early_stopping_rounds, callbacks = self._configure_fit(
+                booster=xgb_model,
+                eval_metric=None,
+                params=params,
+                early_stopping_rounds=early_stopping_rounds,
+                callbacks=callbacks,
+            )
 
-        model, _, params, early_stopping_rounds, callbacks = self._configure_fit(
-            booster=xgb_model,
-            eval_metric=None,
-            params=params,
-            early_stopping_rounds=early_stopping_rounds,
-            callbacks=callbacks,
-        )
+            train_dmatrix, evals = _wrap_evaluation_matrices(
+                missing=self.missing,
+                X=X,
+                y=y,
+                group=None,
+                qid=None,
+                sample_weight=sample_weight,
+                base_margin=base_margin,
+                feature_weights=feature_weights,
+                eval_set=eval_set,
+                sample_weight_eval_set=sample_weight_eval_set,
+                base_margin_eval_set=base_margin_eval_set,
+                eval_group=None,
+                eval_qid=None,
+                create_dmatrix=self._create_dmatrix,
+                enable_categorical=self.enable_categorical,
+                feature_types=self.feature_types,
+            )
 
-        self._Booster = train(
-            params,
-            train_dmatrix,
-            num_boost_round=self.get_num_boosting_rounds(),
-            evals=evals,
-            early_stopping_rounds=early_stopping_rounds,
-            evals_result=evals_result,
-            obj=self._objective_func(),
-            custom_metric=self._evaluation_func(),
-            verbose_eval=verbose,
-            xgb_model=model,
-            callbacks=callbacks,
-        )
+            self._Booster = train(
+                params,
+                train_dmatrix,
+                num_boost_round=self.get_num_boosting_rounds(),
+                evals=evals,
+                early_stopping_rounds=early_stopping_rounds,
+                evals_result=evals_result,
+                obj=self._objective_func(),
+                custom_metric=self._evaluation_func(),
+                verbose_eval=verbose,
+                xgb_model=model,
+                callbacks=callbacks,
+            )
 
-        self._set_evaluation_result(evals_result)
-        self.objective = f"distribution:{self.distribution}"
+            self._set_evaluation_result(evals_result)
+            self.objective = f"distribution:{self.distribution}"
 
-        # we set additional params needed for XGBDistribution on the Booster object,
-        # in order to make use of the Booster's serialisation methods
-        self._Booster.set_attr(distribution=self.distribution)
-        self._Booster.set_attr(starting_params=json.dumps(self._starting_params))
+            # we set additional params needed for XGBDistribution on the Booster object,
+            # in order to make use of the Booster's serialisation methods
+            self._Booster.set_attr(distribution=self.distribution)
+            self._Booster.set_attr(starting_params=json.dumps(self._starting_params))
 
-        return self
+            return self
 
     @no_type_check
     def predict(
@@ -207,18 +223,19 @@ class XGBDistribution(XGBModel, RegressorMixin):
             A namedtuple of the distribution parameters. Each parameter is a
             numpy array of shape (n_samples,).
         """
-        check_is_fitted(self, attributes=("_distribution", "_starting_params"))
+        with config_context(verbosity=self.verbosity):
+            check_is_fitted(self, attributes=("_distribution", "_starting_params"))
 
-        base_margin = self._get_base_margin(X.shape[0])
+            base_margin = self._get_base_margin(X.shape[0])
 
-        params = super().predict(
-            X=X,
-            output_margin=True,
-            validate_features=validate_features,
-            base_margin=base_margin,
-            iteration_range=iteration_range,
-        )
-        return self._distribution.predict(params)
+            params = super().predict(
+                X=X,
+                output_margin=True,
+                validate_features=validate_features,
+                base_margin=base_margin,
+                iteration_range=iteration_range,
+            )
+            return self._distribution.predict(params)
 
     def save_model(self, fname: Union[str, os.PathLike]) -> None:
         # self._distribution class cannot be saved by `super().save_model`, as it
