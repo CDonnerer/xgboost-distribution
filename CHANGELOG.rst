@@ -14,10 +14,11 @@ Version 0.x.x, 2023-xx-xx
 Current version
 ===============
 
-Version 0.2.8, 2023-xx-xx
+Version 0.2.8, 2023-09-24
 --------------------------
 
 - Fixes to make package work with xgboost 2.0
+- Various internal changes for xgboost sklearn API consistency
 
 
 Version 0.2.7, 2023-03-12
