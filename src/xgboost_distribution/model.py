@@ -3,7 +3,7 @@
 import importlib
 import json
 import os
-from typing import Any, Callable, List, Optional, Tuple, Union, no_type_check
+from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_type_check
 
 import numpy as np
 from sklearn.base import RegressorMixin
@@ -52,13 +52,13 @@ class XGBDistribution(XGBModel, RegressorMixin):
         y: ArrayLike,
         *,
         sample_weight: Optional[ArrayLike] = None,
-        eval_set: Optional[List[Tuple[ArrayLike, ArrayLike]]] = None,
+        eval_set: Optional[Sequence[Tuple[ArrayLike, ArrayLike]]] = None,
         early_stopping_rounds: Optional[int] = None,
-        verbose: Optional[bool] = False,
+        verbose: Optional[Union[bool, int]] = True,
         xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
-        sample_weight_eval_set: Optional[List[ArrayLike]] = None,
+        sample_weight_eval_set: Optional[Sequence[ArrayLike]] = None,
         feature_weights: Optional[ArrayLike] = None,
-        callbacks: Optional[List[TrainingCallback]] = None,
+        callbacks: Optional[Sequence[TrainingCallback]] = None,
     ) -> "XGBDistribution":
         """Fit gradient boosting distribution model.
 
