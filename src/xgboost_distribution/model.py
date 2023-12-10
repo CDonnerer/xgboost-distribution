@@ -16,6 +16,7 @@ from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_d
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
+from xgboost_distribution.utils import to_serializable
 
 
 @xgboost_model_doc(
@@ -191,7 +192,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
             # we set additional params needed for XGBDistribution on the Booster object,
             # in order to make use of the Booster's serialisation methods
             self._Booster.set_attr(distribution=self.distribution)
-            self._Booster.set_attr(starting_params=json.dumps(self._starting_params))
+            self._Booster.set_attr(
+                starting_params=json.dumps(
+                    self._starting_params, default=to_serializable
+                )
+            )
 
             return self
 
