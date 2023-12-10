@@ -25,13 +25,16 @@ def small_X_y_data():
     return X[..., np.newaxis], y
 
 
-@pytest.fixture(params=["numpy", "pandas"])
+@pytest.fixture(params=["numpy", "pandas", "numpy-float32"])
 def small_train_test_data(request, small_X_y_data):
     """Small set of train-test split X, y data (single feature)"""
     X, y = small_X_y_data
 
     if request.param == "pandas":
         X, y = pd.DataFrame(X), pd.Series(y)
+
+    elif request.param == "numpy-float32":
+        X, y = X.astype("float32"), y.astype("float32")
 
     return train_test_split(X, y, test_size=0.2, random_state=1)
 
