@@ -5,14 +5,24 @@ Changelog
 Development version
 ===================
 
-Version 0.x.x, 2023-xx-xx
+Version 0.2.x, 20xx-xx-xx
 --------------------------
 
-- ...
+- ..
 
 
 Current version
 ===============
+
+Version 0.2.9, 2023-12-10
+--------------------------
+
+- Fix float32 serialisation, :issue:`97`
+
+
+Older versions
+===============
+
 
 Version 0.2.8, 2023-09-24
 --------------------------
@@ -27,10 +37,6 @@ Version 0.2.7, 2023-03-12
 - Fix overflow issues for normal distribution, :issue:`64`
 - Removed verbosity hack in model training
 - Better support for pickle/joblib, :issue:`82`
-
-
-Older versions
-===============
 
 
 Version 0.2.6, 2023-01-21
