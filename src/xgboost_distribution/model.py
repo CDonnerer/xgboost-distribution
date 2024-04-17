@@ -5,6 +5,9 @@ import json
 import os
 from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_type_check
 
+from xgboost_distribution.utils import to_serializable
+
+
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
@@ -16,7 +19,6 @@ from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_d
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
-from xgboost_distribution.utils import to_serializable
 
 
 @xgboost_model_doc(
