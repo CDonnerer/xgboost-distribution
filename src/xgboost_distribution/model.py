@@ -7,7 +7,6 @@ from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_typ
 
 from xgboost_distribution.utils import to_serializable
 
-
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
