@@ -5,11 +5,12 @@ import json
 import os
 from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_type_check
 
+import numpy as np
+
 from xgboost_distribution.utils import to_serializable
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
 
 
-import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost._typing import ArrayLike
