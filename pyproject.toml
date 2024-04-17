@@ -16,4 +16,8 @@ exclude = [
     ".eggs",
     "docs/conf.py",
 ]
-#src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "I",  # isort formatting.
+]
