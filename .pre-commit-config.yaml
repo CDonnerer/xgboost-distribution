@@ -2,7 +2,7 @@ exclude: '^docs/conf.py'
 
 repos:
 - repo: git://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v4.6.0
   hooks:
   - id: trailing-whitespace
   - id: check-added-large-files
@@ -16,10 +16,7 @@ repos:
     args: ['--fix=auto']  # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  # Ruff version.
   rev: v0.3.7
   hooks:
-    # Run the linter.
     - id: ruff
-    # Run the formatter.
     - id: ruff-format
