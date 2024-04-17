@@ -16,3 +16,8 @@ exclude = [
     ".eggs",
     "docs/conf.py",
 ]
+
+[tool.ruff.lint]
+select = [
+    "I",  # isort formatting.
+]

@@ -1,5 +1,5 @@
-"""XGBDistribution model
-"""
+"""XGBDistribution model"""
+
 import importlib
 import json
 import os
