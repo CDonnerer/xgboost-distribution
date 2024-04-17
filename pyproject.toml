@@ -16,4 +16,4 @@ exclude = [
     ".eggs",
     "docs/conf.py",
 ]
-src = ["src"]
+#src = ["src"]
