@@ -44,8 +44,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
             raise ValueError(
                 "Please do not set objective directly! Use the `distribution` kwarg"
             )
-
-        super().__init__(objective=None, **kwargs)
+        else:
+            super().__init__(objective=None, **kwargs)
 
     @_deprecate_positional_args
     def fit(
@@ -55,12 +55,12 @@ class XGBDistribution(XGBModel, RegressorMixin):
         *,
         sample_weight: Optional[ArrayLike] = None,
         eval_set: Optional[Sequence[Tuple[ArrayLike, ArrayLike]]] = None,
-        early_stopping_rounds: Optional[int] = None,
+        # early_stopping_rounds: Optional[int] = None,
         verbose: Optional[Union[bool, int]] = True,
         xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
         sample_weight_eval_set: Optional[Sequence[ArrayLike]] = None,
         feature_weights: Optional[ArrayLike] = None,
-        callbacks: Optional[Sequence[TrainingCallback]] = None,
+        # callbacks: Optional[Sequence[TrainingCallback]] = None,
     ) -> "XGBDistribution":
         """Fit gradient boosting distribution model.
 
@@ -145,12 +145,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
             else:
                 base_margin_eval_set = None
 
-            model, _, params, early_stopping_rounds, callbacks = self._configure_fit(
+            model, _, params = self._configure_fit(
                 booster=xgb_model,
-                eval_metric=None,
                 params=params,
-                early_stopping_rounds=early_stopping_rounds,
-                callbacks=callbacks,
+                # early_stopping_rounds=early_stopping_rounds,
+                # callbacks=callbacks,
             )
 
             train_dmatrix, evals = _wrap_evaluation_matrices(
@@ -177,13 +176,13 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 train_dmatrix,
                 num_boost_round=self.get_num_boosting_rounds(),
                 evals=evals,
-                early_stopping_rounds=early_stopping_rounds,
+                early_stopping_rounds=self.early_stopping_rounds,
                 evals_result=evals_result,
                 obj=self._objective_func(),
                 custom_metric=self._evaluation_func(),
                 verbose_eval=verbose,
                 xgb_model=model,
-                callbacks=callbacks,
+                callbacks=self.callbacks,
             )
 
             self._set_evaluation_result(evals_result)

@@ -1,7 +1,5 @@
-import pytest
-
 import numpy as np
-
+import pytest
 from xgboost_distribution.distributions import Laplace
 
 
@@ -28,17 +26,23 @@ def laplace():
     ],
 )
 def test_gradient_calculation(laplace, y, params, natural_gradient, expected_grad):
-    grad, hess = laplace.gradient_and_hessian(
-        y, params, natural_gradient=natural_gradient
-    )
+    grad, _ = laplace.gradient_and_hessian(y, params, natural_gradient=natural_gradient)
     np.testing.assert_array_equal(grad, expected_grad)
 
 
 def test_loss(laplace):
     loss_name, loss_values = laplace.loss(
         # fmt: off
-        y=np.array([1, ]),
-        params=np.array([[1, np.log(1)], ]),
+        y=np.array(
+            [
+                1,
+            ]
+        ),
+        params=np.array(
+            [
+                [1, np.log(1)],
+            ]
+        ),
     )
     assert loss_name == "Laplace-NLL"
     np.testing.assert_approx_equal(loss_values, np.array([-np.log(0.5)]))
