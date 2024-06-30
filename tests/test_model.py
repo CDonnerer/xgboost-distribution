@@ -1,5 +1,5 @@
-"""Test suite for XGBDistribution model
-"""
+"""Test suite for XGBDistribution model"""
+
 import os
 import pickle
 
@@ -93,6 +93,7 @@ def test_fit_with_sample_weights(small_X_y_data, distribution):
 
     random_weights = np.random.choice([1, 2], len(X))
     model = XGBDistribution(distribution=distribution, n_estimators=2)
+
     preds_without_weights = model.fit(X, y).predict(X)
     preds_with_weights = model.fit(X, y, sample_weight=random_weights).predict(X)
 
@@ -214,7 +215,7 @@ def assert_model_equivalence(model_a, model_b, X):
 
 @pytest.mark.parametrize(
     "model_format",
-    ["bst", "json"],
+    ["json", "ubj"],
 )
 def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdir):
     X, y = small_X_y_data

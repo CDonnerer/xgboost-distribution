@@ -1,11 +1,12 @@
-"""Negative binomial distribution
-"""
+"""Negative binomial distribution"""
+
 from collections import namedtuple
 
 import numpy as np
 from scipy.special import digamma, expit
 from scipy.stats import nbinom
 
+from xgboost_distribution.compat import linalg_solve
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import (
     MAX_EXPONENT,
@@ -96,7 +97,7 @@ class NegativeBinomial(BaseDistribution):
             fisher_matrix[:, 0, 0] = (n * p) / (p + 1)
             fisher_matrix[:, 1, 1] = n * p
 
-            grad = np.linalg.solve(fisher_matrix, grad)
+            grad = linalg_solve(fisher_matrix, grad)
             hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
             raise NotImplementedError(

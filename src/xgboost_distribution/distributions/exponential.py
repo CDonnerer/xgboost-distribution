@@ -1,10 +1,11 @@
-"""Exponential distribution
-"""
+"""Exponential distribution"""
+
 from collections import namedtuple
 
 import numpy as np
 from scipy.stats import expon
 
+from xgboost_distribution.compat import linalg_solve
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import check_all_ge_zero, safe_exp
 
@@ -50,7 +51,7 @@ class Exponential(BaseDistribution):
         if natural_gradient:
             fisher_matrix = np.ones(shape=(len(y), 1, 1), dtype="float32")
 
-            grad = np.linalg.solve(fisher_matrix, grad)
+            grad = linalg_solve(fisher_matrix, grad)
             hess = np.ones(shape=(len(y), 1), dtype="float32")  # constant hessian
         else:
             hess = -(grad - 1)

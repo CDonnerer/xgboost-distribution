@@ -1,10 +1,11 @@
-"""Laplace distribution
-"""
+"""Laplace distribution"""
+
 from collections import namedtuple
 
 import numpy as np
 from scipy.stats import cauchy, laplace
 
+from xgboost_distribution.compat import linalg_solve
 from xgboost_distribution.distributions.base import BaseDistribution
 from xgboost_distribution.distributions.utils import safe_exp
 
@@ -74,7 +75,7 @@ class Laplace(BaseDistribution):
             fisher_matrix[:, 0, 0] = 1 / scale**2
             fisher_matrix[:, 1, 1] = 1
 
-            grad = np.linalg.solve(fisher_matrix, grad)
+            grad = linalg_solve(fisher_matrix, grad)
             hess = np.ones(shape=(len(y), 2), dtype="float32")  # constant hessian
         else:
             hess = np.zeros(shape=(len(y), 2), dtype="float32")
