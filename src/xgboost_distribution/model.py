@@ -142,7 +142,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
 
     assert XGBModel.fit.__doc__ is not None
     fit.__doc__ = XGBModel.fit.__doc__.replace(
-        "Fit gradient boosting model", "Fit gradient boosting distribution", 1
+        "Fit gradient boosting model", "Fit gradient boosting distribution model", 1
     )
 
     @no_type_check
