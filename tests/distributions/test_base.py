@@ -51,7 +51,7 @@ def test_distribution_starting_params_shape(distribution_name):
 @pytest.mark.parametrize("distribution_name", AVAILABLE_DISTRIBUTIONS.keys())
 def test_distribution_loss_shape(distribution_name):
     """Ensure that evaluation fns return expect nd.array shape"""
-    y = np.random.choice([1, 2], 5)  # fmt: off
+    y = np.random.choice([1, 2], 10)
 
     distribution = get_distribution(distribution_name)
     starting_params = distribution.starting_params(y=y)
