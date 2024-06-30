@@ -5,7 +5,7 @@ Changelog
 Development version
 ===================
 
-Version 0.2.x, 20xx-xx-xx
+Version 0.3.x, 20xx-xx-xx
 --------------------------
 
 - ..
@@ -14,14 +14,21 @@ Version 0.2.x, 20xx-xx-xx
 Current version
 ===============
 
-Version 0.2.9, 2023-12-10
+Version 0.3.0, 2024-xx-xx
 --------------------------
 
-- Fix float32 serialisation, :issue:`97`
+- Adapted for xgboost==2.1.0 compatibility
+- Numpy compatibility for beyond 2.0.0 (older versions are still supported)
 
 
 Older versions
 ===============
+
+
+Version 0.2.9, 2023-12-10
+--------------------------
+
+- Fix float32 serialisation, :issue:`97`
 
 
 Version 0.2.8, 2023-09-24
