@@ -55,12 +55,10 @@ class XGBDistribution(XGBModel, RegressorMixin):
         *,
         sample_weight: Optional[ArrayLike] = None,
         eval_set: Optional[Sequence[Tuple[ArrayLike, ArrayLike]]] = None,
-        # early_stopping_rounds: Optional[int] = None,
         verbose: Optional[Union[bool, int]] = True,
         xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
         sample_weight_eval_set: Optional[Sequence[ArrayLike]] = None,
         feature_weights: Optional[ArrayLike] = None,
-        # callbacks: Optional[Sequence[TrainingCallback]] = None,
     ) -> "XGBDistribution":
         with config_context(verbosity=self.verbosity):
             evals_result: TrainingCallback.EvalsLog = {}
