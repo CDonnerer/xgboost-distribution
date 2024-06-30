@@ -1,7 +1,8 @@
 """Test the base distribution functionality"""
 
-import numpy as np
 import pytest
+
+import numpy as np
 from xgboost_distribution.distributions import (
     AVAILABLE_DISTRIBUTIONS,
     Normal,

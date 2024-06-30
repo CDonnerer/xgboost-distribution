@@ -3,7 +3,6 @@ import pytest
 import numpy as np
 import pandas as pd
 from scipy.special import logit
-
 from xgboost_distribution.distributions import NegativeBinomial
 
 

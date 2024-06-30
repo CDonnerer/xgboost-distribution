@@ -1,9 +1,8 @@
-"""Tests against data edge cases
-"""
+"""Tests against data edge cases"""
+
 import pytest
 
 import numpy as np
-
 from xgboost_distribution.model import XGBDistribution
 
 

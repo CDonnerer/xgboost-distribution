@@ -2,7 +2,6 @@ import pytest
 
 import numpy as np
 import pandas as pd
-
 from xgboost_distribution.distributions.utils import (
     check_all_ge_zero,
     check_all_gt_zero,

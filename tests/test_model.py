@@ -3,9 +3,10 @@
 import os
 import pickle
 
+import pytest
+
 import joblib
 import numpy as np
-import pytest
 from sklearn.exceptions import NotFittedError
 from xgboost_distribution.distributions import AVAILABLE_DISTRIBUTIONS
 from xgboost_distribution.model import XGBDistribution
