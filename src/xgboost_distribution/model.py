@@ -92,8 +92,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
             model, _, params = self._configure_fit(
                 booster=xgb_model,
                 params=params,
-                # early_stopping_rounds=early_stopping_rounds,
-                # callbacks=callbacks,
             )
 
             train_dmatrix, evals = _wrap_evaluation_matrices(
@@ -140,7 +138,6 @@ class XGBDistribution(XGBModel, RegressorMixin):
                     self._starting_params, default=to_serializable
                 )
             )
-
             return self
 
     assert XGBModel.fit.__doc__ is not None
