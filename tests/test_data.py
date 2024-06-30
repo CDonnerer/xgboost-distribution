@@ -3,6 +3,7 @@
 import pytest
 
 import numpy as np
+
 from xgboost_distribution.model import XGBDistribution
 
 

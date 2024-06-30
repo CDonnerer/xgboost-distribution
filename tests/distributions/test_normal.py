@@ -1,6 +1,7 @@
 import pytest
 
 import numpy as np
+
 from xgboost_distribution.distributions import Normal
 
 
