@@ -23,6 +23,7 @@ select = [
 ]
 
 [tool.ruff.lint.isort]
+known-first-party = ["xgboost_distribution"]
 section-order = [
     "future",
     "standard-library",
