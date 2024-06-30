@@ -21,3 +21,11 @@ exclude = [
 select = [
     "I",  # isort formatting.
 ]
+section-order = [
+    "future",
+    "standard-library",
+    "testing",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
