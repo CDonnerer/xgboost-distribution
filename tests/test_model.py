@@ -213,7 +213,7 @@ def assert_model_equivalence(model_a, model_b, X):
 
 @pytest.mark.parametrize(
     "model_format",
-    ["bst", "json"],
+    ["json", "ubj"],
 )
 def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdir):
     X, y = small_X_y_data

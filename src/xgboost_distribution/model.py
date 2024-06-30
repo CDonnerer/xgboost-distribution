@@ -277,8 +277,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 weights = weights.reshape(-1, 1)
                 grad *= weights
                 hess *= weights
-
-            return grad.flatten(), hess.flatten()
+            return grad, hess
 
         return obj
 
