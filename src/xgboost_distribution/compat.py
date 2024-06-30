@@ -1,12 +1,13 @@
 import numpy as np
 
 if np.__version__ >= "2.0.0":
+    """Required as the `b` input array shape is treated differently.
+
+    https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html
+    """
 
     def linalg_solve(a, b):
-        b_padded = b[..., np.newaxis]
-        res = np.linalg.solve(a, b_padded)
-        return np.squeeze(res, axis=2)
+        x = np.linalg.solve(a, b[..., np.newaxis])
+        return np.squeeze(x, axis=2)
 else:
-
-    def linalg_solve(a, b):
-        return np.linalg.solve(a, b)
+    linalg_solve = np.linalg.solve
