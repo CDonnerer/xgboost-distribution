@@ -93,7 +93,6 @@ def test_fit_with_sample_weights(small_X_y_data, distribution):
 
     random_weights = np.random.choice([1, 2], len(X))
     model = XGBDistribution(distribution=distribution, n_estimators=2)
-
     preds_without_weights = model.fit(X, y).predict(X)
     preds_with_weights = model.fit(X, y, sample_weight=random_weights).predict(X)
 
