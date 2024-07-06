@@ -14,7 +14,7 @@ Version 0.3.x, 20xx-xx-xx
 Current version
 ===============
 
-Version 0.3.0, 2024-xx-xx
+Version 0.3.0, 2024-07-06
 --------------------------
 
 - Adapted for xgboost==2.1.0 compatibility
