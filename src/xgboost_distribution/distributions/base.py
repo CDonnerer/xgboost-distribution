@@ -15,7 +15,6 @@ class BaseDistribution(ABC):
 
     def check_target(self, y) -> None:
         """Ensure that the target is compatible with the chosen distribution"""
-        pass
 
     @property
     @abstractmethod
