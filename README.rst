@@ -44,7 +44,7 @@ Installation
 
     install_requires =
         scikit-learn
-        xgboost>=2.0.0
+        xgboost>=2.1.0
 
 
 Usage

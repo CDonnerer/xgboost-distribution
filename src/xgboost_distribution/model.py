@@ -32,9 +32,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def __init__(
         self,
         *,
-        distribution: str = None,
+        distribution: Optional[str] = None,
         natural_gradient: bool = True,
-        objective: str = None,
+        objective: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         self.distribution = distribution or "normal"
@@ -44,8 +44,8 @@ class XGBDistribution(XGBModel, RegressorMixin):
             raise ValueError(
                 "Please do not set objective directly! Use the `distribution` kwarg"
             )
-
-        super().__init__(objective=None, **kwargs)
+        else:
+            super().__init__(objective=None, **kwargs)
 
     @_deprecate_positional_args
     def fit(
@@ -55,67 +55,11 @@ class XGBDistribution(XGBModel, RegressorMixin):
         *,
         sample_weight: Optional[ArrayLike] = None,
         eval_set: Optional[Sequence[Tuple[ArrayLike, ArrayLike]]] = None,
-        early_stopping_rounds: Optional[int] = None,
         verbose: Optional[Union[bool, int]] = True,
         xgb_model: Optional[Union[Booster, str, XGBModel]] = None,
         sample_weight_eval_set: Optional[Sequence[ArrayLike]] = None,
         feature_weights: Optional[ArrayLike] = None,
-        callbacks: Optional[Sequence[TrainingCallback]] = None,
     ) -> "XGBDistribution":
-        """Fit gradient boosting distribution model.
-
-        Note that calling ``fit()`` multiple times will cause the model object to be
-        re-fit from scratch. To resume training from a previous checkpoint, explicitly
-        pass ``xgb_model`` argument.
-
-        Parameters
-        ----------
-        X :
-            Feature matrix. See :ref:`py-data` for a list of supported types.
-
-            When the ``tree_method`` is set to ``hist``, internally, the
-            :py:class:`QuantileDMatrix` will be used instead of the :py:class:`DMatrix`
-            for conserving memory. However, this has performance implications when the
-            device of input data is not matched with algorithm. For instance, if the
-            input is a numpy array on CPU but ``cuda`` is used for training, then the
-            data is first processed on CPU then transferred to GPU.
-        y :
-            Labels
-        sample_weight :
-            instance weights
-        eval_set :
-            A list of (X, y) tuple pairs to use as validation sets, for which
-            metrics will be computed.
-            Validation metrics will help us track the performance of the model.
-
-        early_stopping_rounds : int
-
-            .. deprecated:: 1.6.0
-
-            Use `early_stopping_rounds` in :py:meth:`__init__` or :py:meth:`set_params`
-            instead.
-        verbose :
-            If `verbose` is True and an evaluation set is used, the evaluation metric
-            measured on the validation set is printed to stdout at each boosting stage.
-            If `verbose` is an integer, the evaluation metric is printed at each
-            `verbose` boosting stage. The last boosting stage / the boosting stage found
-            by using `early_stopping_rounds` is also printed.
-        xgb_model :
-            file name of stored XGBoost model or 'Booster' instance XGBoost model to be
-            loaded before training (allows training continuation).
-        sample_weight_eval_set :
-            A list of the form [L_1, L_2, ..., L_n], where each L_i is an array like
-            object storing instance weights for the i-th validation set.
-        feature_weights :
-            Weight for each feature, defines the probability of each feature being
-            selected when colsample is being used.  All values must be greater than 0,
-            otherwise a `ValueError` is thrown.
-
-        callbacks :
-            .. deprecated:: 1.6.0
-                Use `callbacks` in :py:meth:`__init__` or :py:meth:`set_params` instead.
-
-        """
         with config_context(verbosity=self.verbosity):
             evals_result: TrainingCallback.EvalsLog = {}
 
@@ -145,12 +89,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
             else:
                 base_margin_eval_set = None
 
-            model, _, params, early_stopping_rounds, callbacks = self._configure_fit(
+            model, _, params = self._configure_fit(
                 booster=xgb_model,
-                eval_metric=None,
                 params=params,
-                early_stopping_rounds=early_stopping_rounds,
-                callbacks=callbacks,
             )
 
             train_dmatrix, evals = _wrap_evaluation_matrices(
@@ -177,13 +118,13 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 train_dmatrix,
                 num_boost_round=self.get_num_boosting_rounds(),
                 evals=evals,
-                early_stopping_rounds=early_stopping_rounds,
+                early_stopping_rounds=self.early_stopping_rounds,
                 evals_result=evals_result,
                 obj=self._objective_func(),
                 custom_metric=self._evaluation_func(),
                 verbose_eval=verbose,
                 xgb_model=model,
-                callbacks=callbacks,
+                callbacks=self.callbacks,
             )
 
             self._set_evaluation_result(evals_result)
@@ -197,8 +138,12 @@ class XGBDistribution(XGBModel, RegressorMixin):
                     self._starting_params, default=to_serializable
                 )
             )
-
             return self
+
+    assert XGBModel.fit.__doc__ is not None
+    fit.__doc__ = XGBModel.fit.__doc__.replace(
+        "Fit gradient boosting model", "Fit gradient boosting distribution model", 1
+    )
 
     @no_type_check
     def predict(
@@ -278,8 +223,7 @@ class XGBDistribution(XGBModel, RegressorMixin):
                 weights = weights.reshape(-1, 1)
                 grad *= weights
                 hess *= weights
-
-            return grad.flatten(), hess.flatten()
+            return grad, hess
 
         return obj
 

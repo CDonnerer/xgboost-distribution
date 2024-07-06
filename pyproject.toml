@@ -19,5 +19,27 @@ exclude = [
 
 [tool.ruff.lint]
 select = [
-    "I",  # isort formatting.
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["xgboost_distribution"]
+section-order = [
+    "future",
+    "standard-library",
+    "testing",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+testing = ["pytest"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

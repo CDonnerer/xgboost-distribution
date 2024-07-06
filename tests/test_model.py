@@ -1,5 +1,5 @@
-"""Test suite for XGBDistribution model
-"""
+"""Test suite for XGBDistribution model"""
+
 import os
 import pickle
 
@@ -131,7 +131,7 @@ def test_sample_weights_eval_set(small_train_test_data):
         "NormalDistribution-NLL"
     ]
 
-    assert all((nll_with_weights[i] != nll_without_weights[i] for i in range(2)))
+    assert all(nll_with_weights[i] != nll_without_weights[i] for i in range(2))
 
 
 # -------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ def assert_model_equivalence(model_a, model_b, X):
 
 @pytest.mark.parametrize(
     "model_format",
-    ["bst", "json"],
+    ["json", "ubj"],
 )
 def test_XGBDistribution_save_and_load_model(small_X_y_data, model_format, tmpdir):
     X, y = small_X_y_data

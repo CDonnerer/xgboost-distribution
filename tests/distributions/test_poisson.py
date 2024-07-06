@@ -49,9 +49,8 @@ def test_gradient_calculation(poisson, y, params, natural_gradient, expected_gra
 
 def test_loss(poisson):
     loss_name, loss_values = poisson.loss(
-        # fmt: off
-        y=np.array([1, ]),
-        params=np.array([np.log(1), ]),
+        y=np.array([1]),
+        params=np.array([np.log(1)]),
     )
     assert loss_name == "Poisson-NLL"
     np.testing.assert_array_equal(loss_values, np.array([1.0]))

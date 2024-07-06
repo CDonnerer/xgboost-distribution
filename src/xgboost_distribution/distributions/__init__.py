@@ -28,7 +28,7 @@ AVAILABLE_DISTRIBUTIONS = {
 def get_distribution(name):
     """Get instantianted distribution based on name"""
 
-    if name not in AVAILABLE_DISTRIBUTIONS.keys():
+    if name not in AVAILABLE_DISTRIBUTIONS:
         raise ValueError(
             "Distribution is not implemented! Please choose one of "
             f"{set(AVAILABLE_DISTRIBUTIONS.keys())}"
