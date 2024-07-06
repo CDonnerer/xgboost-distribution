@@ -132,7 +132,7 @@ def test_sample_weights_eval_set(small_train_test_data):
         "NormalDistribution-NLL"
     ]
 
-    assert all((nll_with_weights[i] != nll_without_weights[i] for i in range(2)))
+    assert all(nll_with_weights[i] != nll_without_weights[i] for i in range(2))
 
 
 # -------------------------------------------------------------------------------------

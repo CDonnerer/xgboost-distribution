@@ -13,9 +13,9 @@ class BaseDistribution(ABC):
     functions that operate on the data (`y`) and the outputs of the xgboost (`params`).
     """
 
-    @abstractmethod
     def check_target(self, y) -> None:
         """Ensure that the target is compatible with the chosen distribution"""
+        pass
 
     @property
     @abstractmethod
