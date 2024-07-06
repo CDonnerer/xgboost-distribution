@@ -51,7 +51,6 @@ def test_gradient_calculation(exponential, y, params, natural_gradient, expected
 
 def test_loss(exponential):
     loss_name, loss_values = exponential.loss(
-        # fmt: off
         y=np.array([1]),
         params=np.array([np.log(1)]),
     )
