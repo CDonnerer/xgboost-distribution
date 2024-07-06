@@ -1,6 +1,7 @@
 """Distribution base class"""
 
 from abc import ABC, abstractmethod
+from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_type_check
 
 import numpy as np
 
