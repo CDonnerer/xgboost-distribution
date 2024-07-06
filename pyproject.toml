@@ -35,3 +35,7 @@ section-order = [
 
 [tool.ruff.lint.isort.sections]
 testing = ["pytest"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

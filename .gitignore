@@ -54,3 +54,6 @@ MANIFEST
 
 # Data
 data/*
+
+# Exploratory work
+sandbox/*

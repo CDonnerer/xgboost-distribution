@@ -32,9 +32,9 @@ class XGBDistribution(XGBModel, RegressorMixin):
     def __init__(
         self,
         *,
-        distribution: str = None,
+        distribution: Optional[str] = None,
         natural_gradient: bool = True,
-        objective: str = None,
+        objective: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         self.distribution = distribution or "normal"
