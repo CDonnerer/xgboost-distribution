@@ -1,7 +1,7 @@
 """Distribution base class"""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_type_check
+from typing import Tuple
 
 import numpy as np
 
@@ -13,28 +13,29 @@ class BaseDistribution(ABC):
     functions that operate on the data (`y`) and the outputs of the xgboost (`params`).
     """
 
+    @abstractmethod
     def check_target(self, y) -> None:
         """Ensure that the target is compatible with the chosen distribution"""
 
     @property
     @abstractmethod
-    def params(self) -> tuple[str, ...]:
+    def params(self) -> Tuple[str, ...]:
         """The parameter names of the distribution"""
 
     @abstractmethod
-    def starting_params(self, y) -> tuple[float, ...]:
+    def starting_params(self, y) -> Tuple[float, ...]:
         """The starting parameters of the distribution"""
 
     @abstractmethod
     def gradient_and_hessian(
         self, y, params, natural_gradient=True
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Compute the gradient and hessian of the distribution"""
 
     @abstractmethod
-    def loss(self, y, params) -> tuple[str, np.ndarray]:
+    def loss(self, y, params) -> Tuple[str, np.ndarray]:
         """Evaluate the per sample loss (typically negative log-likelihood)"""
 
     @abstractmethod
-    def predict(self, params) -> tuple[np.ndarray, ...]:
+    def predict(self, params) -> Tuple[np.ndarray, ...]:
         """Predict the parameters of a given distribution"""
