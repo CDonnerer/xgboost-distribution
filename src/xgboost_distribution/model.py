@@ -3,13 +3,26 @@
 import importlib
 import json
 import os
-from typing import Any, Callable, List, Optional, Sequence, Tuple, Union, no_type_check
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    no_type_check,
+)
 
 import numpy as np
-from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
+from xgboost.compat import (
+    XGBRegressorBase,
+    _sklearn_Tags,
+)
 from xgboost.config import config_context
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
 from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
@@ -27,7 +40,7 @@ from xgboost_distribution.utils import to_serializable
     natural_gradient : bool, default=True
         Whether or not natural gradients should be used.""",
 )
-class XGBDistribution(XGBModel, RegressorMixin):
+class XGBDistribution(XGBRegressorBase, XGBModel):
     @_deprecate_positional_args
     def __init__(
         self,
@@ -46,6 +59,19 @@ class XGBDistribution(XGBModel, RegressorMixin):
             )
         else:
             super().__init__(objective=None, **kwargs)
+
+    def _more_tags(self) -> Dict[str, bool]:
+        tags = super()._more_tags()
+        tags["multioutput"] = True
+        tags["multioutput_only"] = False
+        return tags
+
+    def __sklearn_tags__(self) -> _sklearn_Tags:
+        tags = super().__sklearn_tags__()
+        tags_dict = self._more_tags()
+        tags.target_tags.multi_output = tags_dict["multioutput"]
+        tags.target_tags.single_output = not tags_dict["multioutput_only"]
+        return tags
 
     @_deprecate_positional_args
     def fit(
