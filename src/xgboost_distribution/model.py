@@ -6,7 +6,6 @@ import os
 from typing import (
     Any,
     Callable,
-    Dict,
     List,
     Optional,
     Sequence,
@@ -21,7 +20,6 @@ from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
 from xgboost.compat import (
     XGBRegressorBase,
-    _sklearn_Tags,
 )
 from xgboost.config import config_context
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
@@ -59,19 +57,6 @@ class XGBDistribution(XGBRegressorBase, XGBModel):
             )
         else:
             super().__init__(objective=None, **kwargs)
-
-    def _more_tags(self) -> Dict[str, bool]:
-        tags = super()._more_tags()
-        tags["multioutput"] = True
-        tags["multioutput_only"] = False
-        return tags
-
-    def __sklearn_tags__(self) -> _sklearn_Tags:
-        tags = super().__sklearn_tags__()
-        tags_dict = self._more_tags()
-        tags.target_tags.multi_output = tags_dict["multioutput"]
-        tags.target_tags.single_output = not tags_dict["multioutput_only"]
-        return tags
 
     @_deprecate_positional_args
     def fit(
