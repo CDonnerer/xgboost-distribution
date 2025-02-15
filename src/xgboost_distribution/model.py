@@ -18,12 +18,14 @@ import numpy as np
 from sklearn.utils.validation import check_is_fitted
 from xgboost._typing import ArrayLike
 from xgboost.callback import TrainingCallback
-from xgboost.compat import (
-    XGBRegressorBase,
-)
 from xgboost.config import config_context
 from xgboost.core import Booster, DMatrix, _deprecate_positional_args
-from xgboost.sklearn import XGBModel, _wrap_evaluation_matrices, xgboost_model_doc
+from xgboost.sklearn import (
+    XGBModel,
+    XGBRegressor,
+    _wrap_evaluation_matrices,
+    xgboost_model_doc,
+)
 from xgboost.training import train
 
 from xgboost_distribution.distributions import get_distribution, get_distribution_doc
@@ -38,7 +40,7 @@ from xgboost_distribution.utils import to_serializable
     natural_gradient : bool, default=True
         Whether or not natural gradients should be used.""",
 )
-class XGBDistribution(XGBRegressorBase, XGBModel):
+class XGBDistribution(XGBRegressor):
     @_deprecate_positional_args
     def __init__(
         self,
