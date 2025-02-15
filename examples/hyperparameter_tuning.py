@@ -1,6 +1,6 @@
-"""Hyperparameter tuning example
-"""
-from sklearn.datasets import load_boston
+"""Hyperparameter tuning example"""
+
+from sklearn.datasets import fetch_california_housing
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
 
@@ -9,7 +9,7 @@ from xgboost_distribution.metrics import get_ll_score_func
 
 
 def main():
-    data = load_boston()
+    data = fetch_california_housing()
     X, y = data.data, data.target
 
     distribution = "normal"

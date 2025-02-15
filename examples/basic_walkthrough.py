@@ -1,5 +1,5 @@
-"""Minimal example of XGBDistribution on Boston Housing dataset
-"""
+"""Minimal example of XGBDistribution on Boston Housing dataset"""
+
 from matplotlib import pyplot as plt
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
@@ -38,12 +38,12 @@ def main():
         natural_gradient=True,
         max_depth=2,
         n_estimators=500,
+        early_stopping_rounds=10,
     )
     model.fit(
         X_train,
         y_train,
         eval_set=[(X_eval, y_eval)],
-        early_stopping_rounds=10,
         verbose=False,
     )
     preds = model.predict(X_test)
