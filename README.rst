@@ -34,6 +34,7 @@ Installation
 .. code-block:: console
 
     $ pip install xgboost-distribution
+    $ pip install xgboost-distribution[gpu]  # for GPU support
 
 
 `Dependencies`_:
