@@ -17,7 +17,7 @@ Current version
 Version 0.4.0, 2025-03-22
 --------------------------
 
-- Fix for xgboost>=3.0.0 compatibility (inlcudes python >=3.10)
+- Fix for xgboost>=3.0.0 compatibility (requires python >=3.10)
 - Use `xgboost-cpu` where possible to reduce package footprint
 
 
