@@ -102,9 +102,10 @@ class XGBDistribution(XGBRegressor):
             else:
                 base_margin_eval_set = None
 
-            model, _, params = self._configure_fit(
+            model, _, params, feature_weights = self._configure_fit(
                 booster=xgb_model,
                 params=params,
+                feature_weights=feature_weights,
             )
 
             train_dmatrix, evals = _wrap_evaluation_matrices(
