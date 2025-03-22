@@ -34,7 +34,7 @@ Installation
 .. code-block:: console
 
     $ pip install xgboost-distribution
-    $ pip install xgboost-distribution[gpu]  # GPU support - generally not recommended
+    $ pip install xgboost-distribution[gpu]  # for GPU support
 
 
 `Dependencies`_:
@@ -76,6 +76,9 @@ argument specifying the distribution, which is fit via `Maximum Likelihood Estim
 
 
 See the `documentation`_ for all available distributions.
+
+Note: We recommend using early stopping to avoid overfitting, as otherwise the
+determined distribution parameters can become unreliable.
 
 After fitting, we can predict the parameters of the distribution:
 
