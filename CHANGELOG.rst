@@ -5,7 +5,7 @@ Changelog
 Development version
 ===================
 
-Version 0.3.x, 20xx-xx-xx
+Version 0.4.x, 20xx-xx-xx
 --------------------------
 
 - ..
