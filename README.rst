@@ -41,11 +41,11 @@ Installation
 
 .. code-block::
 
-    python_requires = >=3.8
+    python_requires = >=3.10
 
     install_requires =
         scikit-learn
-        xgboost>=2.1.0
+        xgboost>=3.0.0
 
 
 Usage
@@ -76,6 +76,9 @@ argument specifying the distribution, which is fit via `Maximum Likelihood Estim
 
 
 See the `documentation`_ for all available distributions.
+
+Note: We recommend using early stopping to avoid overfitting, as otherwise the
+determined distribution parameters can become unreliable.
 
 After fitting, we can predict the parameters of the distribution:
 
