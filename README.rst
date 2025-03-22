@@ -34,18 +34,18 @@ Installation
 .. code-block:: console
 
     $ pip install xgboost-distribution
-    $ pip install xgboost-distribution[gpu]  # for GPU support
+    $ pip install xgboost-distribution[gpu]  # GPU support - generally not recommended
 
 
 `Dependencies`_:
 
 .. code-block::
 
-    python_requires = >=3.8
+    python_requires = >=3.10
 
     install_requires =
         scikit-learn
-        xgboost>=2.1.0
+        xgboost>=3.0.0
 
 
 Usage
